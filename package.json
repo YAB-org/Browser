@@ -1,0 +1,25 @@
+{
+  "name": "yab-browser",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yab-org/browser.git"
+  },
+  "keywords": [
+    "yab",
+    "browser",
+    "webx",
+    "napture"
+  ],
+  "author": "Lars & Inv",
+  "license": "CC BY-NC-ND 4.0 DEED Attribution-NonCommercial-NoDerivs 4.0 International",
+  "bugs": {
+    "url": "https://github.com/yab-org/browser/issues"
+  },
+  "homepage": "https://github.com/yab-org/browser#readme"
+}
