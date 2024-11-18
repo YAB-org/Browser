@@ -1,3 +1,11 @@
 // window gets initiated, 
 
-let BrowserInstance = {};
+let BrowserInstance = {
+    
+};
+// TabManager
+// 
+
+class TabManager {
+    
+}
