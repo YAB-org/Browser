@@ -1,21 +1,20 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const userDataPath = app.getPath("userData")
 
-// Remove menu abr
+// Remove menu bar
 Menu.setApplicationMenu(null);
 
 console.log(path.join(userDataPath, 'user-data.json'))
 
+// Create browser window
 function createWindow() {
-  // Create browser window
   const win = new BrowserWindow({
     title: 'YAB',
     show: false,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
-    titleBarOverlay: true,
     webPreferences: {
       sandbox: false,
       preload: path.join(__dirname, 'preload.js')
