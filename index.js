@@ -30,6 +30,7 @@ function createWindow() {
   } else {
     // Setup
     win.loadFile('pages/setup.html');
+    win.webContents.openDevTools();
   }
 
   win.show();

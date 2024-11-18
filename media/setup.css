@@ -1,4 +1,32 @@
 body {
   color: #868c92;
-  background-color: #32363a;
+  background-color: var(--bg-page);
+}
+
+
+html, body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+.titlebar {
+  height: 32px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.controls_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
