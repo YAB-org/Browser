@@ -8,6 +8,9 @@ Menu.setApplicationMenu(null);
 
 // Create browser window
 function createWindow() {
+  // Check if first use
+  const first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
+
   const win = new BrowserWindow({
     title: 'YAB',
     show: false,
@@ -15,27 +18,51 @@ function createWindow() {
     titleBarStyle: 'hidden',
     webPreferences: {
       sandbox: false,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'js', (first_use ? 'setup' : 'index'), 'preload.js')
     }
   })
 
   win.maximize();
-  win.setWindowButtonVisibility(false);
+  // Doesn't seem to work
+  // TODO: Remove traffic lights in macos
+  //win.setWindowButtonVisibility(false)
 
-  // Check if first use
-  if (fs.existsSync(path.join(userDataPath, 'user-data.json'))) {
-    // Open normal browser
-    win.loadFile('pages/index.html');
-  } else {
+  if (first_use) {
     // Setup
     win.loadFile('pages/setup.html');
-    win.webContents.openDevTools();
+  } else {
+    // Open normal browser
+    win.loadFile('pages/index.html');
   }
+  win.webContents.openDevTools();
 
   win.show();
 }
 
 app.whenReady().then(() => {
+  ipcMain.on('window-action', (event, data) => {
+    let win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return;
+    switch(data.action) {
+      case 'minimize':
+        win.minimize();
+        break;
+      case 'maximize':
+        if (win.isMaximized()) {
+          win.unmaximize();
+        } else {
+          win.maximize();
+        }
+        break;
+      case 'close':
+        win.close();
+        break;
+      default:
+        // Invalid action
+        break;
+    }
+  });
+
   createWindow()
 })
 
