@@ -1,0 +1,10 @@
+
+
+
+class WaveInstance {
+    
+}
+
+class LuaVM {
+
+}
