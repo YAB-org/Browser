@@ -47,11 +47,17 @@ class TabManager {
     cleanup () {
         // simply closes safely, and saves the tab tree if its valid.
     }
-    
+
 
 }
 
 class NetworkManager {
+    constructor () {
 
+    }
+
+    init () {
+
+    }
 }
 
