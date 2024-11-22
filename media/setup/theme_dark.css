@@ -1,3 +1,10 @@
 :root {
-    --bg-page: #32363A;
+    --bg-page: #2e3236;
+    --bg-titlebar: #2d2f31;
+    --color-windows-controls: #9f9f9f;
+    --color-windows-controls-hover: #bcbcbc;
+    --bg-windows-controls-hover: #ffffff1a;
+    --color-windows-controls-disabled: #5d5c5c;
+    --bg-windows-controls-close-hover: #c94444;
+    --color-windows-controls-close-hover: #e6e6e6;
 }

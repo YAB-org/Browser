@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, screen } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const userDataPath = app.getPath("userData")
@@ -7,13 +7,19 @@ const userDataPath = app.getPath("userData")
 Menu.setApplicationMenu(null);
 
 // Create browser window
-function createWindow() {
+function createWindow(w, h) {
   // Check if first use
   const first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
+  let primaryDisplay = screen.getPrimaryDisplay();
+  let { width, height } = primaryDisplay.workAreaSize;
+
 
   const win = new BrowserWindow({
     title: 'YAB',
     show: false,
+    width: (first_use ? Math.floor(width * 0.5) : w),
+    height: (first_use ? Math.floor(height * 0.7) : h),
+    resizable: false,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     webPreferences: {
@@ -23,6 +29,7 @@ function createWindow() {
   })
 
   win.maximize();
+
   // Doesn't seem to work
   // TODO: Remove traffic lights in macos
   //win.setWindowButtonVisibility(false)
@@ -36,7 +43,7 @@ function createWindow() {
   }
   win.webContents.openDevTools();
 
-  win.show();
+  win.show();b             ;
 }
 
 app.whenReady().then(() => {

@@ -1,7 +1,11 @@
 body {
-  background-color: var(--bg-page)
+  background-color: var(--bg-page);
+
 }
 
+html {
+  overflow: hidden;
+}
 
 html, body {
   margin: 0px;
@@ -11,10 +15,12 @@ html, body {
 }
 
 .titlebar {
+  background: var(--bg-titlebar);
   height: 32px;
   width: 100%;
   display: flex;
   justify-content: flex-end;
+  -webkit-app-region: drag;
 }
 
 .window {
@@ -28,4 +34,42 @@ html, body {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.windows-controls {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  color: var(--color-windows-controls);
+  transition: 0.35s;
+  -webkit-app-region: no-drag;
+}
+
+.windows-controls:hover {
+  background: var(--bg-windows-controls-hover);
+  color: var(--color-windows-controls-hover);
+  cursor: pointer;
+}
+.windows-controls:active {
+  filter: brightness(1.5);
+}
+
+.windows-disable-maximize {
+  color: var(--color-windows-controls-disabled);
+}
+
+.windows-disable-maximize:hover {
+  background: none;
+  color: var(--color-windows-controls-disabled);
+}
+
+/*.windows-controls-close {
+  margin-left: -3px;
+}*/
+
+.windows-controls-close:hover {
+  background: var(--bg-windows-controls-close-hover);
+  color: var(--color-windows-controls-close-hover);
 }
