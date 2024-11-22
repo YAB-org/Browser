@@ -7,19 +7,17 @@ const userDataPath = app.getPath("userData")
 Menu.setApplicationMenu(null);
 
 // Create browser window
-function createWindow(w, h) {
+function createWindow() {
   // Check if first use
   const first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
   let primaryDisplay = screen.getPrimaryDisplay();
   let { width, height } = primaryDisplay.workAreaSize;
 
-
   const win = new BrowserWindow({
     title: 'YAB',
     show: false,
-    width: (first_use ? Math.floor(width * 0.5) : w),
-    height: (first_use ? Math.floor(height * 0.7) : h),
-    resizable: false,
+    width: (first_use ? Math.floor(width * 0.5) : width),
+    height: (first_use ? Math.floor(height * 0.7) : height),
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     webPreferences: {
@@ -28,7 +26,7 @@ function createWindow(w, h) {
     }
   })
 
-  win.maximize();
+  if (!first_use) win.maximize();
 
   // Doesn't seem to work
   // TODO: Remove traffic lights in macos
@@ -43,7 +41,7 @@ function createWindow(w, h) {
   }
   win.webContents.openDevTools();
 
-  win.show();b             ;
+  win.show();
 }
 
 app.whenReady().then(() => {
