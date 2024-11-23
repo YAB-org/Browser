@@ -1,34 +1,37 @@
-
-class BrowserInstance {
-
+export class BrowserInstance {
+    constructor() {
+        this.LayoutManager = new LayoutManager();
+        this.TabManager = new TabManager();
+        this.NetworkManager = new NetworkManager();
+    }
 }
 
 class LayoutManager {
-    
+
 }
 
 class TabManager {
-    constructor (target_id, max, engineInstance, tabTree = undefined) {
+    constructor(target_id, max, engineInstance, tabTree = undefined) {
         this.targetDiv = target_id;
         this.maxTabAmount = max;
         this.minTabAmount = min;
         this.initTree = tabTree;
         this.engine = engineInstance;
-        this.tabTree = {};
+        this.tabTree = [];
         this.currentTab = undefined;
         this.ready = false;
     }
 
-    init () {
+    init() {
         if (!document.getElementById(this.targetDiv)) {
-            console.error('[TabManager][FATAL]:Cannot initialize. Target Tab Container "' + this.targetDiv + '" does not exist.');
+            console.error('[TabManager][FATAL]: Cannot initialize. Target Tab Container "' + this.targetDiv + '" does not exist.');
         } else {
             this.ready = true;
-            return;            
+            return;
         }
     }
 
-    spawnTab (state, text, icon, closable) {
+    spawnTab(state, text, icon, closable) {
         if (!this.ready === true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
@@ -36,7 +39,7 @@ class TabManager {
         }
     }
 
-    terminateTab () {
+    terminateTab() {
         if (!this.ready === true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
@@ -44,20 +47,16 @@ class TabManager {
         }
     }
 
-    cleanup () {
+    cleanup() {
         // simply closes safely, and saves the tab tree if its valid.
     }
-
-
 }
 
 class NetworkManager {
-    constructor () {
+    constructor() {
 
     }
-
-    init () {
+    init() {
 
     }
 }
-

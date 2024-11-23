@@ -1,8 +1,5 @@
-
-
-
 class WaveInstance {
-    
+
 }
 
 class LuaVM {
