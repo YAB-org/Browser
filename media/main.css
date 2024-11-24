@@ -1,0 +1,18 @@
+body {
+    background-color: var(--bg-page);
+}
+  
+html {
+    overflow: hidden;
+}
+  
+html, body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+.titlebar {
+  height: 42px;
+}

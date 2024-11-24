@@ -3,9 +3,33 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../media/titlebar.css">
+    <link rel="stylesheet" href="../media/titlebar/theme_dark.css">
+    <link rel="stylesheet" href="../media/main.css">
+    <link rel="stylesheet" href="../media/main/theme_dark.css">
+    <!-- Citron -->
+    <c-import src="../citronjs/navigation.xml"></c-import>
+    <!-- Scripts -->
+    <script src="https://mrlarso2002.github.io/CitronJS/src/v2-0-0/index.js"></script>
+    
     <title>YAB</title>
   </head>
   <body>
-    
+    <div class="window">
+      <div class="titlebar">
+        <div class="controls_container">
+          <div id="winConMinimize" class="windows-controls" role="button" aria-label="Minimize">
+            <sample name="windows_minimize_svg"></sample>
+          </div>
+          <div id="winConMaximize" class="windows-controls" role="button" aria-label="Maximize">
+            <sample name="windows_maximize_svg"></sample>
+          </div>
+          <div id="winConClose" class="windows-controls windows-controls-close" role="button" aria-label="Close">
+            <sample name="windows_close_svg"></sample>
+          </div>
+        </div>
+      </div>
+      <div class="main_screen"></div>
+    </div>
   </body>
 </html>

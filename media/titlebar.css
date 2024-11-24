@@ -1,0 +1,70 @@
+:root {
+    --bg-titlebar: #2d2f31;
+    --color-windows-controls: #9f9f9f;
+    --color-windows-controls-hover: #bcbcbc;
+    --bg-windows-controls-hover: #ffffff1a;
+    --color-windows-controls-disabled: #5d5c5c;
+    --bg-windows-controls-close-hover: #c94444;
+    --color-windows-controls-close-hover: #e6e6e6;
+}
+
+
+.titlebar {
+    background: var(--bg-titlebar);
+    height: 32px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    -webkit-app-region: drag;
+  }
+  
+  .window {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .controls_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .windows-controls {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    color: var(--color-windows-controls);
+    transition: 0.35s;
+    -webkit-app-region: no-drag;
+  }
+  
+  .windows-controls:hover {
+    background: var(--bg-windows-controls-hover);
+    color: var(--color-windows-controls-hover);
+    cursor: pointer;
+  }
+  .windows-controls:active {
+    filter: brightness(1.5);
+  }
+  
+  .windows-controls-disable {
+    color: var(--color-windows-controls-disabled);
+  }
+  
+  .windows-controls-disable:hover {
+    background: none;
+    color: var(--color-windows-controls-disabled);
+  }
+  
+  /*.windows-controls-close {
+    margin-left: -3px;
+  }*/
+  
+  .windows-controls-close:hover {
+    background: var(--bg-windows-controls-close-hover);
+    color: var(--color-windows-controls-close-hover);
+  }

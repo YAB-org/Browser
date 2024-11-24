@@ -13,7 +13,7 @@ html, body {
   width: 100%;
 }
 
-.titlebar {
+/* .titlebar {
   background: var(--bg-titlebar);
   height: 32px;
   width: 100%;
@@ -63,12 +63,12 @@ html, body {
   background: none;
   color: var(--color-windows-controls-disabled);
 }
-
-/*.windows-controls-close {
+---
+.windows-controls-close {
   margin-left: -3px;
-}*/
-
+}
+---
 .windows-controls-close:hover {
   background: var(--bg-windows-controls-close-hover);
   color: var(--color-windows-controls-close-hover);
-}
+} */

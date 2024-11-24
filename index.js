@@ -9,7 +9,7 @@ Menu.setApplicationMenu(null);
 // Create browser window
 function createWindow() {
   // Check if first use
-  const first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
+  let first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
   let primaryDisplay = screen.getPrimaryDisplay();
   let { width, height } = primaryDisplay.workAreaSize;
 
@@ -31,7 +31,7 @@ function createWindow() {
   // Doesn't seem to work
   // TODO: Remove traffic lights in macos
   //win.setWindowButtonVisibility(false)
-
+  first_use = false;
   if (first_use) {
     // Setup
     win.loadFile('pages/setup.html');
