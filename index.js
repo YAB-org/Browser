@@ -25,13 +25,13 @@ function createWindow() {
       preload: path.join(__dirname, 'js', (first_use ? 'setup' : 'index'), 'preload.js')
     }
   })
-
+  first_use = false;
   if (!first_use) win.maximize();
 
   // Doesn't seem to work
   // TODO: Remove traffic lights in macos
   //win.setWindowButtonVisibility(false)
-  first_use = false;
+
   if (first_use) {
     // Setup
     win.loadFile('pages/setup.html');
@@ -40,6 +40,13 @@ function createWindow() {
     win.loadFile('pages/index.html');
   }
   win.webContents.openDevTools();
+
+  win.on('maximize', () => {
+    win.webContents.send('window-state', { maximized: true });
+  });
+  win.on('unmaximize', () => {
+    win.webContents.send('window-state', { maximized: false });
+  });
 
   win.show();
 }

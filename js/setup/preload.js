@@ -11,3 +11,7 @@ window.addEventListener('DOMContentLoaded', function(){
     ipcRenderer.send('window-action', { action: "close" });
   };
 })
+
+ipcRenderer.on('window-state', (event, data) => {
+  document.getElementById('winConMaximize').innerHTML = `<sample name="windows_maximize${data.maximized ? 'd' : ''}_svg"></sample>`;
+});

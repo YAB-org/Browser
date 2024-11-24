@@ -1,6 +1,7 @@
 <citron>
     <export sample="windows_close_svg"></export>
     <export sample="windows_maximize_svg"></export>
+    <export sample="windows_maximized_svg"></export>
     <export sample="windows_minimize_svg"></export>
 
     <sample name="windows_close_svg">
@@ -9,6 +10,10 @@
 
     <sample name="windows_maximize_svg">
         <svg aria-hidden="true" role="img" width="12" height="12" viewBox="0 0 12 12"><rect width="9" height="9" x="1.5" y="1.5" fill="none" stroke="currentColor"></rect></svg>
+    </sample>
+
+    <sample name="windows_maximized_svg">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1H5C4.44772 1 4 1.44772 4 2V9C4 9.55229 4.44772 10 5 10H12C12.5523 10 13 9.55229 13 9V2C13 1.44772 12.5523 1 12 1Z" stroke="currentColor"/><path d="M9 4H2C1.44772 4 1 4.44772 1 5V12C1 12.5523 1.44772 13 2 13H9C9.55229 13 10 12.5523 10 12V5C10 4.44772 9.55229 4 9 4Z" stroke="currentColor"/></svg>
     </sample>
 
     <sample name="windows_minimize_svg">
