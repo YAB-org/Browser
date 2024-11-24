@@ -27,6 +27,10 @@ class TabManager {
             console.error('[TabManager][FATAL]: Cannot initialize. Target Tab Container "' + this.targetDiv + '" does not exist.');
         } else {
             this.ready = true;
+
+            Sortable.create(this.targetDiv, {
+                animation: 150
+            });
             return;
         }
     }

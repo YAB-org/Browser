@@ -11,14 +11,19 @@
     <c-import src="../citronjs/navigation.xml"></c-import>
     <!-- Scripts -->
     <script src="https://mrlarso2002.github.io/CitronJS/src/v2-0-0/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="../js/browser.js"></script>
     
     <title>YAB</title>
   </head>
   <body>
     <div class="window">
       <div class="titlebar">
-        <div class="tabbar">
-          <div class="tab"></div>
+        <div class="tabbar" id="tab_sortable">
+          <div class="tab">
+            <div class="tab_icon"></div>
+            <div class="text"></div>
+          </div>
           <div class="tab tab-disabled"></div>
           <div class="tab tab-disabled"></div>
         </div>
