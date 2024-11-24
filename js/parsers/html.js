@@ -18,7 +18,7 @@ function subparse(content) {
       }
       stack.pop();
 
-      let elem = stack.join('').split(' ');
+      let elem = stack.join('').trim().split(' ');
       temp.name = elem[0].toLocaleLowerCase();
       if (temp.name.startsWith('/')) {
         // ummmmm, lets ignore that
