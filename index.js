@@ -17,7 +17,7 @@ function createWindow() {
     title: 'YAB',
     show: false,
     width: (first_use ? Math.floor(width * 0.5) : width),
-    height: (first_use ? Math.floor(height * 0.7) : height),
+    height: (first_use ? Math.floor(height * 0.6) : height),
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     webPreferences: {
