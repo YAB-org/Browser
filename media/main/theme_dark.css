@@ -2,4 +2,8 @@
     --bg-page: #1B1F23;
     --bg-titlebar: transparent;
     --color-windows-controls: #878787;
+
+    --bg-toolbar: #2F3337;
+    --bg-tab-active: #2F3337;
+    --bg-tab-disabled: #2f333761;
 }
