@@ -15,6 +15,9 @@ function subparse(content) {
         i++;
         char = content[i];
         stack.push(char);
+        if (char==='<') {
+          stack = []
+        }
       }
       stack.pop();
 
@@ -23,6 +26,9 @@ function subparse(content) {
       if (temp.name.startsWith('/')) {
         // ummmmm, lets ignore that
         continue;
+      }
+      if (temp.name.match(/^[a-zA-Z][a-zA-Z0-9-]*$/m)===null) {
+        console.warn('[HTML PARSER] Invalid element name '+temp.name)
       }
 
       let attributes = elem.slice(1, elem.length).join(' ').match(/\b([a-zA-Z0-9]+)(=(".*?"|[^\s]+))?/g)??[];
