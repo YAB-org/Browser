@@ -12,6 +12,7 @@ window.addEventListener('DOMContentLoaded', function(){
   };
 })
 
-ipcRenderer.on('window-state', (event, data) => {
-  document.getElementById('winConMaximize').innerHTML = `<sample name="windows_maximize${data.maximized ? 'd' : ''}_svg"></sample>`;
-});
+  ipcRenderer.on('window-state', (event, data) => {
+    console.log(data)
+    document.getElementById('winConMaximize').innerHTML = `<sample name="windows_maximize${data.maximized ? 'd' : ''}_svg"></sample>`;
+  });

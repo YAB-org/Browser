@@ -41,12 +41,11 @@ function createWindow() {
   }
   win.webContents.openDevTools();
 
-  win.on('maximize', () => {
-    win.webContents.send('window-state', { maximized: true });
-  });
-  win.on('unmaximize', () => {
-    win.webContents.send('window-state', { maximized: false });
-  });
+  function sendState() {
+    win.webContents.send('window-state', { maximized: win.isMaximized() });
+  }
+  win.on('maximize', sendState);
+  win.on('unmaximize', sendState);
 
   win.show();
 }
