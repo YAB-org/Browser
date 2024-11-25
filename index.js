@@ -17,8 +17,8 @@ function createWindow() {
   const win = new BrowserWindow({
     title: 'YAB',
     show: false,
-    width: (first_use ? Math.floor(width * 0.5) : width),
-    height: (first_use ? Math.floor(height * 0.6) : height),
+    width: Math.floor(width * (first_use ? 0.5 : 0.7)),
+    height: Math.floor(height * (first_use ? 0.6 : 0.8)),
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     webPreferences: {
@@ -27,7 +27,7 @@ function createWindow() {
     }
   })
 
-  if (!first_use) win.maximize();
+  // if (!first_use) win.maximize();
 
   // Doesn't seem to work
   // TODO: Remove traffic lights in macos
