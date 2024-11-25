@@ -5,6 +5,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     Sortable.create(tab_sortable, {
         swapThreshold: 0.90,
-        animation: 150
+        animation: 150,
+        onEnd: function(){
+            console.log(backend.getMouse())
+        }
     });
 });

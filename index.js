@@ -10,6 +10,7 @@ Menu.setApplicationMenu(null);
 function createWindow() {
   // Check if first use
   let first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
+  first_use = false;
   let primaryDisplay = screen.getPrimaryDisplay();
   let { width, height } = primaryDisplay.workAreaSize;
 
@@ -25,7 +26,7 @@ function createWindow() {
       preload: path.join(__dirname, 'js', (first_use ? 'setup' : 'index'), 'preload.js')
     }
   })
-  first_use = false;
+
   if (!first_use) win.maximize();
 
   // Doesn't seem to work
@@ -67,6 +68,9 @@ app.whenReady().then(() => {
         break;
       case 'close':
         win.close();
+        break;
+      case 'getmouse':
+        win.webContents.send('window-mouse', screen.getCursorScreenPoint());
         break;
       default:
         // Invalid action
