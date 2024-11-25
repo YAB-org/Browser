@@ -69,8 +69,11 @@ app.whenReady().then(() => {
       case 'close':
         win.close();
         break;
-      case 'getmouse':
-        win.webContents.send('window-mouse', screen.getCursorScreenPoint());
+      case 'getwindowdata':
+        win.webContents.send('window-data', {
+          mouse: screen.getCursorScreenPoint(),
+          bounds: win.getBounds()
+        });
         break;
       default:
         // Invalid action

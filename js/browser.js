@@ -7,7 +7,18 @@ document.addEventListener('DOMContentLoaded', function() {
         swapThreshold: 0.90,
         animation: 150,
         onEnd: function(){
-            console.log(backend.getMouse())
+            backend.getWindowData().then(data => {
+                let mouse = data.mouse;
+                let bounds = data.bounds;//document.getElementById('titlebar').getBoundingClientRect()
+
+                const isInsideWindow =
+                    mouse.x >= bounds.x &&
+                    mouse.x <= bounds.x + bounds.width &&
+                    mouse.y >= bounds.y &&
+                    mouse.y <= bounds.y + bounds.height;
+
+                console.log(`Is Inside Window: ${isInsideWindow}`);
+            })
         }
     });
 });
