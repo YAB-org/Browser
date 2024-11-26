@@ -17,7 +17,7 @@ class TabManager {
         this.minTabAmount = min;
         this.initTree = tabTree;
         this.engine = engineInstance;
-        this.tabTree = [];
+        this.tabTree = {};
         this.currentTab = undefined;
         this.ready = false;
     }
