@@ -11,15 +11,15 @@ class LayoutManager {
 }
 
 class TabManager {
-    constructor(target_id, max, engineInstance, tabTree = undefined) {
+    constructor(target_id, max, min, engineInstance, tabs = []) {
+        this.ready = false;
         this.targetDiv = target_id;
         this.maxTabAmount = max;
         this.minTabAmount = min;
-        this.initTree = tabTree;
         this.engine = engineInstance;
-        this.tabTree = {};
-        this.currentTab = undefined;
-        this.ready = false;
+        this.tabs = [];
+        this.initTabs = tabs;
+        this.currentTab = 0;
     }
 
     init() {

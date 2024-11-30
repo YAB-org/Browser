@@ -27,7 +27,7 @@ function createWindow() {
     }
   })
 
-  // if (!first_use) win.maximize();
+  if (!first_use) win.maximize();
 
   // Doesn't seem to work
   // TODO: Remove traffic lights in macos
