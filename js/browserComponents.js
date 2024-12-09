@@ -8,7 +8,6 @@ export class Browser {
 
     init() {
         try {
-            console.log(this.TabManager)
             this.TabManager.init('tab_sortable');
             //this.LayoutManager.init();
             //this.NetworkManager.init();
@@ -39,9 +38,9 @@ class TabManager {
         this.IntiatorID = button;
     }
 
-    init() {
-        console.log(document.getElementById('tab_sortable'));
-        if (!document.getElementById(`${this.targetDiv}`)) {
+    init(targetDiv) {
+        this.targetDiv = targetDiv;
+        if (!document.getElementById(this.targetDiv)) {
             console.error('[TabManager][FATAL]: Cannot initialize. Target Tab Container "' + this.targetDiv + '" does not exist.');
             throw new Error();
         } else {
