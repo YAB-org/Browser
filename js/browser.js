@@ -1,9 +1,9 @@
 // Window gets initiated
-//import { BrowserInstance } from './browserComponents.js'
+import { Browser } from './browserComponents.js'
 
 // new BrowserInstance()
 document.addEventListener('DOMContentLoaded', function() {
-    Sortable.create(tab_sortable, {
+/*    Sortable.create(tab_sortable, {
         swapThreshold: 0.90,
         animation: 150,
         onEnd: function(){
@@ -20,5 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Is Inside Window: ${isInsideWindow}`);
             })
         }
-    });
+    }); */
+    const BrowserInstance = new Browser();
+    BrowserInstance.init();
+
+    
 });
