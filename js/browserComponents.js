@@ -12,8 +12,7 @@ export class Browser {
             //this.LayoutManager.init();
             //this.NetworkManager.init();
         } catch (error) {
-            console.error("BrowserInstance failed to start up... + " + error);
-            console.log(document.getElementById(tab_sortable));
+            console.error("BrowserInstance failed to start up: " + error);
         }
     }
 }
@@ -26,11 +25,10 @@ class LayoutManager {
 }
 
 class TabManager {
-    constructor(target_id, max, min, engineInstance = undefined, button = undefined, tabs = []) {
+    constructor(target_id, max, engineInstance = undefined, button = undefined, tabs = []) {
         this.ready = false;
         this.targetDiv = target_id;
         this.maxTabAmount = max;
-        this.minTabAmount = min;
         this.engine = engineInstance;
         this.tabs = [];
         this.initTabs = tabs;
@@ -46,7 +44,7 @@ class TabManager {
         } else {
             this.ready = true;
 
-            Sortable.create(this.targetDiv, {
+            Sortable.create(document.getElementById(this.targetDiv), {
                 swapThreshold: 0.90,
                 animation: 150,
                 onEnd: function(){
