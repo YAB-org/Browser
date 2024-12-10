@@ -1,11 +1,11 @@
 body {
-  background-color: var(--bg-page);
+    background-color: var(--bg-page);
 }
-
+  
 html {
-  overflow: hidden;
+    overflow: hidden;
 }
-
+  
 html, body {
   margin: 0px;
   padding: 0px;
@@ -38,4 +38,33 @@ html, body {
   padding-right: 50px;
   padding-top: 1PX;
   gap: 10px;
+}
+
+.tab {
+  width: 200px;
+  height: 26px;
+  background: var(--bg-tab-active);
+  width: 200px;
+  height: 28px;
+  border-radius: 3px;
+  transition: border-radius 0.5s;
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.tab:hover {
+  cursor:pointer;
+}
+.tab:first-child {
+  border-top-left-radius: 7px;
+}
+.tab:last-child {
+  border-top-right-radius: 7px;
+}
+
+.tab-disabled {
+  background: var(--bg-tab-disabled);
 }
