@@ -53,6 +53,7 @@ class TabManager {
             Sortable.create(document.getElementById(this.targetDiv), {
                 swapThreshold: 0.90,
                 animation: 150,
+                easing: "cubic-bezier(1, 0, 0, 1)",
                 onEnd: function(){
                     backend.getWindowData().then(data => {
                         let mouse = data.mouse;
