@@ -44,7 +44,7 @@ class TabManager {
             this.ready = true;
 
             Array.from(document.querySelectorAll('.tab')).forEach(e=>{
-                e.onclick = function(){
+                e.onmousedown = function(){
                     document.querySelector('.tab:not(.tab-disabled)').classList.add('tab-disabled');
                     e.classList.remove('tab-disabled')
                 }
