@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }); */
     const BrowserInstance = new Browser();
     BrowserInstance.init();
-
+    // exposes BrowserInstance, not recommended unless developing
+    window.BrowserInstance = BrowserInstance;
     
 });

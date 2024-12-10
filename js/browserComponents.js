@@ -43,16 +43,13 @@ class TabManager {
         } else {
             this.ready = true;
 
-            Array.from(document.querySelectorAll('.tab')).forEach(e=>{
-                e.onmousedown = function(){
-                    document.querySelector('.tab:not(.tab-disabled)').classList.add('tab-disabled');
-                    e.classList.remove('tab-disabled')
-                }
-            })
+            this.spawnTab(undefined, 'first');
 
             Sortable.create(document.getElementById(this.targetDiv), {
                 swapThreshold: 0.90,
                 animation: 150,
+                preventOnFilter: true,
+                preventOnCancel: false,
                 easing: "cubic-bezier(1, 0, 0, 1)",
                 onEnd: function(){
                     backend.getWindowData().then(data => {
@@ -74,11 +71,24 @@ class TabManager {
         }
     }
 
-    spawnTab(state, text, icon, closable) {
+    spawnTab(state, text, icon, focused) {
         if (!this.ready === true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
             // open tab logic
+            const newTab = document.createElement('sample');
+            newTab.setAttribute('name', 'tab_disabled');
+            newTab.setAttribute('title', text);
+            document.getElementById(this.targetDiv).appendChild(newTab);
+            // attach event
+            console.log("e1");
+            
+            newTab.addEventListener('click', () => {
+                // TODO: prevent sortablejs from overriding mouseover and click /preventing default and propagation
+                console.log("e");
+                document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
+                newTab.classList.remove('tab-disabled');
+              });
         }
     }
 
