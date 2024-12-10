@@ -1,4 +1,4 @@
-export const nonTerminatingElements = ['hr','img','input','textarea','link','meta','script']
+export const nonTerminatingElements = ['hr','img','input','textarea','link','meta','script'];
 
 function subparse(content) {
   let list = [];
