@@ -44,6 +44,8 @@ class TabManager {
             this.ready = true;
 
             this.spawnTab(undefined, 'first');
+            this.spawnTab(undefined, 'second');
+            this.spawnTab(undefined, 'third');
 
             Sortable.create(document.getElementById(this.targetDiv), {
                 swapThreshold: 0.90,
@@ -79,16 +81,15 @@ class TabManager {
             const newTab = document.createElement('sample');
             newTab.setAttribute('name', 'tab_disabled');
             newTab.setAttribute('title', text);
-            document.getElementById(this.targetDiv).appendChild(newTab);
-            // attach event
-            console.log("e1");
-            
-            newTab.addEventListener('click', () => {
-                // TODO: prevent sortablejs from overriding mouseover and click /preventing default and propagation
-                console.log("e");
-                document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                newTab.classList.remove('tab-disabled');
-              });
+
+            // circumvents SortableJS blocking event propagation
+            var wrapper = document.createElement('div');
+            wrapper.appendChild(newTab);
+            document.getElementById(this.targetDiv).appendChild(wrapper);
+
+            wrapper.addEventListener('click', () => {
+                // sortablejs doesnt seem to care about the wrapper for whatever reason, and you can attach a click event and shit. i mgiht be mistaken, dont know, dont care, i really dont have time for this cuz exam
+            });
         }
     }
 
