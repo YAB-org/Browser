@@ -44,6 +44,8 @@ class TabManager {
             this.ready = true;
 
             this.spawnTab(undefined, 'first');
+            this.spawnTab(undefined, 'second');
+            this.spawnTab(undefined, 'third');
 
             Sortable.create(document.getElementById(this.targetDiv), {
                 swapThreshold: 0.90,
@@ -77,15 +79,18 @@ class TabManager {
         } else {
             // Open tab logic
             const newTab = document.createElement('sample');
-            newTab.setAttribute('keepWrapper', true);
             newTab.setAttribute('name', 'tab_disabled');
             newTab.setAttribute('title', text);
-            document.getElementById(this.targetDiv).appendChild(newTab);
+
+            // circumvents SortableJS blocking event propagation
+            var wrapper = document.createElement('div');
+            wrapper.appendChild(newTab);
+            document.getElementById(this.targetDiv).appendChild(wrapper);
+
             // Attach event
-            newTab.addEventListener('mousedown', () => {
+            wrapper.addEventListener('mousedown', () => {
                 document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                newTab.querySelector('.tab').classList.remove('tab-disabled');
-                newTab.setAttribute('name', 'tab');
+                wrapper.querySelector('.tab').classList.remove('tab-disabled');
             });
         }
     }

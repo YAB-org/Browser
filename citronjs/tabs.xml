@@ -1,9 +1,11 @@
 <citron>
     <export sample="tab">
         <var var="title" default="New Tab"></var>
+        <var var="id" default=""></var>
     </export>
     <export sample="tab_disabled">
         <var var="title" default="New Tab"></var>
+        <var var="id" default=""></var>
     </export>
 
 
@@ -22,7 +24,7 @@
     </sample>
 
     <sample name="tab_disabled">
-        <div class="tab tab-disabled">
+        <div class="tab tab-disabled" id="{ id }">
             <div class="tab_left">
                 <div class="tab_icon"></div>
                 <div class="tab_title">ye so: { title }</div>
