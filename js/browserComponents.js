@@ -72,28 +72,26 @@ class TabManager {
     }
 
     spawnTab(state, text, icon, focused) {
-        if (!this.ready === true) {
+        if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
-            // open tab logic
+            // Open tab logic
             const newTab = document.createElement('sample');
+            newTab.setAttribute('keepWrapper', true);
             newTab.setAttribute('name', 'tab_disabled');
             newTab.setAttribute('title', text);
             document.getElementById(this.targetDiv).appendChild(newTab);
-            // attach event
-            console.log("e1");
-            
-            newTab.addEventListener('click', () => {
-                // TODO: prevent sortablejs from overriding mouseover and click /preventing default and propagation
-                console.log("e");
+            // Attach event
+            newTab.addEventListener('mousedown', () => {
                 document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                newTab.classList.remove('tab-disabled');
-              });
+                newTab.querySelector('.tab').classList.remove('tab-disabled');
+                newTab.setAttribute('name', 'tab');
+            });
         }
     }
 
     terminateTab() {
-        if (!this.ready === true) {
+        if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
             // close a tab logic

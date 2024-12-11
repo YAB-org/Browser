@@ -21,7 +21,7 @@
           </div>
     </sample>
 
-        <sample name="tab_disabled">
+    <sample name="tab_disabled">
         <div class="tab tab-disabled">
             <div class="tab_left">
                 <div class="tab_icon"></div>
