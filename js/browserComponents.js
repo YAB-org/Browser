@@ -1,7 +1,7 @@
 export class Browser {
     constructor() {
         this.LayoutManager = new LayoutManager();
-        this.TabManager = new TabManager('tab_sortable');
+        this.TabManager = new TabManager('tab_sortable', 2, undefined, undefined, undefined);
         this.NetworkManager = new NetworkManager();
     }
 
@@ -34,6 +34,7 @@ class TabManager {
         this.initTabs = tabs;
         this.currentTab = 0;
         this.IntiatorID = button;
+        this.currentAmount = 0;
     }
 
     init() {
@@ -77,21 +78,20 @@ class TabManager {
         if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
-            // Open tab logic
-            const newTab = document.createElement('sample');
-            newTab.setAttribute('name', 'tab_disabled');
-            newTab.setAttribute('title', text);
+            
+            if (this.currentAmount < this.maxTabAmount) {
 
-            // circumvents SortableJS blocking event propagation
-            var wrapper = document.createElement('div');
-            wrapper.appendChild(newTab);
-            document.getElementById(this.targetDiv).appendChild(wrapper);
+                const newTab = this.createTabSkeleton();
+                document.getElementById(this.targetDiv).appendChild(newTab);
+                console.log('got here!');
+                // Attach event
+                newTab.addEventListener('mousedown', () => {
+                    document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
+                    newTab.classList.remove('tab-disabled');
+                });
+                this.currentAmount++
 
-            // Attach event
-            wrapper.addEventListener('mousedown', () => {
-                document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                wrapper.querySelector('.tab').classList.remove('tab-disabled');
-            });
+            }
         }
     }
 
@@ -105,6 +105,25 @@ class TabManager {
 
     cleanup() {
         // simply closes safely, and saves the tab tree if its valid.
+    }
+
+    createTabSkeleton() {
+        const tab = document.createElement('tab');
+        const tab_left = document.createElement('div');
+        const tab_right = document.createElement('div');
+        const tab_icon = document.createElement('div');
+        const tab_title = document.createElement('div');
+        const tab_close = document.createElement('div');
+        const tab_svg = document.createElement('sample');
+        tab.appendChild(tab_left);
+        tab.appendChild(tab_right);
+        tab_left.appendChild(tab_icon);
+        tab_left.appendChild(tab_title);
+        tab_right.appendChild(tab_close);
+        tab_close.appendChild(tab_svg);
+        tab.classList.add('tab', 'tab-disabled');
+        tab_svg.setAttribute('name', 'windows_close_svg');
+        return tab;
     }
 }
 
