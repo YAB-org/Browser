@@ -1,7 +1,7 @@
 export class Browser {
     constructor() {
         this.LayoutManager = new LayoutManager();
-        this.TabManager = new TabManager('tab_sortable', 2, undefined, undefined, undefined);
+        this.TabManager = new TabManager('tab_sortable', 100, undefined, undefined, undefined);
         this.NetworkManager = new NetworkManager();
     }
 
@@ -25,12 +25,12 @@ class LayoutManager {
 }
 
 class TabManager {
-    constructor(target_id, max, engineInstance = undefined, button = undefined, tabs = []) {
+    constructor(target_id, max, engineInstance = undefined, button = undefined, tabs = undefined) {
         this.ready = false;
         this.targetDiv = target_id;
         this.maxTabAmount = max;
         this.engine = engineInstance;
-        this.tabs = [];
+        this.tabs = tabs;
         this.initTabs = tabs;
         this.currentTab = 0;
         this.IntiatorID = button;
@@ -44,9 +44,15 @@ class TabManager {
         } else {
             this.ready = true;
 
-            this.spawnTab(undefined, 'first', undefined, true);
-            this.spawnTab(undefined, 'second');
-            this.spawnTab(undefined, 'third');
+            if (!this.tabs == undefined) {
+
+            } else {
+                this.spawnTab(undefined, 'first', undefined, true);
+
+                for (let i = 1; i <= 100; i++) {
+                    this.spawnTab(undefined, i);
+                }
+            }
 
             Sortable.create(document.getElementById(this.targetDiv), {
                 swapThreshold: 0.90,
@@ -79,8 +85,8 @@ class TabManager {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
             
-            if (this.currentAmount <= this.maxTabAmount) {
-                const newTab = this.createTabSkeleton();
+            if (this.currentAmount < this.maxTabAmount) {
+                const newTab = this.createTabSkeleton(text);
                 document.getElementById(this.targetDiv).appendChild(newTab);
                 console.log('got here!');
                 // Attach event
@@ -89,7 +95,9 @@ class TabManager {
                     newTab.classList.remove('tab-disabled');
                 });
                 this.currentAmount++
-                if (focused === true) newTab.classList.remove('tab-disabled');
+                if (focused === true) {
+                    newTab.classList.remove('tab-disabled')
+                };
             }
             
             
@@ -108,7 +116,7 @@ class TabManager {
         // simply closes safely, and saves the tab tree if its valid.
     }
 
-    createTabSkeleton() {
+    createTabSkeleton(title) {
         const tab = document.createElement('tab');
         const tab_left = document.createElement('div');
         const tab_right = document.createElement('div');
@@ -116,6 +124,8 @@ class TabManager {
         const tab_title = document.createElement('div');
         const tab_close = document.createElement('div');
         const tab_svg = document.createElement('sample');
+        tab_title.innerHTML = title;
+        tab_title.classList.add('tab_text');
         tab.appendChild(tab_left);
         tab.appendChild(tab_right);
         tab_left.appendChild(tab_icon);

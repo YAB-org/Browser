@@ -38,10 +38,11 @@ html, body {
   padding-right: 50px;
   padding-top: 1PX;
   gap: 10px;
+  overflow: hidden;
 }
 
 .tab {
-  width: 200px;
+  max-width: 200px;
   height: 26px;
   background: var(--bg-tab-active);
   width: 200px;
@@ -54,6 +55,7 @@ html, body {
   gap: 10px;
   padding-left: 10px;
   padding-right: 10px;
+  flex-shrink: 5;
 }
 .tab:hover {
   cursor:pointer;
@@ -67,4 +69,10 @@ html, body {
 
 .tab-disabled {
   background: var(--bg-tab-disabled);
+}
+
+.tab_text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
