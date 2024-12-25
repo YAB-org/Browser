@@ -44,7 +44,7 @@ class TabManager {
         } else {
             this.ready = true;
 
-            this.spawnTab(undefined, 'first');
+            this.spawnTab(undefined, 'first', undefined, true);
             this.spawnTab(undefined, 'second');
             this.spawnTab(undefined, 'third');
 
@@ -74,13 +74,12 @@ class TabManager {
         }
     }
 
-    spawnTab(state, text, icon, focused) {
+    spawnTab(state, text, icon, focused = false) {
         if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
             
-            if (this.currentAmount < this.maxTabAmount) {
-
+            if (this.currentAmount <= this.maxTabAmount) {
                 const newTab = this.createTabSkeleton();
                 document.getElementById(this.targetDiv).appendChild(newTab);
                 console.log('got here!');
@@ -90,8 +89,10 @@ class TabManager {
                     newTab.classList.remove('tab-disabled');
                 });
                 this.currentAmount++
-
+                if (focused === true) newTab.classList.remove('tab-disabled');
             }
+            
+            
         }
     }
 
