@@ -1,7 +1,7 @@
 export class Browser {
     constructor() {
         this.LayoutManager = new LayoutManager();
-        this.TabManager = new TabManager('tab_sortable', 3, undefined, undefined, undefined);
+        this.TabManager = new TabManager('tab_sortable', 1582, undefined, undefined, undefined);
         this.NetworkManager = new NetworkManager();
     }
 
@@ -49,7 +49,7 @@ class TabManager {
             } else {
                 this.spawnTab(undefined, 'first', undefined, true);
 
-                for (let i = 1; i <= 100; i++) {
+                for (let i = 1; i <= 1; i++) {
                     this.spawnTab(undefined, `loooong text ${i}`);
                 }
             }
@@ -140,6 +140,7 @@ class TabManager {
         tab_icon_spinner.setAttribute('name', 'tab_favicon_loading');
         tab_svg.setAttribute('name', 'windows_close_svg');
         tab_icon.classList.add('tab_icon');
+        tab.setAttribute('data-aos', 'fade-up'); 
         return tab;
     }
 }

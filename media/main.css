@@ -39,7 +39,6 @@ html, body {
   /* justify-content: flex-start; */
   width: 100%;
   padding-left: 8px;
-  padding-right: 50px;
   padding-top: 1PX;
   gap: 10px;
   overflow: hidden;
@@ -125,8 +124,12 @@ html, body {
   fill: #ffffff;
 }
 @container (max-width: 50px) {
-  .tab_close_container {
-    display: none;
+    .tab_close_container {
+      display: none;
+    }
+    /* this dont work */
+    .tab:hover + .tab_close_container{
+      display: block;
   }
 }
 
@@ -168,4 +171,11 @@ html, body {
   100% {
    stroke-dashoffset: -125px;
   }
+ }
+
+
+ .drag_space {
+  height: 100%;
+  width: 50px;
+  -webkit-app-region: drag;
  }

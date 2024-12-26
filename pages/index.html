@@ -7,20 +7,22 @@
     <link rel="stylesheet" href="../media/titlebar/theme_dark.css">
     <link rel="stylesheet" href="../media/main.css">
     <link rel="stylesheet" href="../media/main/theme_dark.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
     <!-- Citron -->
     <c-import src="../citronjs/navigation.xml"></c-import>
     <!-- Scripts -->
     <script src="https://mrlarso2002.github.io/CitronJS/src/v2-0-0/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="../js/browser.js" type="module"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <title>YAB</title>
   </head>
   <body>
     <div class="window">
       <div class="titlebar" id="titlebar">
-        <div class="tabbar" id="tab_sortable">
-        </div>
+        <div class="tabbar" id="tab_sortable"></div>
+        <div class="drag_space"></div>
         <div class="controls_container">
           <div id="winConMinimize" class="windows-controls" role="button" aria-label="Minimize">
             <sample name="windows_minimize_svg"></sample>
@@ -37,5 +39,8 @@
         <div class="toolbar"></div>
       </div>
     </div>
+    <script>
+      AOS.init();
+    </script>
   </body>
 </html>
