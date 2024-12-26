@@ -37,6 +37,7 @@
     align-items: center;
     justify-content: center;
     width: 45px;
+    fill: var(--color-windows-controls);
     color: var(--color-windows-controls);
     transition: 0.35s;
     -webkit-app-region: no-drag;
@@ -44,6 +45,7 @@
   
   .windows-controls:hover {
     background: var(--bg-windows-controls-hover);
+    fill: var(--color-windows-controls-hover);
     color: var(--color-windows-controls-hover);
     cursor: pointer;
   }
