@@ -3,6 +3,7 @@
     <export sample="windows_maximize_svg"></export>
     <export sample="windows_maximized_svg"></export>
     <export sample="windows_minimize_svg"></export>
+    <export sample="tab_favicon_loading"></export>
 
     <sample name="windows_close_svg">
         <svg aria-hidden="true" role="img" width="12" height="12" viewBox="0 0 12 12"><polygon fill-rule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"></polygon></svg>
@@ -24,5 +25,10 @@
         <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"> <mask id="mask0_27_346" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="17" height="17"> <rect width="17" height="17" fill="#D9D9D9"/> </mask> <g mask="url(#mask0_27_346)"> <path d="M4.24992 15.5834C3.86034 15.5834 3.52683 15.4446 3.2494 15.1672C2.97197 14.8898 2.83325 14.5563 2.83325 14.1667V2.83335C2.83325 2.44377 2.97197 2.11026 3.2494 1.83283C3.52683 1.5554 3.86034 1.41669 4.24992 1.41669H9.91658L14.1666 5.66669V8.74794C13.9423 8.6653 13.7121 8.60332 13.476 8.562C13.2398 8.52068 12.9978 8.50002 12.7499 8.50002V6.37502H9.20825V2.83335H4.24992V14.1667H8.74784C8.84228 14.4382 8.96034 14.692 9.102 14.9281C9.24367 15.1643 9.40895 15.3827 9.59784 15.5834H4.24992ZM11.2624 15.2292L10.2708 14.2375L11.7583 12.75L10.2708 11.2625L11.2624 10.2709L12.7499 11.7584L14.2374 10.2709L15.2291 11.2625L13.7593 12.75L15.2291 14.2375L14.2374 15.2292L12.7499 13.7594L11.2624 15.2292Z" fill="#A5ADB4"/> </g> </svg>
     </sample>
 
+    <sample name="tab_favicon_loading">
+        <svg viewBox="25 25 50 50" class="tab_spinner">
+            <circle r="20" cy="50" cx="50" class="tab_spinner_circle"></circle>
+        </svg>
+    </sample>
+    
 </citron>
-

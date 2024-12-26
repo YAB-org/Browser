@@ -1,7 +1,7 @@
 export class Browser {
     constructor() {
         this.LayoutManager = new LayoutManager();
-        this.TabManager = new TabManager('tab_sortable', 20, undefined, undefined, undefined);
+        this.TabManager = new TabManager('tab_sortable', 3, undefined, undefined, undefined);
         this.NetworkManager = new NetworkManager();
     }
 
@@ -121,6 +121,7 @@ class TabManager {
         const tab_left = document.createElement('div');
         const tab_right = document.createElement('div');
         const tab_icon = document.createElement('div');
+        const tab_icon_spinner = document.createElement('sample');
         const tab_title = document.createElement('div');
         const tab_close = document.createElement('div');
         const tab_svg = document.createElement('sample');
@@ -134,8 +135,11 @@ class TabManager {
         tab_left.appendChild(tab_title);
         tab_right.appendChild(tab_close);
         tab_close.appendChild(tab_svg);
+        tab_icon.appendChild(tab_icon_spinner);
         tab.classList.add('tab', 'tab-disabled');
+        tab_icon_spinner.setAttribute('name', 'tab_favicon_loading');
         tab_svg.setAttribute('name', 'windows_close_svg');
+        tab_icon.classList.add('tab_icon');
         return tab;
     }
 }
