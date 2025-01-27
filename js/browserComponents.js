@@ -84,7 +84,7 @@ class TabManager {
         if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
-            
+
             if (this.currentAmount < this.maxTabAmount) {
                 const newTab = this.createTabSkeleton(text);
                 document.getElementById(this.targetDiv).appendChild(newTab);
@@ -94,13 +94,12 @@ class TabManager {
                     document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
                     newTab.classList.remove('tab-disabled');
                 });
-                this.currentAmount++
+                this.currentAmount++;
                 if (focused === true) {
                     newTab.classList.remove('tab-disabled')
                 };
             }
-            
-            
+
         }
     }
 
@@ -118,29 +117,36 @@ class TabManager {
 
     createTabSkeleton(title) {
         const tab = document.createElement('tab');
-        const tab_left = document.createElement('div');
-        const tab_right = document.createElement('div');
-        const tab_icon = document.createElement('div');
-        const tab_icon_spinner = document.createElement('sample');
-        const tab_title = document.createElement('div');
-        const tab_close = document.createElement('div');
-        const tab_svg = document.createElement('sample');
-        tab_title.innerHTML = title;
-        tab_title.classList.add('tab_text');
-        tab_left.classList.add('tab_left');
-        tab_close.classList.add('tab_close_container');
-        tab.appendChild(tab_left);
-        tab.appendChild(tab_right);
-        tab_left.appendChild(tab_icon);
-        tab_left.appendChild(tab_title);
-        tab_right.appendChild(tab_close);
-        tab_close.appendChild(tab_svg);
-        tab_icon.appendChild(tab_icon_spinner);
         tab.classList.add('tab', 'tab-disabled');
-        tab_icon_spinner.setAttribute('name', 'tab_favicon_loading');
-        tab_svg.setAttribute('name', 'windows_close_svg');
+        tab.setAttribute('data-aos', 'fade-up');
+
+        const tab_left = document.createElement('div');
+        tab_left.classList.add('tab_left');
+        tab.appendChild(tab_left);
+
+        const tab_icon = document.createElement('div');
         tab_icon.classList.add('tab_icon');
-        tab.setAttribute('data-aos', 'fade-up'); 
+        tab_left.appendChild(tab_icon);
+
+        const tab_title = document.createElement('div');
+        tab_title.classList.add('tab_text');
+        tab_title.innerHTML = title;
+        tab_left.appendChild(tab_title);
+
+        const tab_icon_spinner = document.createElement('sample');
+        tab_icon_spinner.setAttribute('name', 'tab_favicon_loading');
+        tab_icon.appendChild(tab_icon_spinner);
+
+        const tab_right = document.createElement('div');
+        tab.appendChild(tab_right);
+
+        const tab_close = document.createElement('div');
+        tab_close.classList.add('tab_close_container');
+        tab_right.appendChild(tab_close);
+
+        const tab_svg = document.createElement('sample');
+        tab_svg.setAttribute('name', 'windows_close_svg');
+        tab_close.appendChild(tab_svg);
         return tab;
     }
 }
