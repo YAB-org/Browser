@@ -80,24 +80,35 @@ class TabManager {
         }
     }
 
+    generateRandomID() {
+        return Math.floor(1000000 + Math.random() * 9000000).toString();
+    }
+
     spawnTab(state, text, icon, focused = false) {
         if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
 
             if (this.currentAmount < this.maxTabAmount) {
-                const newTab = this.createTabSkeleton(text);
+                let generatedID = this.generateRandomID();
+                console.log(generatedID)
+                const newTab = this.createTabSkeleton(text, generatedID);
                 document.getElementById(this.targetDiv).appendChild(newTab);
                 console.log('got here!');
                 // Attach event
-                newTab.addEventListener('mousedown', () => {
-                    document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                    newTab.classList.remove('tab-disabled');
-                });
-                this.currentAmount++;
-                if (focused === true) {
-                    newTab.classList.remove('tab-disabled')
-                };
+                setTimeout(() => {
+                    let generatedTab = document.getElementById(generatedID);
+                    console.log(generatedTab)
+                    generatedTab.addEventListener('mousedown', () => {
+                        document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
+                        generatedTab.classList.remove('tab-disabled');
+                    });
+                    this.currentAmount++;
+                    if (focused === true) {
+                        newTab.classList.remove('tab-disabled')
+                    };    
+                }, 500);
+                
             }
 
         }
@@ -115,38 +126,11 @@ class TabManager {
         // simply closes safely, and saves the tab tree if its valid.
     }
 
-    createTabSkeleton(title) {
-        const tab = document.createElement('tab');
-        tab.classList.add('tab', 'tab-disabled');
-        tab.setAttribute('data-aos', 'fade-up');
-
-        const tab_left = document.createElement('div');
-        tab_left.classList.add('tab_left');
-        tab.appendChild(tab_left);
-
-        const tab_icon = document.createElement('div');
-        tab_icon.classList.add('tab_icon');
-        tab_left.appendChild(tab_icon);
-
-        const tab_title = document.createElement('div');
-        tab_title.classList.add('tab_text');
-        tab_title.innerHTML = title;
-        tab_left.appendChild(tab_title);
-
-        const tab_icon_spinner = document.createElement('sample');
-        tab_icon_spinner.setAttribute('name', 'tab_favicon_loading');
-        tab_icon.appendChild(tab_icon_spinner);
-
-        const tab_right = document.createElement('div');
-        tab.appendChild(tab_right);
-
-        const tab_close = document.createElement('div');
-        tab_close.classList.add('tab_close_container');
-        tab_right.appendChild(tab_close);
-
-        const tab_svg = document.createElement('sample');
-        tab_svg.setAttribute('name', 'windows_close_svg');
-        tab_close.appendChild(tab_svg);
+    createTabSkeleton(title, id) {
+        const tab = document.createElement('sample');
+        tab.setAttribute('name', 'tab');
+        tab.setAttribute('title', title);
+        tab.setAttribute('id', id);
         return tab;
     }
 }
