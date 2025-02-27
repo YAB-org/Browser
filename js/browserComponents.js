@@ -107,7 +107,7 @@ class TabManager {
                     if (focused === true) {
                         newTab.classList.remove('tab-disabled')
                     };    
-                }, 500);
+                }, 250);
                 
             }
 

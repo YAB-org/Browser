@@ -19,6 +19,7 @@ html, body {
 
 .titlebar {
   height: 42px;
+  justify-content: space-between;
 }
 
 .toolbar {
@@ -37,7 +38,6 @@ html, body {
   flex-direction: row;
   align-items: center;
   /* justify-content: flex-start; */
-  width: 100%;
   padding-left: 8px;
   padding-top: 1PX;
   gap: 10px;
