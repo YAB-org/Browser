@@ -44,14 +44,24 @@ html, body {
   overflow: hidden;
 }
 
+.tabbar_container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.tab_button {
+  -webkit-app-region: no-drag;
+}
 .tab {
   max-width: 200px;
   min-width: 20px;
-  width: 200px;
+  width: 0px;
   height: 70%;
   background: var(--bg-tab-active);
   border-radius: 3px;
-  transition: border-radius 0.5s;
+  transition: 0.5s;
   -webkit-app-region: no-drag;
   display: flex;
   align-items: center;
@@ -62,7 +72,18 @@ html, body {
   justify-content: space-between;
   container-type: inline-size;
   border: 1px solid #438fb3;
+  
 }
+.tab_animation {
+  animation: expandOnce 400ms ease-out forwards;
+}
+
+@keyframes expandOnce {
+  to {
+    width: 200px;
+  }
+}
+
 .tab:hover {
   cursor:pointer;
 }
@@ -88,6 +109,7 @@ html, body {
   align-items: center;
   display: flex;
   font-size: 15px;
+  margin-right: 9px;
 }
 
 .tab-disabled .tab_text {
@@ -114,6 +136,9 @@ html, body {
   justify-content: center;
   fill: #6b6b6b;
   transition: 0.25s;
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
 .tab_close_container:hover {
   background: #73737324;
@@ -123,15 +148,36 @@ html, body {
   scale: 0.8;
   fill: #ffffff;
 }
-@container (max-width: 50px) {
+/*@container (max-width: 40px) {
     .tab_close_container {
       display: none;
     }
-    /* this dont work */
-    .tab:hover + .tab_close_container{
+     
+    .tab:active + .tab_close_container{
       display: block;
   }
+} */
+.tab .tab_close_container {
+  display: flex;
 }
+
+/* Hide when tab is small AND disabled */
+@container (max-width: 30px) {
+  .tab.tab-disabled .tab_close_container {
+      display: none;
+  }
+  .tab:not(.tab-disabled) .tab_left {
+    display: none;
+}
+
+  .tab_text {
+    display: none;
+  }
+  /*.tab_text {
+    margin-right: -12px;
+  }*/
+}
+
 
 /* favicon test */
 
