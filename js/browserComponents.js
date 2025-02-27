@@ -37,7 +37,7 @@ class TabManager {
         this.maxTabAmount = max;
         this.engine = engineInstance;
         this.tabs = [];
-        this.initTabs = tabs;
+        this.initTabs = this.tabs;
         this.currentTab = 0;
         this.IntiatorID = button;
         this.currentAmount = 0;
@@ -100,11 +100,11 @@ class TabManager {
                 const newTab = this.createTabSkeleton(text, generatedID, focused);
                 if (focused === true) {
                     document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                };    
+                };
                 document.getElementById(this.targetDiv).appendChild(newTab);
                 console.log('got here!');
 
-                
+
                 // add to registry
                 // TODO: Finish dis
                 this.tabs.push(generatedID);
@@ -114,14 +114,17 @@ class TabManager {
                 setTimeout(() => {
                     let generatedTab = document.getElementById(generatedID);
                     console.log(generatedTab)
-                    generatedTab.addEventListener('mousedown', () => {
+                    generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
                         document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
                         generatedTab.classList.remove('tab-disabled');
                     });
+                    generatedTab.querySelector('.tab_close_container').addEventListener('click', () => {
+                        this.terminateTab(generatedID);
+                    });
                     this.currentAmount++;
-                    
+
                 }, 250);
-                
+
             }
 
         }
@@ -131,7 +134,12 @@ class TabManager {
         if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
         } else {
-            // TODO: Terminate tab based on ID
+            // TODO: Handle closing a focused tab
+            // Find and remove tab entry
+            let idx = this.tabs.indexOf(id);
+            this.tabs.splice(idx, 1);
+            // Remove tab element
+            document.getElementById(id).remove();
         }
     }
 

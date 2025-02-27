@@ -3,13 +3,13 @@
 body {
     background-color: var(--bg-page);
 }
-  
+
 html {
     overflow: hidden;
     font-family: "Inter", serif;
     font-optical-sizing: auto;
 }
-  
+
 html, body {
   margin: 0px;
   padding: 0px;
@@ -69,10 +69,8 @@ html, body {
   padding-left: 5px;
   padding-right: 5px;
   flex-shrink: 5;
-  justify-content: space-between;
   container-type: inline-size;
   border: 1px solid #438fb3;
-  
 }
 .tab_animation {
   animation: expandOnce 400ms ease-out forwards;
@@ -120,6 +118,7 @@ html, body {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 5px;
+  flex: 1;
 }
 
 .tab_icon {
@@ -152,7 +151,7 @@ html, body {
     .tab_close_container {
       display: none;
     }
-     
+
     .tab:active + .tab_close_container{
       display: block;
   }
@@ -185,43 +184,43 @@ html, body {
   width: 18px;
   transform-origin: center;
   animation: rotate4 2s linear infinite;
+}
+
+.tab_spinner_circle {
+ fill: none;
+ stroke: #438fb3;
+ stroke-width: 5;
+ stroke-dasharray: 1, 200;
+ stroke-dashoffset: 0;
+ stroke-linecap: round;
+ animation: dash4 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate4 {
+ 100% {
+  transform: rotate(360deg);
  }
- 
- .tab_spinner_circle {
-  fill: none;
-  stroke: #438fb3;
-  stroke-width: 5;
+}
+
+@keyframes dash4 {
+ 0% {
   stroke-dasharray: 1, 200;
   stroke-dashoffset: 0;
-  stroke-linecap: round;
-  animation: dash4 1.5s ease-in-out infinite;
- }
- 
- @keyframes rotate4 {
-  100% {
-   transform: rotate(360deg);
-  }
- }
- 
- @keyframes dash4 {
-  0% {
-   stroke-dasharray: 1, 200;
-   stroke-dashoffset: 0;
-  }
- 
-  50% {
-   stroke-dasharray: 90, 200;
-   stroke-dashoffset: -35px;
-  }
- 
-  100% {
-   stroke-dashoffset: -125px;
-  }
  }
 
-
- .drag_space {
-  height: 100%;
-  width: 50px;
-  -webkit-app-region: drag;
+ 50% {
+  stroke-dasharray: 90, 200;
+  stroke-dashoffset: -35px;
  }
+
+ 100% {
+  stroke-dashoffset: -125px;
+ }
+}
+
+
+.drag_space {
+ height: 100%;
+ width: 50px;
+ -webkit-app-region: drag;
+}
