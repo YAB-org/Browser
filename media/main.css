@@ -56,7 +56,7 @@ html, body {
 }
 .tab {
   max-width: 200px;
-  min-width: 20px;
+  min-width: 0px;
   width: 0px;
   height: 70%;
   background: var(--bg-tab-active);
@@ -71,17 +71,31 @@ html, body {
   flex-shrink: 5;
   container-type: inline-size;
   border: 1px solid #438fb3;
+  opacity: 1;
 }
 .tab_animation {
   animation: expandOnce 400ms ease-out forwards;
 }
 
+.tab_animation-close {
+  animation: shrinkOnce 300ms ease-out forwards;
+  padding: 0px !important;
+}
+
 @keyframes expandOnce {
   to {
     width: 200px;
+    min-width: 20px;
   }
 }
-
+@keyframes shrinkOnce {
+  to {
+    width: 0px;
+    margin-left: -10px;
+    opacity: 0;
+    
+  }
+}
 .tab:hover {
   cursor:pointer;
 }

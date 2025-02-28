@@ -1,6 +1,7 @@
+
 export class Browser {
     constructor() {
-        this.TabManager = new TabManager('tab_sortable', 1582, undefined, undefined, undefined);
+        this.TabManager = new TabManager('tab_sortable', 1582, undefined, this.terminateBrowserInstance_safe);
         this.LayoutManager = new LayoutManager(this.TabManager);
         this.NetworkManager = new NetworkManager();
     }
@@ -14,6 +15,16 @@ export class Browser {
         } catch (error) {
             console.error("BrowserInstance failed to start up: " + error);
         }
+    }
+
+    terminateBrowserInstance_safe() {
+        // here it would do all the stuff it needs to do like ending lua vm/subprocesses etc.
+        window.closeApp.close();
+    }
+
+    killBrowserInstance() {
+        // just kill the app
+        window.closeApp.close();
     }
 }
 
@@ -31,7 +42,7 @@ class LayoutManager {
 }
 
 class TabManager {
-    constructor(target_id, max, engineInstance = undefined, button = undefined) {
+    constructor(target_id, max, engineInstance = undefined, BrowserInstance) {
         this.ready = false;
         this.targetDiv = target_id;
         this.maxTabAmount = max;
@@ -39,8 +50,8 @@ class TabManager {
         this.tabs = [];
         this.initTabs = this.tabs;
         this.currentTab = 0;
-        this.IntiatorID = button;
         this.currentAmount = 0;
+        this.browserTerminate = BrowserInstance;
     }
 
     init() {
@@ -108,6 +119,7 @@ class TabManager {
                 // add to registry
                 // TODO: Finish dis
                 this.tabs.push(generatedID);
+                this.currentTab = generatedID;
 
 
                 // Attach event
@@ -117,11 +129,14 @@ class TabManager {
                     generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
                         document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
                         generatedTab.classList.remove('tab-disabled');
+                        this.currentTab = generatedID;
                     });
                     generatedTab.querySelector('.tab_close_container').addEventListener('click', () => {
                         this.terminateTab(generatedID);
                     });
                     this.currentAmount++;
+
+                   
 
                 }, 250);
 
@@ -139,8 +154,48 @@ class TabManager {
             let idx = this.tabs.indexOf(id);
             this.tabs.splice(idx, 1);
             // Remove tab element
-            document.getElementById(id).remove();
+            this.currentAmount--;
+            
+            let tabtodel = document.getElementById(id)
+            
+            
+            tabtodel.style.width = '200px';
+            tabtodel.classList.remove('tab_animation');
+            tabtodel.classList.add('tab_animation-close');
+            let neighbour = tabtodel.nextElementSibling || tabtodel.previousElementSibling;
+            
+            setTimeout(() => {
+                
+                tabtodel.remove(); 
+                console.log(this.tabs.length);
+                console.log("it is " + this.tabs.length === 0);
+                if (!document.body.contains(neighbour)) {
+                    // TODO: Find a better way to fix when the neighbour is an element that no longer exists without 450ms delay
+                    neighbour = document.getElementById(this.targetDiv).lastElementChild;
+                    console.log(neighbour);
+                    this.setFocus(neighbour.id);
+                }
+            }, 450);
+            if (this.tabs.length > 0) {
+                console.log('hallo?');
+                if (this.currentTab === id) {
+                    this.setFocus(neighbour.id);
+                    console.log(neighbour);
+                }
+                
+            }
+            if (this.tabs.length === 0) {
+                this.browserTerminate();
+            }
+            
         }
+    }
+
+    setFocus(id) {
+        this.currentTab = id;
+        document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
+        document.getElementById(id).classList.remove('tab-disabled');
+        
     }
 
     cleanup() {

@@ -26,3 +26,9 @@ contextBridge.exposeInMainWorld('backend', {
     })
   }
 });
+
+contextBridge.exposeInMainWorld('closeApp', {
+  close: () => {
+      ipcRenderer.send('close-request');
+  }
+});
