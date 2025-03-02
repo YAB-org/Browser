@@ -1,7 +1,10 @@
 export const nonTerminatingElements = ['hr','img','input','textarea','link','meta','script'];
 
-function subparse(content) {
-  let list = [];
+export function parse(content) {
+  let tree = [];
+  // Remove comments
+  content = content.replaceAll(/<!--([^¬]|.)*?-->/g, '');
+  // Go through string and parse
   for (let i = 0; i<content.length; i++) {
     let stack = [];
     let temp = {
@@ -42,7 +45,7 @@ function subparse(content) {
       temp.attributes = tempattr;
 
       if (nonTerminatingElements.includes(temp.name)) {
-        list.push(temp)
+        tree.push(temp)
         continue;
       }
 
@@ -77,15 +80,8 @@ function subparse(content) {
         }
       }
 
-      list.push(temp);
+      tree.push(temp);
     }
   }
-  return list;
-}
-
-export function parse(content) {
-  let tree = [];
-  content = content.replaceAll(/<!--([^¬]|.)*?-->/g, '');
-  tree = subparse(content);
   return tree;
 }
