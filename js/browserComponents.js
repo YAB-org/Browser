@@ -1,6 +1,5 @@
-
 export class Browser {
-    constructor() {
+    constructor(engine) {
         this.TabManager = new TabManager('tab_sortable', 1582, undefined, this.terminateBrowserInstance_safe);
         this.LayoutManager = new LayoutManager(this.TabManager);
         this.NetworkManager = new NetworkManager();
@@ -19,12 +18,12 @@ export class Browser {
 
     terminateBrowserInstance_safe() {
         // here it would do all the stuff it needs to do like ending lua vm/subprocesses etc.
-        window.closeApp.close();
+        closeApp.close();
     }
 
     killBrowserInstance() {
         // just kill the app
-        window.closeApp.close();
+        closeApp.close();
     }
 }
 

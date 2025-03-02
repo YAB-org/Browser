@@ -27,6 +27,11 @@ contextBridge.exposeInMainWorld('backend', {
   }
 });
 
+contextBridge.exposeInMainWorld('ipcRenderer', {
+  send: (channel, ...args) => electron.ipcRenderer.send(channel, ...args),
+  on: (channel, callback) => electron.ipcRenderer.on(channel, callback)
+});
+
 contextBridge.exposeInMainWorld('closeApp', {
   close: () => {
       ipcRenderer.send('close-request');
