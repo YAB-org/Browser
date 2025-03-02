@@ -28,4 +28,5 @@ document.addEventListener('DOMContentLoaded', function() {
     BrowserInstance.init();
     // TODO: Remove exposed browser instance
     window.BrowserInstance = BrowserInstance;
+    //window.Wave = WaveInstance;
 });

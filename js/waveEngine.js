@@ -23,7 +23,7 @@ export class Wave {
     }
 
     spawnNewProcess() {
-        ipcRenderer.send('spawn-process');
+        window.process.spawn();
         
     }
 

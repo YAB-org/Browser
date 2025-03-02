@@ -1,7 +1,8 @@
 const { app, BrowserWindow, ipcMain, Menu, screen } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
-const userDataPath = app.getPath("userData")
+const userDataPath = app.getPath("userData");
+const childProcess = require('child_process');
 
 // Remove menu bar
 Menu.setApplicationMenu(null);
@@ -49,6 +50,16 @@ function createWindow() {
   win.on('unmaximize', sendState);
 
   win.show();
+
+  ipcMain.on('spawn-process', () => {
+    const pid = Date.now(); // Unique ID for this process
+    
+    // Spawn a new process
+    childProcess.fork(path.join(__dirname,'subprocess.js'));
+
+    // we assign "process ids" but they arent real. there is no need to get the real windows assigned process ids. ideally a pid should be the same length as the tab ids
+    
+});
 }
 
 app.whenReady().then(() => {

@@ -1,6 +1,6 @@
 export class Browser {
     constructor(engine) {
-        this.TabManager = new TabManager('tab_sortable', 1582, undefined, this.terminateBrowserInstance_safe);
+        this.TabManager = new TabManager('tab_sortable', 1582, engine, this.terminateBrowserInstance_safe);
         this.LayoutManager = new LayoutManager(this.TabManager);
         this.NetworkManager = new NetworkManager();
     }
@@ -12,7 +12,9 @@ export class Browser {
             this.LayoutManager.init();
             //this.NetworkManager.init();
         } catch (error) {
+            throw new Error(error);
             console.error("BrowserInstance failed to start up: " + error);
+            
         }
     }
 
@@ -41,7 +43,7 @@ class LayoutManager {
 }
 
 class TabManager {
-    constructor(target_id, max, engineInstance = undefined, BrowserInstance) {
+    constructor(target_id, max, engineInstance, BrowserInstance) {
         this.ready = false;
         this.targetDiv = target_id;
         this.maxTabAmount = max;
@@ -120,7 +122,7 @@ class TabManager {
                 this.tabs.push(generatedID);
                 this.currentTab = generatedID;
 
-
+                this.engine.spawnNewProcess();
                 // Attach event
                 setTimeout(() => {
                     let generatedTab = document.getElementById(generatedID);
@@ -134,10 +136,7 @@ class TabManager {
                         this.terminateTab(generatedID);
                     });
                     this.currentAmount++;
-
-                   
-
-                }, 250);
+                 }, 250);
 
             }
 
