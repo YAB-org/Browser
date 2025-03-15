@@ -109,9 +109,12 @@ class TabManager {
                     generatedID = this.generateRandomID();
                 }
                 console.log(generatedID)
-                const newTab = CitronJS.getContent('tab', { title:text, id:generatedID});
+                console.log(CitronJS.getContent);
+                const newTab = this.createTabSkeleton(text, generatedID, focused);
+                console.log(newTab);
                 if (focused === true) { 
                     document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
+                
                 };
                 document.getElementById(this.targetDiv).appendChild(newTab);
                 console.log('got here!');
@@ -124,7 +127,7 @@ class TabManager {
 
                 this.engine.spawnNewProcess();
                 // Attach event
-                setTimeout(() => {
+                
                     let generatedTab = document.getElementById(generatedID);
                     console.log(generatedTab)
                     generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
@@ -136,7 +139,7 @@ class TabManager {
                         this.terminateTab(generatedID);
                     });
                     this.currentAmount++;
-                 }, 250);
+                 
 
             }
 
@@ -173,7 +176,7 @@ class TabManager {
                     console.log(neighbour);
                     this.setFocus(neighbour.id);
                 }
-            }, 450);
+            }, 220);
             if (this.tabs.length > 0) {
                 console.log('hallo?');
                 if (this.currentTab === id) {
@@ -201,14 +204,11 @@ class TabManager {
     }
 
     createTabSkeleton(title, id, focused) {
-        const tab = document.createElement('sample');
-        tab.setAttribute('name', 'tab');
-        tab.setAttribute('title', title);
-        tab.setAttribute('id', id);
         if (focused) {
-            tab.setAttribute('name', 'tab_focused');
+            return CitronJS.getContent('tab_focused', {title:title, id:id});
+        } else {
+            return CitronJS.getContent('tab', {title:title, id:id});
         }
-        return tab;
     }
 }
 

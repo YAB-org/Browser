@@ -23,10 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }); */
 
-    const WaveInstance = new Wave();
-    const BrowserInstance = new Browser(WaveInstance);
-    BrowserInstance.init();
-    // TODO: Remove exposed browser instance
-    window.BrowserInstance = BrowserInstance;
-    //window.Wave = WaveInstance;
+
+    document.addEventListener("CitronReady", () => {
+        const WaveInstance = new Wave();
+        const BrowserInstance = new Browser(WaveInstance);
+        BrowserInstance.init();
+
+        // TODO: Remove exposed browser instance
+        window.BrowserInstance = BrowserInstance;
+        //window.Wave = WaveInstance;
+    });
 });

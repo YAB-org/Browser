@@ -42,6 +42,11 @@ html, body {
   padding-top: 1PX;
   gap: 10px;
   overflow: hidden;
+  overflow-x: auto;
+}
+
+.tabbar::-webkit-scrollbar {
+  display: none;
 }
 
 .tabbar_container {
@@ -78,7 +83,7 @@ html, body {
 }
 
 .tab_animation-close {
-  animation: shrinkOnce 300ms ease-out forwards;
+  animation: shrinkOnce 200ms ease-out forwards;
   padding: 0px !important;
 }
 

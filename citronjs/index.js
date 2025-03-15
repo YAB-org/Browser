@@ -16,9 +16,14 @@ customElements.define('c-import', CImport);
 
 let CitronJS = {};
 
+const isready = new Event('CitronReady');
+
+// Dispatch the event on a target element (for example, document)
+
 CitronJS.DyCache = {}; // files
 CitronJS.ObCache = {}; // samples
 
+CitronJS.ready = false;
 CitronJS.addEntry = function (file, src) {
     // generate entry number
     let entry = CitronJS.generateRand();
@@ -237,6 +242,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             await CitronJS.handleImports(e.getAttribute('src'));
         }
     }
+    document.dispatchEvent(isready);
 
     const samples = Array.from(document.getElementsByTagName('sample'));
     for (let i = 0; i < samples.length; i++) {
