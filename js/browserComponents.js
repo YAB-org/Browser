@@ -14,7 +14,7 @@ export class Browser {
         } catch (error) {
             throw new Error(error);
             console.error("BrowserInstance failed to start up: " + error);
-            
+
         }
     }
 
@@ -74,10 +74,10 @@ class TabManager {
                 preventOnFilter: true,
                 preventOnCancel: false,
                 easing: "cubic-bezier(1, 0, 0, 1)",
-                onEnd: function(){
+                onEnd: function() {
                     backend.getWindowData().then(data => {
                         let mouse = data.mouse;
-                        let bounds = data.bounds;//document.getElementById('titlebar').getBoundingClientRect()
+                        let bounds = data.bounds; //document.getElementById('titlebar').getBoundingClientRect()
 
                         const isInsideWindow =
                             mouse.x >= bounds.x &&
@@ -112,9 +112,9 @@ class TabManager {
                 console.log(CitronJS.getContent);
                 const newTab = this.createTabSkeleton(text, generatedID, focused);
                 console.log(newTab);
-                if (focused === true) { 
+                if (focused === true) {
                     document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                
+
                 };
                 document.getElementById(this.targetDiv).appendChild(newTab);
                 console.log('got here!');
@@ -127,19 +127,19 @@ class TabManager {
 
                 this.engine.spawnNewProcess();
                 // Attach event
-                
-                    let generatedTab = document.getElementById(generatedID);
-                    console.log(generatedTab)
-                    generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
-                        document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-                        generatedTab.classList.remove('tab-disabled');
-                        this.currentTab = generatedID;
-                    });
-                    generatedTab.querySelector('.tab_close_container').addEventListener('click', () => {
-                        this.terminateTab(generatedID);
-                    });
-                    this.currentAmount++;
-                 
+
+                let generatedTab = document.getElementById(generatedID);
+                console.log(generatedTab)
+                generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
+                    document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
+                    generatedTab.classList.remove('tab-disabled');
+                    this.currentTab = generatedID;
+                });
+                generatedTab.querySelector('.tab_close_container').addEventListener('click', () => {
+                    this.terminateTab(generatedID);
+                });
+                this.currentAmount++;
+
 
             }
 
@@ -152,30 +152,42 @@ class TabManager {
         } else {
             // TODO: Handle closing a focused tab
             // Find and remove tab entry
+            const container = document.getElementById(this.targetDiv); // or document.getElementById('myDiv')
+            const currentElem = document.getElementById(id); // or however you determine it
+            // Remove tab element
+            const lastChild = container.lastElementChild;
+            console.log(lastChild);
+            let neighbour = null;
+
+            if (currentElem === lastChild) {
+                // If the current element is the last child, get its previous sibling (to the left)
+                neighbour = currentElem.previousElementSibling;
+            } else {
+                // currentElem is not the last child of the DIV.
+                if (currentElem !== lastChild && !this.tabs.includes(lastChild.id)) {
+                    // If the container's last child is NOT in the list, get currentElem's previous sibling
+                    neighbour = currentElem.previousElementSibling;
+                } else {
+                    // If the container's last child IS in the list, get currentElem's next sibling (to the right)
+                    neighbour = currentElem.nextElementSibling;
+                }
+            }
             let idx = this.tabs.indexOf(id);
             this.tabs.splice(idx, 1);
-            // Remove tab element
+
             this.currentAmount--;
-            
+
             let tabtodel = document.getElementById(id)
-            
-            
+
             tabtodel.style.width = '200px';
             tabtodel.classList.remove('tab_animation');
             tabtodel.classList.add('tab_animation-close');
-            let neighbour = tabtodel.nextElementSibling || tabtodel.previousElementSibling;
-            
+
             setTimeout(() => {
-                
-                tabtodel.remove(); 
+
+                tabtodel.remove();
                 console.log(this.tabs.length);
                 console.log("it is " + this.tabs.length === 0);
-                if (!document.body.contains(neighbour)) {
-                    // TODO: Find a better way to fix when the neighbour is an element that no longer exists without 450ms delay
-                    neighbour = document.getElementById(this.targetDiv).lastElementChild;
-                    console.log(neighbour);
-                    this.setFocus(neighbour.id);
-                }
             }, 220);
             if (this.tabs.length > 0) {
                 console.log('hallo?');
@@ -183,12 +195,12 @@ class TabManager {
                     this.setFocus(neighbour.id);
                     console.log(neighbour);
                 }
-                
+
             }
             if (this.tabs.length === 0) {
                 this.browserTerminate();
             }
-            
+
         }
     }
 
@@ -196,7 +208,7 @@ class TabManager {
         this.currentTab = id;
         document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
         document.getElementById(id).classList.remove('tab-disabled');
-        
+
     }
 
     cleanup() {
@@ -205,9 +217,15 @@ class TabManager {
 
     createTabSkeleton(title, id, focused) {
         if (focused) {
-            return CitronJS.getContent('tab_focused', {title:title, id:id});
+            return CitronJS.getContent('tab_focused', {
+                title: title,
+                id: id
+            });
         } else {
-            return CitronJS.getContent('tab', {title:title, id:id});
+            return CitronJS.getContent('tab', {
+                title: title,
+                id: id
+            });
         }
     }
 }
