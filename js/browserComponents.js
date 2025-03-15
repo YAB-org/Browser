@@ -109,8 +109,8 @@ class TabManager {
                     generatedID = this.generateRandomID();
                 }
                 console.log(generatedID)
-                const newTab = this.createTabSkeleton(text, generatedID, focused);
-                if (focused === true) {
+                const newTab = CitronJS.getContent('tab', { title:text, id:generatedID});
+                if (focused === true) { 
                     document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
                 };
                 document.getElementById(this.targetDiv).appendChild(newTab);
