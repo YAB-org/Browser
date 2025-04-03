@@ -6,4 +6,11 @@
     --bg-toolbar: #2F3337;
     --bg-tab-active: #2F3337;
     --bg-tab-disabled: #2f333761;
+    --tab-border-color: #438fb3;
+    --tab-text-color: #9d9d9d;
+    --tab-text-color-disabled: #6f6f6f;
+    --tab-close-fill: #6b6b6b;
+    --tab-close-hover-fill: #989898;
+    --tab-close-active-fill: #ffffff;
+    --tab-spinner-stroke: #438fb3;
 }

@@ -11,8 +11,8 @@ html {
 }
 
 html, body {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   height: 100%;
   width: 100%;
 }
@@ -39,7 +39,7 @@ html, body {
   align-items: center;
   /* justify-content: flex-start; */
   padding-left: 8px;
-  padding-top: 1PX;
+  padding-top: 1px;
   gap: 10px;
   overflow: hidden;
   overflow-x: auto;
@@ -59,10 +59,11 @@ html, body {
 .tab_button {
   -webkit-app-region: no-drag;
 }
+
 .tab {
   max-width: 200px;
-  min-width: 0px;
-  width: 0px;
+  min-width: 0;
+  width: 0;
   height: 70%;
   background: var(--bg-tab-active);
   border-radius: 3px;
@@ -75,16 +76,17 @@ html, body {
   padding-right: 5px;
   flex-shrink: 5;
   container-type: inline-size;
-  border: 1px solid #438fb3;
+  border: 1px solid var(--tab-border-color);
   opacity: 1;
 }
+
 .tab_animation {
   animation: expandOnce 400ms ease-out forwards;
 }
 
 .tab_animation-close {
   animation: shrinkOnce 200ms ease-out forwards;
-  padding: 0px !important;
+  padding: 0 !important;
 }
 
 @keyframes expandOnce {
@@ -93,25 +95,26 @@ html, body {
     min-width: 20px;
   }
 }
+
 @keyframes shrinkOnce {
   to {
-    width: 0px;
+    width: 0;
     margin-left: -10px;
     opacity: 0;
-    
   }
 }
+
 .tab:hover {
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .tab:first-child {
   border-top-left-radius: 7px;
 }
+
 .tab:last-child {
   border-top-right-radius: 7px;
 }
-
-
 
 .tab-disabled {
   background: var(--bg-tab-disabled);
@@ -122,7 +125,7 @@ html, body {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: clip;
-  color: #9d9d9d;
+  color: var(--tab-text-color);
   align-items: center;
   display: flex;
   font-size: 15px;
@@ -130,7 +133,7 @@ html, body {
 }
 
 .tab-disabled .tab_text {
-  color: #6f6f6f;
+  color: var(--tab-text-color-disabled);
 }
 
 .tab_left {
@@ -152,29 +155,24 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  fill: #6b6b6b;
+  fill: var(--tab-close-fill);
   transition: 0.25s;
   position: absolute;
   top: 5px;
   right: 5px;
 }
+
 .tab_close_container:hover {
   background: #73737324;
-  fill: #989898;
+  fill: var(--tab-close-hover-fill);
 }
+
 .tab_close_container:active {
   scale: 0.8;
-  fill: #ffffff;
+  fill: var(--tab-close-active-fill);
 }
-/*@container (max-width: 40px) {
-    .tab_close_container {
-      display: none;
-    }
 
-    .tab:active + .tab_close_container{
-      display: block;
-  }
-} */
+/* Always display the close container when needed */
 .tab .tab_close_container {
   display: flex;
 }
@@ -186,16 +184,11 @@ html, body {
   }
   .tab:not(.tab-disabled) .tab_left {
     display: none;
-}
-
+  }
   .tab_text {
     display: none;
   }
-  /*.tab_text {
-    margin-right: -12px;
-  }*/
 }
-
 
 /* favicon test */
 
@@ -206,40 +199,37 @@ html, body {
 }
 
 .tab_spinner_circle {
- fill: none;
- stroke: #438fb3;
- stroke-width: 5;
- stroke-dasharray: 1, 200;
- stroke-dashoffset: 0;
- stroke-linecap: round;
- animation: dash4 1.5s ease-in-out infinite;
+  fill: none;
+  stroke: var(--tab-spinner-stroke);
+  stroke-width: 5;
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: dash4 1.5s ease-in-out infinite;
 }
 
 @keyframes rotate4 {
- 100% {
-  transform: rotate(360deg);
- }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes dash4 {
- 0% {
-  stroke-dasharray: 1, 200;
-  stroke-dashoffset: 0;
- }
-
- 50% {
-  stroke-dasharray: 90, 200;
-  stroke-dashoffset: -35px;
- }
-
- 100% {
-  stroke-dashoffset: -125px;
- }
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dashoffset: -125px;
+  }
 }
 
-
 .drag_space {
- height: 100%;
- width: 50px;
- -webkit-app-region: drag;
+  height: 100%;
+  width: 50px;
+  -webkit-app-region: drag;
 }

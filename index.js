@@ -32,13 +32,12 @@ function createWindow() {
 	})
 
 	if (!first_use) win.maximize();
-
-	// Doesn't seem to work
+  // Doesn't seem to work
 	// TODO: Remove traffic lights in macos
 	//win.setWindowButtonVisibility(false)
 
 	if (first_use) {
-		// Setup
+		// Setup Screen
 		win.loadFile('pages/setup.html');
 	} else {
 		// Open normal browser
@@ -53,18 +52,7 @@ function createWindow() {
 	}
 	win.on('maximize', sendState);
 	win.on('unmaximize', sendState);
-
-	win.show();
-
-	ipcMain.on('spawn-process', () => {
-		const pid = Date.now(); // Unique ID for this process
-
-		// Spawn a new process
-		childProcess.fork(path.join(__dirname, 'subprocess.js'));
-
-		// we assign "process ids" but they arent real. there is no need to get the real windows assigned process ids. ideally a pid should be the same length as the tab ids
-
-	});
+  win.show();
 }
 
 app.whenReady().then(() => {
@@ -106,4 +94,17 @@ app.on('window-all-closed', () => {
 
 ipcMain.on('close-request', () => {
 	app.quit();
+});
+
+
+// SUBPROCESSES
+
+ipcMain.on('spawn-process', () => {
+  const pid = Date.now(); // Unique ID for this process
+
+  // Spawn a new process
+  childProcess.fork(path.join(__dirname, 'subprocess.js'));
+
+  // we assign "process ids" but they arent real. there is no need to get the real windows assigned process ids. ideally a pid should be the same length as the tab ids
+
 });

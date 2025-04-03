@@ -38,7 +38,9 @@ class LayoutManager {
 	init() {
 		document.getElementById('tab_newtab_button').addEventListener('click', () => {
 			this.tabman.spawnTab('New Tab', true)
-		})
+		});
+
+		
 	}
 }
 
