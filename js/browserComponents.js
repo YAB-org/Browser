@@ -36,7 +36,6 @@ class LayoutManager {
     }
 
     init() {
-			console.log('Layoutmanager init')
         // Initialize URL highlighting functionality
         this.setupUrlHighlighting();
 
