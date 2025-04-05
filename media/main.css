@@ -24,9 +24,27 @@ html, body {
 
 .toolbar {
   background: var(--bg-toolbar);
-  height: 48px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  gap: 5px;
 }
 
+.toolbar-icon_disabled {
+  color: #52585D;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.toolbar-icon_enabled {
+  color: #8F969C;
+}
 .main_screen {
   display: flex;
   flex-direction: column;
@@ -80,6 +98,10 @@ html, body {
   opacity: 1;
 }
 
+.tab_ghost {
+  width: 200px;
+  min-width: 20px;
+}
 .tab_animation {
   animation: expandOnce 400ms ease-out forwards;
 }
@@ -232,4 +254,90 @@ html, body {
   height: 100%;
   width: 50px;
   -webkit-app-region: drag;
+}
+
+
+
+.toolbar_searchbar_container {
+  position: relative;
+  width: 100%;
+}
+.toolbar_searchbar_container .toolbar_searchbar, .toolbar_searchbar_container .searchbar_highlight {
+  font-family: "Inter";
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: normal;
+  white-space: pre;
+  padding: 2px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.toolbar_searchbar_container .toolbar_searchbar {
+  width: 100%;
+  caret-color: #7C7C7C;
+  color: transparent;
+  background: transparent;
+}
+.toolbar_searchbar_container .searchbar_highlight {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: calc(100% - 4px);
+  pointer-events: none;
+}
+
+.searchbar_highlight {
+  color: #A9A9A9;
+  z-index: 1;
+  height: 31px;
+  display: flex;
+    align-items: center;
+}
+.toolbar_searchbar {
+  z-index: 2;
+  position: relative;
+  height: 31px;
+}
+
+/* Extra styling */
+.searchbar_proto {
+  color: #7C7C7C;
+}
+.searchbar_port {
+  color: #dca86d;
+}
+.searchbar_path {
+  color: #7C7C7C;
+}
+
+
+
+.toolbar_searchbar:focus {
+  border: none;
+  outline: none;
+}
+
+.toolbar_searchbar {
+  border: none;
+}
+
+.toolbar_searchbar_components:has(#toolbar_searchbar:focus) {
+  background: #292f35;
+}
+
+.toolbar_searchbar_components {
+  width: 100%;
+  background: #1B1F23;
+  border: 2px solid #52585D;
+  border-radius: 6px;
+  padding-left: 4px;
+  padding-right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar_searchbar_components:hover {
+  background: #292f35;
+  transition: 0.25s;
 }

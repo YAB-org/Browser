@@ -31,17 +31,53 @@ export class Browser {
 
 
 class LayoutManager {
-	constructor(tab_manager) {
-		this.tabman = tab_manager;
-	}
+    constructor(tab_manager) {
+        this.tabman = tab_manager;
+        this.input = document.getElementById('toolbar_searchbar');
+        this.highlight = document.getElementById('searchbar_highlight');
+        
+        this.init();
+    }
 
-	init() {
-		document.getElementById('tab_newtab_button').addEventListener('click', () => {
-			this.tabman.spawnTab('New Tab', true)
+    init() {
+        // Initialize URL highlighting functionality
+        this.setupUrlHighlighting();
+        
+        // Initialize tab management functionality
+        document.getElementById('tab_newtab_button').addEventListener('click', () => {
+            this.tabman.spawnTab('New Tab', true);
+        });
+    }
+
+    setupUrlHighlighting() {
+        let update = () => {
+            let final = this.input.value;
+            final = final
+                .replaceAll('<', '&lt;')
+                .replace(/.+?:\/\//, '<span class="searchbar_proto">$&</span>')
+                .replace(/(?<!:|:\/|<)(\/|\?).*?$/m, '<span class="searchbar_path">$&</span>')
+                .replace(/:[0-9]+/, '<span class="searchbar_port">$&</span>');
+            this.highlight.innerHTML = final;
+        };
+
+        this.input.oninput = update;
+
+        this.input.addEventListener('focus', () => {
+            this.input.select();
+            let proto = document.querySelector('.searchbar_proto');
+            if (proto) proto.style.display = '';
+        });
+
+        this.input.addEventListener('blur', () => {
+            let proto = document.querySelector('.searchbar_proto');
+            if (proto) proto.style.display = 'none';
+        });
+
+		this.input.addEventListener("scroll", () => {
+			this.highlight.scrollTop = this.input.scrollTop;
+			this.highlight.scrollLeft = this.input.scrollLeft;
 		});
-
-		
-	}
+    }
 }
 
 class TabManager {
