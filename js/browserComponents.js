@@ -5,16 +5,14 @@ export class Browser {
 		this.NetworkManager = new NetworkManager();
 	}
 
-
 	init() {
 		try {
 			this.TabManager.init();
 			this.LayoutManager.init();
 			//this.NetworkManager.init();
 		} catch (error) {
-			throw new Error(error);
 			console.error("BrowserInstance failed to start up: " + error);
-
+			throw new Error(error);
 		}
 	}
 
@@ -35,14 +33,13 @@ class LayoutManager {
         this.tabman = tab_manager;
         this.input = document.getElementById('toolbar_searchbar');
         this.highlight = document.getElementById('searchbar_highlight');
-        
-        this.init();
     }
 
     init() {
+			console.log('Layoutmanager init')
         // Initialize URL highlighting functionality
         this.setupUrlHighlighting();
-        
+
         // Initialize tab management functionality
         document.getElementById('tab_newtab_button').addEventListener('click', () => {
             this.tabman.spawnTab('New Tab', true);
