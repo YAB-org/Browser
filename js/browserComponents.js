@@ -1,7 +1,7 @@
 export class Browser {
 	constructor() {
 		this.ProcessManager = new ProcessManager();
-		this.TabManager = new TabManager('tab_sortable', 1582, this.ProcessManager, this.terminateBrowserInstance_safe);
+		this.TabManager = new TabManager('tab_sortable', 9999, this.ProcessManager, this.terminateBrowserInstance_safe);
 		this.LayoutManager = new LayoutManager(this.TabManager);
 		this.NetworkManager = new NetworkManager();
 		
@@ -182,7 +182,7 @@ class TabManager {
 
         window.main.onMessage('process-unexpected-terminated', (data) => {
             console.log('Tab with pid: ' + data.pid + ' closed unexpectedly. Cleaning up.');
-			this.terminateTab(data.pid)
+			this.terminateTab(data.pid);
         });
     }
 
@@ -191,7 +191,11 @@ class TabManager {
 
 	}
 
-	async spawnTab(text, focused = false) {
+	async TravelTo(pid, url, inherit) {
+
+	}
+	
+	async spawnTab(title, focused = false, options) {
 		if (this.ready !== true) {
 			console.error('[TabManager][ERROR]: TabManager is not ready yet.');
 		} else {
@@ -199,7 +203,17 @@ class TabManager {
 			if (this.currentAmount < this.maxTabAmount) {
 
 				const pid = await this.engine.spawnNewProcess();
-				this.tabs.push(pid);
+				this.tabs.push({[pid]: {
+					"10482059":{
+						"addressBar":"",
+						"currentURL":"yab://error/some-error",
+						"inheritedURL":"",
+						"title":"",
+						"favicon":"",
+						"timestamp": Date.now(),
+						"navigationHistory":[]
+					 }
+				}});
 				this.currentTab = pid;
 
 				console.log(pid);
