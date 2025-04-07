@@ -1,14 +1,17 @@
 export class Browser {
-	constructor(engine) {
-		this.TabManager = new TabManager('tab_sortable', 1582, engine, this.terminateBrowserInstance_safe);
+	constructor() {
+		this.ProcessManager = new ProcessManager();
+		this.TabManager = new TabManager('tab_sortable', 1582, this.ProcessManager, this.terminateBrowserInstance_safe);
 		this.LayoutManager = new LayoutManager(this.TabManager);
 		this.NetworkManager = new NetworkManager();
+		
 	}
 
 	init() {
 		try {
-			this.TabManager.init();
+			this.ProcessManager.init();
 			this.LayoutManager.init();
+			this.TabManager.init();
 			//this.NetworkManager.init();
 		} catch (error) {
 			console.error("BrowserInstance failed to start up: " + error);
@@ -76,6 +79,38 @@ class LayoutManager {
     }
 }
 
+class ProcessManager {
+    constructor(tabman) {
+        // Track active processes
+        this.processes = new Map();
+        this.process_count = 0;
+        this.controlled_term = [];
+		this.tabman = tabman;
+
+		console.log(this.tabman);
+    }
+
+    init() {
+        
+    }
+
+    async spawnNewProcess() {
+        const pid = await window.process.spawn();
+        console.log("renderer received: ");
+        console.log(pid);
+
+		return pid;
+    }
+
+    terminateProcess(pid) {
+        window.process.terminate(pid);
+    }
+
+    
+
+
+}
+
 class TabManager {
 	constructor(target_id, max, engineInstance, BrowserInstance) {
 		this.ready = false;
@@ -124,27 +159,51 @@ class TabManager {
 				}
 			});
 
+			this.startEventEmitters();
 			return;
 		}
+		
 	}
 
-	generateRandomID() {
-		return Math.floor(1000000 + Math.random() * 9000000).toString();
+	startEventEmitters() {
+        /*ipcRenderer.on('process-created', (event, pid, tab_id) => {
+            this.processes.set(tab_id, pid);
+            this.process_count++;
+        });
+
+        ipcRenderer.on('process-ended', (event, tab_id) => {
+            // ended triggered by closing a tab or the browser
+            const processPID = this.processes.get(tab_id);
+        });
+
+        ipcRenderer.on('process-terminated', (event, pid) => {
+            // unexpected ended, aka triggered by task manager or other task killer
+        });*/
+
+        window.main.onMessage('process-unexpected-terminated', (data) => {
+            console.log('Tab with pid: ' + data.pid + ' closed unexpectedly. Cleaning up.');
+			this.terminateTab(data.pid)
+        });
+    }
+
+
+	getTabID(pid) {
+
 	}
 
-	spawnTab(text, focused = false) {
+	async spawnTab(text, focused = false) {
 		if (this.ready !== true) {
 			console.error('[TabManager][ERROR]: TabManager is not ready yet.');
 		} else {
 
 			if (this.currentAmount < this.maxTabAmount) {
-				let generatedID = this.generateRandomID();
-				while (this.tabs.includes(generatedID)) {
-					generatedID = this.generateRandomID();
-				}
-				console.log(generatedID)
-				console.log(CitronJS.getContent);
-				const newTab = this.createTabSkeleton(text, generatedID, focused);
+
+				const pid = await this.engine.spawnNewProcess();
+				this.tabs.push(pid);
+				this.currentTab = pid;
+
+				console.log(pid);
+				const newTab = this.createTabSkeleton(text, pid, focused);
 				console.log(newTab);
 				if (focused === true) {
 					document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
@@ -156,21 +215,17 @@ class TabManager {
 
 				// add to registry
 				// TODO: Finish dis
-				this.tabs.push(generatedID);
-				this.currentTab = generatedID;
-
-				this.engine.spawnNewProcess();
 				// Attach event
 
-				let generatedTab = document.getElementById(generatedID);
+				let generatedTab = document.getElementById(pid);
 				console.log(generatedTab)
 				generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
 					document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
 					generatedTab.classList.remove('tab-disabled');
-					this.currentTab = generatedID;
+					this.currentTab = pid;
 				});
 				generatedTab.querySelector('.tab_close_container').addEventListener('click', () => {
-					this.terminateTab(generatedID);
+					this.terminateTab(pid);
 				});
 				this.currentAmount++;
 
@@ -180,14 +235,15 @@ class TabManager {
 		}
 	}
 
-	terminateTab(id) {
+	terminateTab(pid) {
 		if (this.ready !== true) {
 			console.error('[TabManager][ERROR]: TabManager is not ready yet.');
 		} else {
 			// TODO: Handle closing a focused tab
 			// Find and remove tab entry
+			this.engine.terminateProcess(pid);
 			const container = document.getElementById(this.targetDiv); // or document.getElementById('myDiv')
-			const currentElem = document.getElementById(id); // or however you determine it
+			const currentElem = document.getElementById(pid); // or however you determine it
 			// Remove tab element
 			const lastChild = container.lastElementChild;
 			console.log(lastChild);
@@ -206,12 +262,12 @@ class TabManager {
 					neighbour = currentElem.nextElementSibling;
 				}
 			}
-			let idx = this.tabs.indexOf(id);
+			let idx = this.tabs.indexOf(pid);
 			this.tabs.splice(idx, 1);
 
 			this.currentAmount--;
 
-			let tabtodel = document.getElementById(id)
+			let tabtodel = document.getElementById(pid)
 
 			tabtodel.style.width = '200px';
 			tabtodel.classList.remove('tab_animation');
@@ -225,7 +281,7 @@ class TabManager {
 			}, 220);
 			if (this.tabs.length > 0) {
 				console.log('hallo?');
-				if (this.currentTab === id) {
+				if (this.currentTab === pid) {
 					this.setFocus(neighbour.id);
 					console.log(neighbour);
 				}
@@ -238,10 +294,10 @@ class TabManager {
 		}
 	}
 
-	setFocus(id) {
-		this.currentTab = id;
+	setFocus(pid) {
+		this.currentTab = pid;
 		document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-		document.getElementById(id).classList.remove('tab-disabled');
+		document.getElementById(pid).classList.remove('tab-disabled');
 
 	}
 
@@ -249,16 +305,16 @@ class TabManager {
 		// simply closes safely, and saves the tab tree if its valid.
 	}
 
-	createTabSkeleton(title, id, focused) {
+	createTabSkeleton(title, pid, focused) {
 		if (focused) {
 			return CitronJS.getContent('tab_focused', {
 				title: title,
-				id: id
+				id: pid
 			});
 		} else {
 			return CitronJS.getContent('tab', {
 				title: title,
-				id: id
+				id: pid
 			});
 		}
 	}

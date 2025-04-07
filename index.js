@@ -1,9 +1,8 @@
-const {app, BrowserWindow, ipcMain, Menu, screen} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, screen, utilityProcess} = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const userDataPath = app.getPath("userData");
 const childProcess = require('child_process');
-
 // Remove menu bar
 Menu.setApplicationMenu(null);
 
@@ -53,6 +52,13 @@ function createWindow() {
 	win.on('maximize', sendState);
 	win.on('unmaximize', sendState);
   win.show();
+
+
+  app.on('child-process-gone', (event, details) => {
+	console.log(`Child process of type ${details.type} with name ${details.name} and service name ${details.serviceName} has exited.`);
+	console.log(`Reason: ${details.reason}, Exit Code: ${details.exitCode}`);
+	win.webContents.send('process-unexpected-terminated', { pid: details.name });
+  }); 
 }
 
 app.whenReady().then(() => {
@@ -99,12 +105,38 @@ ipcMain.on('close-request', () => {
 
 // SUBPROCESSES
 
-ipcMain.on('spawn-process', () => {
-  const pid = Date.now(); // Unique ID for this process
+// Store child processes with custom PIDs
+const subprocesses = {};
 
-  // Spawn a new process
-  childProcess.fork(path.join(__dirname, 'subprocess.js'));
+// generate pid
+function generateUniquePid() {
+	let pid;
+	do {
+	  pid = Math.floor(10000000 + Math.random() * 9000000).toString();
+	} while (subprocesses[pid]);
+	return pid;
+}
 
-  // we assign "process ids" but they arent real. there is no need to get the real windows assigned process ids. ideally a pid should be the same length as the tab ids
+// spawning
+ipcMain.handle('spawn-process', async (event) => {
+	const pid = generateUniquePid();
+	const child = utilityProcess.fork(path.join(__dirname, 'subprocess.js'), [], {
+	serviceName: pid
+  });
+
+	subprocesses[pid] = child;
+	child.on('spawn', () => {
+		console.log("spawned process with fpid: " + pid + " and tpid: " + child.pid) // Integer
+	})
+	return pid;
+});
+
+ipcMain.on('terminate-process', (event, pid) => {
+	const child = subprocesses[pid];
+	child.kill();
+});
+
+ipcMain.on('kill-process', (event, pid) => {
 
 });
+

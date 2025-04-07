@@ -26,17 +26,17 @@ html, body {
   background: var(--bg-toolbar);
   display: flex;
   align-items: center;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
   padding-top: 8px;
   padding-bottom: 8px;
-  gap: 5px;
+  gap: 10px;
 }
 
-.toolbar-icon_disabled {
+.toolbar-icon {
   color: #52585D;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   align-items: center;
   justify-content: center;
   display: flex;
@@ -329,14 +329,77 @@ html, body {
   background: #1B1F23;
   border: 2px solid #52585D;
   border-radius: 6px;
-  padding-left: 4px;
-  padding-right: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: 0.25s;
 }
 
 .toolbar_searchbar_components:hover {
   background: #292f35;
+}
+
+.toolbar-icon-sidebar {
+  width: 28px;
+  height: 28px;
+}
+
+.toolbar-icon-home {
+  width: 24px;
+  height: 24px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 2px;
+}
+
+.toolbar-icon-historyback {
+  width: 24px;
+  height: 24px;
+}
+
+.toolbar-icon-historyforward {
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+}
+
+.toolbar-icon-downloads {
+  width: 32px;
+  height: 32px;
+}
+.toolbar-icon-options {
+  width: 32px;
+  height: 32px;
+}
+
+.searchbar-icon {
+  color: #52585D;
+  width: 34px;
+  height: 32px;
+  margin-top: -1px;
+  margin-right: -3px;
+}
+
+.tab_button {
+  background: #2F3337;
+  border: none;
+  min-width: 23px;
+  height: 23px;
+  border-radius: 4px;
+  color: #6b6b6b;
+  font-size: 18px;
   transition: 0.25s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tab_button:hover {
+  background: #484e54;
+  transform: scale(1.08);
+}
+.tab_button:active {
+  transform: scale(0.9);
 }

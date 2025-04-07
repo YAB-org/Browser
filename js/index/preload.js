@@ -28,12 +28,24 @@ contextBridge.exposeInMainWorld('backend', {
 });
 
 
-contextBridge.exposeInMainWorld(
-  'process',
-  {
-    spawn: () => ipcRenderer.send('spawn-process')
+contextBridge.exposeInMainWorld('process', {
+  spawn: async () => {
+    const pid = await ipcRenderer.invoke('spawn-process');
+    return pid;
+  },
+  terminate: (pid) => ipcRenderer.send('terminate-process', pid),
+  kill: (pid) => ipcRenderer.send('kill-process', pid)
+});
+
+// Main -> Renderer
+contextBridge.exposeInMainWorld('main', {
+  onMessage: (channel, callback) => {
+    const validChannels = ['process-unexpected-terminated'];
+    if (validChannels.includes(channel)) {
+      ipcRenderer.on(channel, (event, data) => callback(data));
+    }
   }
-)
+});
 contextBridge.exposeInMainWorld('closeApp', {
   close: () => {
       ipcRenderer.send('close-request');

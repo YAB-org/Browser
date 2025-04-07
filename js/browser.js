@@ -1,6 +1,5 @@
 // Window gets initiated
 import { Browser } from './browserComponents.js'
-import { Wave } from './waveEngine.js';
 
 // new BrowserInstance()
 document.addEventListener('DOMContentLoaded', function() {
@@ -25,12 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     document.addEventListener("CitronReady", () => {
-        const WaveInstance = new Wave();
-        const BrowserInstance = new Browser(WaveInstance);
+        const BrowserInstance = new Browser();
         BrowserInstance.init();
 
         // TODO: Remove exposed browser instance
-        window.BrowserInstance = BrowserInstance;
+        //window.BrowserInstance = BrowserInstance;
         //window.Wave = WaveInstance;
     });
 });
