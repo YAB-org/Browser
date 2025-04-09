@@ -37,14 +37,13 @@ class LayoutManager {
         this.tabman = tab_manager;
         this.input = document.getElementById('toolbar_searchbar');
         this.highlight = document.getElementById('searchbar_highlight');
-		this.address_bar = document.getElementById('toolbar_searchbar');
-		console.log(this.input);
+				this.address_bar = document.getElementById('toolbar_searchbar');
     }
 
     init() {
         // Initialize URL highlighting functionality
         this.setupUrlHighlighting();
-		this.input.oninput = this.address_highlight_update;
+				this.input.oninput = ()=>{this.address_highlight_update(this)};
 
         // Initialize tab management functionality
         document.getElementById('tab_newtab_button').addEventListener('click', () => {
@@ -52,19 +51,19 @@ class LayoutManager {
         });
     }
 
-	address_highlight_update() {
-		const final = this.address_bar.value;
-		final = final
-			.replaceAll('<', '&lt;')
-			.replace(/.+?:\/\//, '<span class="searchbar_proto">$&</span>')
-			.replace(/(?<!:|:\/|<)(\/|\?).*?$/m, '<span class="searchbar_path">$&</span>')
-			.replace(/:[0-9]+/, '<span class="searchbar_port">$&</span>');
-		this.highlight.innerHTML = final;
-	};
+		address_highlight_update(_this) {
+				let final = _this.input.value;
+				final = final
+					.replaceAll('<', '&lt;')
+					.replace(/.+?:\/\//, '<span class="searchbar_proto">$&</span>')
+					.replace(/(?<!:|:\/|<)(\/|\?).*?$/m, '<span class="searchbar_path">$&</span>')
+					.replace(/:[0-9]+/, '<span class="searchbar_port">$&</span>');
+					_this.highlight.innerHTML = final;
+		};
     setupUrlHighlighting() {
-
+			  let _this = this;
         this.input.addEventListener('focus', () => {
-            this.input.select();
+            _this.input.select();
             let proto = document.querySelector('.searchbar_proto');
             if (proto) proto.style.display = '';
         });
@@ -74,11 +73,10 @@ class LayoutManager {
             if (proto) proto.style.display = 'none';
         });
 
-		this.input.addEventListener("scroll", () => {
-			this.highlight.scrollTop = this.input.scrollTop;
-			this.highlight.scrollLeft = this.input.scrollLeft;
-		});
-
+				this.input.addEventListener("scroll", () => {
+					_this.highlight.scrollTop = _this.input.scrollTop;
+					_this.highlight.scrollLeft = _this.input.scrollLeft;
+				});
     }
 }
 
