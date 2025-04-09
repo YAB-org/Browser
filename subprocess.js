@@ -5,6 +5,21 @@ const process = require('process');
 process.title = `ElectronSubProcess-${Date.now()}`;
 
 // Handle messages from main process
-process.on('message', async (message) => {
+process.on('begin', async (data) => {
     console.log(message);
 });
+
+
+class JSVM {
+    constructor() {
+
+    }
+
+    getElem() {
+
+    }
+}
+
+class LuaVM {
+
+}

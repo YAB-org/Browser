@@ -1,7 +1,8 @@
 export class Browser {
 	constructor() {
 		this.ProcessManager = new ProcessManager();
-		this.TabManager = new TabManager('tab_sortable', 9999, this.ProcessManager, this.terminateBrowserInstance_safe);
+		this.WebView = new WebView('web_display');
+		this.TabManager = new TabManager('tab_sortable', 9999, this.ProcessManager, this.WebView, this.terminateBrowserInstance_safe);
 		this.LayoutManager = new LayoutManager(this.TabManager);
 		this.NetworkManager = new NetworkManager();
 		
@@ -36,11 +37,14 @@ class LayoutManager {
         this.tabman = tab_manager;
         this.input = document.getElementById('toolbar_searchbar');
         this.highlight = document.getElementById('searchbar_highlight');
+		this.address_bar = document.getElementById('toolbar_searchbar');
+		console.log(this.input);
     }
 
     init() {
         // Initialize URL highlighting functionality
         this.setupUrlHighlighting();
+		this.input.oninput = this.address_highlight_update;
 
         // Initialize tab management functionality
         document.getElementById('tab_newtab_button').addEventListener('click', () => {
@@ -48,18 +52,16 @@ class LayoutManager {
         });
     }
 
+	address_highlight_update() {
+		const final = this.address_bar.value;
+		final = final
+			.replaceAll('<', '&lt;')
+			.replace(/.+?:\/\//, '<span class="searchbar_proto">$&</span>')
+			.replace(/(?<!:|:\/|<)(\/|\?).*?$/m, '<span class="searchbar_path">$&</span>')
+			.replace(/:[0-9]+/, '<span class="searchbar_port">$&</span>');
+		this.highlight.innerHTML = final;
+	};
     setupUrlHighlighting() {
-        let update = () => {
-            let final = this.input.value;
-            final = final
-                .replaceAll('<', '&lt;')
-                .replace(/.+?:\/\//, '<span class="searchbar_proto">$&</span>')
-                .replace(/(?<!:|:\/|<)(\/|\?).*?$/m, '<span class="searchbar_path">$&</span>')
-                .replace(/:[0-9]+/, '<span class="searchbar_port">$&</span>');
-            this.highlight.innerHTML = final;
-        };
-
-        this.input.oninput = update;
 
         this.input.addEventListener('focus', () => {
             this.input.select();
@@ -76,6 +78,7 @@ class LayoutManager {
 			this.highlight.scrollTop = this.input.scrollTop;
 			this.highlight.scrollLeft = this.input.scrollLeft;
 		});
+
     }
 }
 
@@ -106,22 +109,29 @@ class ProcessManager {
         window.process.terminate(pid);
     }
 
+
+	async resetProcess(pid) {
+		await window.process.resetProcess(pid);
+		return;
+	}
     
 
 
 }
 
 class TabManager {
-	constructor(target_id, max, engineInstance, BrowserInstance) {
+	constructor(target_id, max, engineInstance, webView, terminateBrowser) {
 		this.ready = false;
 		this.targetDiv = target_id;
 		this.maxTabAmount = max;
 		this.engine = engineInstance;
-		this.tabs = [];
+		this.tabs = {};
 		this.initTabs = this.tabs;
 		this.currentTab = 0;
 		this.currentAmount = 0;
-		this.browserTerminate = BrowserInstance;
+		this.browserTerminate = terminateBrowser;
+		this.WebView = webView;
+		this.address_bar = document.getElementById('toolbar_searchbar');
 	}
 
 	init() {
@@ -203,21 +213,23 @@ class TabManager {
 			if (this.currentAmount < this.maxTabAmount) {
 
 				const pid = await this.engine.spawnNewProcess();
-				this.tabs.push({[pid]: {
-					"10482059":{
-						"addressBar":"",
-						"currentURL":"yab://error/some-error",
-						"inheritedURL":"",
-						"title":"",
-						"favicon":"",
-						"timestamp": Date.now(),
-						"navigationHistory":[]
-					 }
-				}});
+				this.WebView.spawnWebView(pid);
+				this.WebView.focusWebView(pid);
+				this.address_bar.focus();
+
+				this.tabs[pid] = {
+					addressBar: this.address_bar.value,
+					currentURL: "yab://error/some-error",
+					inheritedURL: "",
+					title: "",
+					favicon: "",
+					timestamp: Date.now(),
+					navigationHistory: []
+				};
 				this.currentTab = pid;
 
 				console.log(pid);
-				const newTab = this.createTabSkeleton(text, pid, focused);
+				const newTab = this.createTabSkeleton(title, pid, focused);
 				console.log(newTab);
 				if (focused === true) {
 					document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
@@ -234,8 +246,7 @@ class TabManager {
 				let generatedTab = document.getElementById(pid);
 				console.log(generatedTab)
 				generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
-					document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-					generatedTab.classList.remove('tab-disabled');
+					this.setFocus(pid);
 					this.currentTab = pid;
 				});
 				generatedTab.querySelector('.tab_close_container').addEventListener('click', () => {
@@ -256,6 +267,7 @@ class TabManager {
 			// TODO: Handle closing a focused tab
 			// Find and remove tab entry
 			this.engine.terminateProcess(pid);
+			this.WebView.deleteWebView(pid);
 			const container = document.getElementById(this.targetDiv); // or document.getElementById('myDiv')
 			const currentElem = document.getElementById(pid); // or however you determine it
 			// Remove tab element
@@ -268,7 +280,7 @@ class TabManager {
 				neighbour = currentElem.previousElementSibling;
 			} else {
 				// currentElem is not the last child of the DIV.
-				if (currentElem !== lastChild && !this.tabs.includes(lastChild.id)) {
+				if (currentElem !== lastChild && !this.tabs.hasOwnProperty(lastChild.id)) {
 					// If the container's last child is NOT in the list, get currentElem's previous sibling
 					neighbour = currentElem.previousElementSibling;
 				} else {
@@ -276,8 +288,8 @@ class TabManager {
 					neighbour = currentElem.nextElementSibling;
 				}
 			}
-			let idx = this.tabs.indexOf(pid);
-			this.tabs.splice(idx, 1);
+
+			delete this.tabs[pid];
 
 			this.currentAmount--;
 
@@ -290,10 +302,10 @@ class TabManager {
 			setTimeout(() => {
 
 				tabtodel.remove();
-				console.log(this.tabs.length);
-				console.log("it is " + this.tabs.length === 0);
+				console.log(Object.keys(this.tabs).length);
+				console.log("it is " + Object.keys(this.tabs).length === 0);
 			}, 220);
-			if (this.tabs.length > 0) {
+			if (Object.keys(this.tabs).length > 0) {
 				console.log('hallo?');
 				if (this.currentTab === pid) {
 					this.setFocus(neighbour.id);
@@ -301,7 +313,7 @@ class TabManager {
 				}
 
 			}
-			if (this.tabs.length === 0) {
+			if (Object.keys(this.tabs).length === 0) {
 				this.browserTerminate();
 			}
 
@@ -310,8 +322,10 @@ class TabManager {
 
 	setFocus(pid) {
 		this.currentTab = pid;
+		this.WebView.focusWebView(pid);
 		document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
 		document.getElementById(pid).classList.remove('tab-disabled');
+		this.address_bar.value = this.tabs[pid].addressBar;
 
 	}
 
@@ -334,6 +348,27 @@ class TabManager {
 	}
 }
 
+class WebView {
+	constructor(id) {
+		//this.views = [];
+		this.targetDiv = document.getElementById(id);
+		this.currentView;
+	}
+
+	spawnWebView(pid) {
+		const webview = CitronJS.getContent('webview', { id: "_" + pid });
+		this.targetDiv.appendChild(webview);
+	}
+	deleteWebView(pid) {
+		this.targetDiv.querySelector("#_" + pid);
+	}
+	focusWebView(pid) {
+		this.targetDiv.querySelectorAll('div').forEach(div => {
+			div.classList.add('web_view-hidden');
+		})
+		this.targetDiv.querySelector("#_" + pid).classList.remove('web_view-hidden');
+	}
+}
 class NetworkManager {
 	constructor() {
 
