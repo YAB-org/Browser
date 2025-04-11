@@ -300,7 +300,7 @@ class TabManager {
     }
 
     setFocus(pid) {
-		this.tabs[this.currentTab].addressBar = this.address_bar.value;
+		//this.tabs[this.currentTab].addressBar = this.address_bar.value;
         this.currentTab = pid;
         this.WebView.focusWebView(pid);
         document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
@@ -379,6 +379,64 @@ class WebView {
         this.targetDiv.querySelector("#_" + pid).classList.remove('web_view-hidden');
     }
 }
+
+
+class ProtocolManager {
+	constructor() {
+		this.native = {
+			yab: {
+				paths: {
+					newtab: {
+						html: "native_newtab"
+					},
+					settings: {
+						html: "native_settings"
+					}
+				}
+			}
+		}
+
+		this.third_party = {
+			buss: {
+				primary: true,
+				type: "custom",
+				server1: {
+					address: "https://dns-one.webxplus.org/resolve",
+					timeout: 30000
+				},
+				server2: {
+					address: "https://dns-two.webxplus.org/resolve",
+					timeout: 30000
+				},
+				headers: {
+					key: "value",
+					key: "value"
+				}
+			}
+		}
+	}
+
+	get(protocol, domain, tld, path) {
+
+		// prot://sub.main.tld/hi/bye?q=valuea%20valueb&other=2&sort=relevance#fragment
+		let example = {
+			protocol: "prot",
+			domain: "sub.main",
+			tld: "tld",
+			path: {
+				"segments": ["hi", "bye"],
+				"query": {
+				  "q": "valuea valueb",
+				  "other": "2",
+				  "sort": "relevance"
+				},
+				"fragment": "fragment"
+			}
+		}
+	}
+
+}
+
 class NetworkManager {
     constructor() {
 
