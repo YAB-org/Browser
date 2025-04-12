@@ -120,7 +120,7 @@ function generateUniquePid() {
 // spawning
 ipcMain.handle('spawn-process', async (event) => {
 	const pid = generateUniquePid();
-	const child = utilityProcess.fork(path.join(__dirname, 'sub_wasmoon.js'), [], {
+	const child = utilityProcess.fork(path.join(__dirname, 'subwasmoon.js'), [], {
 	serviceName: pid,
 	stdio: 'pipe'
   });
@@ -132,6 +132,12 @@ ipcMain.handle('spawn-process', async (event) => {
 	child.on('error', (error) => {
 		console.error('Utility process encountered an error:', error);
 	});
+	child.stdout.on('data', (data) => {
+        console.log(`Utility stdout: ${data.toString()}`);
+    });
+    child.stderr.on('data', (data) => {
+        console.error(`Utility stderr: ${data.toString()}`);
+    });
 	return pid;
 });
 

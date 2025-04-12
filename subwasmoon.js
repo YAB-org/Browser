@@ -1,7 +1,11 @@
+const { process } = require('electron');
 const { LuaFactory } = require("wasmoon");
 const { JSDOM } = require("jsdom");
 const request = require("sync-request");
-console.log("hi there 1")
+
+//process.parentPort.postMessage("Utility process ready");
+//process.title = `ElectronSubProcess-${Date.now()}`;
+
 (async () => {
     console.log("hi there")
   const lua = await new LuaFactory().createEngine();
