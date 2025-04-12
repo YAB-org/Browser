@@ -1,5 +1,6 @@
 # YAB — Yet Another Browser
 
+![yabicon](https://github.com/user-attachments/assets/98eb93dc-1c81-48f2-9900-cd81dace8c8c)
 **YAB** is a modern browser designed for the WebX ecosystem. It supports both the legacy Lua API (used by Bussinga) and the new standard WebX API, ensuring compatibility with both older and newer websites.
 
 Built on Electron, YAB offers enhanced security by running each Lua script in its own isolated process. This architecture prevents code from leaking between sites and allows for easy termination of unresponsive pages.
@@ -9,6 +10,7 @@ Built on Electron, YAB offers enhanced security by running each Lua script in it
 - **Dual API Support**: Seamlessly handles both legacy Lua and the modern WebX API.
 - **Isolated Execution**: Each tab in the browser runs in its own process, enhancing security and stability.
 - **Electron-Based**: Available on Windows, Linux and Mac.
+- **Automatic Updates**: YAB has automatic updates for Windows and Linux so you don't have to manually download new releases.
 
 ## Known Issues
 
