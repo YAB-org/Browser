@@ -120,14 +120,20 @@ function generateUniquePid() {
 // spawning
 ipcMain.handle('spawn-process', async (event) => {
 	const pid = generateUniquePid();
+<<<<<<< HEAD
 	const child = utilityProcess.fork(path.join(__dirname, 'subwasmoon.js'), [], {
 	serviceName: pid,
 	stdio: 'pipe'
+=======
+	const child = utilityProcess.fork(path.join(__dirname, 'subprocess.js'), [], {
+	serviceName: pid
+>>>>>>> parent of 797ea8e (broken)
   });
 
 	subprocesses[pid] = child;
 	child.on('spawn', () => {
 		console.log("spawned process with fpid: " + pid + " and tpid: " + child.pid) // Integer
+<<<<<<< HEAD
 	});
 	child.on('error', (error) => {
 		console.error('Utility process encountered an error:', error);
@@ -138,6 +144,9 @@ ipcMain.handle('spawn-process', async (event) => {
     child.stderr.on('data', (data) => {
         console.error(`Utility stderr: ${data.toString()}`);
     });
+=======
+	})
+>>>>>>> parent of 797ea8e (broken)
 	return pid;
 });
 
@@ -154,7 +163,7 @@ ipcMain.on('reset-process', (event, pid) => {
 	const old_child = subprocesses[pid];
 	console.log(subprocesses[pid]);
 	old_child.kill();
-	const new_child = utilityProcess.fork(path.join(__dirname, 'sub_wasmoon.js'), [], {
+	const new_child = utilityProcess.fork(path.join(__dirname, 'subprocess.js'), [], {
 		serviceName: pid.toString()
 	  });
 	subprocesses[pid] = new_child;
