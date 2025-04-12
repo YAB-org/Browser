@@ -8,7 +8,7 @@ Built on Electron, YAB offers enhanced security by running each Lua script in it
 
 - **Dual API Support**: Seamlessly handles both legacy Lua and the modern WebX API.
 - **Isolated Execution**: Each tab in the browser runs in its own process, enhancing security and stability.
-- **Electron-Based**: Leverages Electron's security features and cross-platform capabilities.
+- **Electron-Based**: Available on Windows, Linux and Mac.
 
 ## Known Issues
 
