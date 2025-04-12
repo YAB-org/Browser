@@ -15,9 +15,15 @@ Built on Electron, YAB offers enhanced security by running each Lua script in it
 
 ## Known Issues
 
+### Fengari vs Wasmoon
+- Fengari always returns `null` instead of an actual error message when an error occurs, so most of the time it's better to use Wasmoon since it's error messages are slightly more useful.
+- Neither Fengari or Wasmoon point out the line where an error occurs.
+- Wasmoon degrades in performance when websites interact with the DOM a lot, Fengari is a lot better at this.
+- Both VMs suffer from some quirks and or edge-cases that can be found here: https://github.com/fengari-lua/fengari and https://github.com/ceifa/wasmoon
+
 ### Legacy API
 
-- **`fetch` Handling**: Due to limitations in Wasmoon, our Lua VM, asynchronous `fetch` calls are challenging to implement without changing the current Lua syntax on WebX. To mitigate this, YAB automatically rewrites `fetch` calls to use `await`. While this approach works, excessive use of `fetch` may lead to issues. No significant problems have been reported so far.
+- **`fetch` Handling**: Due to limitations in Wasmoon, our primary Lua VM, asynchronous `fetch` calls are challenging to implement without changing the current Lua syntax on WebX. To mitigate this, YAB automatically rewrites `fetch` calls to use `await`. While this approach works, excessive use of `fetch` may lead to issues. No significant problems have been reported so far.
 
 - **`window.browser` Compatibility**: Bussinga introduced several APIs that rely on checking `window.browser`. To maintain compatibility with older websites, YAB mimics Bussinga's behavior by returning `"bussinga"` for `window.browser`. To detect YAB specifically, check for `window.true_browser`.
 
