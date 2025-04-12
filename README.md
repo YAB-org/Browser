@@ -16,7 +16,6 @@ Built on Electron, YAB offers enhanced security by running each Lua script in it
 ## Known Issues
 
 ### Fengari vs Wasmoon
-- Fengari always returns `null` instead of an actual error message when an error occurs, so it's better to use something like `pcall` to print the error oneself instead of relying on the automatic error logs of the devtools.
 - Neither Fengari or Wasmoon point out the line where an error occurs.
 - Wasmoon degrades in performance when websites interact with the DOM a lot, Fengari is a lot better at this.
 - Both VMs suffer from some quirks and or edge-cases that can be found here: https://github.com/fengari-lua/fengari and https://github.com/ceifa/wasmoon
