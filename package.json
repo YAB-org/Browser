@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/yab-org/browser#readme",
   "dependencies": {
-    "electron": "^33.2.0"
+    "electron": "^33.2.0",
+    "fengari": "^0.1.4",
+    "sync-request": "^6.1.0",
+    "wasmoon": "^1.16.0"
   }
 }
