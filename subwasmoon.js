@@ -1,7 +1,8 @@
 const { process } = require('electron');
 const { LuaFactory } = require("wasmoon");
 const { JSDOM } = require("jsdom");
-const request = require("sync-request");
+//const request = require("sync-request");
+const { XMLHttpRequest } = require("xmlhttprequest");
 
 //process.parentPort.postMessage("Utility process ready");
 //process.title = `ElectronSubProcess-${Date.now()}`;
@@ -56,23 +57,8 @@ const request = require("sync-request");
     };
   }
 
-  function legacy_fetch(req) {
-    const url = req.url;
-    const method = req.method || "GET";
-    const headers = req.headers || {};
-    const body = req.body || null;
-    try {
-      // Perform a synchronous HTTP request.
-      const res = request(method, url, {
-        headers: headers,
-        body: body
-      });
-      // Return the response body as a UTF8 string.
-      return res.getBody("utf8");
-    } catch (err) {
-      console.error("Fetch error:", err);
-      return "";
-    }
+  function legacy_fetch(params) {
+    // TODO: sync request
   }
 
   // Overwrite the Lua print

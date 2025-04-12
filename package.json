@@ -26,6 +26,7 @@
     "electron": "^33.2.0",
     "fengari": "^0.1.4",
     "sync-request": "^6.1.0",
-    "wasmoon": "^1.16.0"
+    "wasmoon": "^1.16.0",
+    "xmlhttprequest": "^1.8.0"
   }
 }
