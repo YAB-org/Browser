@@ -1,8 +1,6 @@
 const { process } = require('electron');
 const { LuaFactory } = require("wasmoon");
 const { JSDOM } = require("jsdom");
-//const request = require("sync-request");
-const { XMLHttpRequest } = require("xmlhttprequest");
 
 //process.parentPort.postMessage("Utility process ready");
 //process.title = `ElectronSubProcess-${Date.now()}`;
@@ -23,29 +21,27 @@ const { XMLHttpRequest } = require("xmlhttprequest");
     console.log(args.join("\t"));
   }
 
-  
+
   function legacy_get(selector, all) {
-    // Try to use getElementById first (assuming selector is an id), im not sure how it works in webx
-    // otherwise querySelector
-    let el = document.getElementById(selector) || document.querySelector(selector);
+    // TODO: Support all
+    let el = document.querySelector(selector) || document.querySelector('.'+selector);
     if (!el) {
       console.warn(`Element '${selector}' was not found.`);
       return null;
     }
+    let tag = elem.tagName.toLowerCase();
     return {
       key: el,
       // GETTING FUNCTIONS
-      get_contents: function() {
-        return el.textContent || "";
-      },
-      get_href: function() {
-        return el.getAttribute("href") || "";
-      },
-      get_opacity: function() {
-        return el.style.opacity || "1";
-      },
+      get_contents: () => c.value || c.checked || c.textContent,
+      get_href: () => el.getAttribute("href") || "",
+      get_opacity: () => el.style.opacity || "1",
       // SETTING FUNCTIONS
       set_contents: function(newValue) {
+        if (['input','textarea'].includes(tag)) {
+          el.value = newValue;
+          return;
+        }
         el.textContent = newValue;
       },
       set_href: function(newValue) {
@@ -57,8 +53,18 @@ const { XMLHttpRequest } = require("xmlhttprequest");
     };
   }
 
-  function legacy_fetch(params) {
-    // TODO: sync request
+  async function legacy_fetch(params) {
+    // TODO: add headers and body
+    let req = await fetch(params.url, {
+      method: params.method??'GET'
+    });
+    let body = await req.text();
+    try {
+      body = JSON.parse(body)
+    } catch(err) {
+      // Ignore :3
+    }
+    return body;
   }
 
   // Overwrite the Lua print
@@ -75,7 +81,7 @@ const { XMLHttpRequest } = require("xmlhttprequest");
     lua.global.set("fetch", legacy_fetch);
   }
 
-    const luaCode = `
+    let luaCode = `
     -- Get the element with id "hi"
     local item = get("hi")
     if item == nil then
@@ -103,6 +109,10 @@ const { XMLHttpRequest } = require("xmlhttprequest");
     })
     print("Fetched response:", response)
   `;
+
+  if (api === "legacy") {
+    luaCode = luaCode.replaceAll(/fetch\(\s*?\{([^¬]|¬)*?\}\s*?\)/g, function(match){return match+':await()'});
+  }
 
     await lua.doString(luaCode);
     lua.global.close();
