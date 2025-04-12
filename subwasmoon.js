@@ -11,8 +11,8 @@ const { JSDOM } = require("jsdom");
 
   // fake DOM 
   const dom = new JSDOM(`<!DOCTYPE html><html><body>
-    <div id="hi">Initial Text</div>
-    <a id="link" href="https://example.com">Example</a>
+    <div class="hi">Initial Text</div>
+    <a class="link" href="https://example.com">Example</a>
   </body></html>`);
   const document = dom.window.document;
 
@@ -29,11 +29,11 @@ const { JSDOM } = require("jsdom");
       console.warn(`Element '${selector}' was not found.`);
       return null;
     }
-    let tag = elem.tagName.toLowerCase();
+    let tag = el.tagName.toLowerCase();
     return {
       key: el,
       // GETTING FUNCTIONS
-      get_contents: () => c.value || c.checked || c.textContent,
+      get_contents: () => el.value || el.checked || el.textContent,
       get_href: () => el.getAttribute("href") || "",
       get_opacity: () => el.style.opacity || "1",
       // SETTING FUNCTIONS
