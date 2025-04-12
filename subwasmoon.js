@@ -34,10 +34,20 @@ const { JSDOM } = require("jsdom");
       key: el,
       // GETTING FUNCTIONS
       get_contents: () => el.value || el.checked || el.textContent,
+      get_content: () => el.value || el.checked || el.textContent,
       get_href: () => el.getAttribute("href") || "",
+      get_source: () => el.getAttribute("src") || "",
       get_opacity: () => el.style.opacity || "1",
+      get_css_name: () => el.className || el.tagName,
       // SETTING FUNCTIONS
       set_contents: function(newValue) {
+        if (['input','textarea'].includes(tag)) {
+          el.value = newValue;
+          return;
+        }
+        el.textContent = newValue;
+      },
+      set_content: function(newValue) {
         if (['input','textarea'].includes(tag)) {
           el.value = newValue;
           return;
@@ -47,9 +57,30 @@ const { JSDOM } = require("jsdom");
       set_href: function(newValue) {
         el.setAttribute("href", newValue);
       },
+      set_source: function(newValue) {
+        el.setAttribute("src", newValue);
+      },
       set_opacity: function(newValue) {
         el.style.opacity = newValue;
+      },
+      set_value: function(newValue) {
+        el.value = newValue;
+      },
+      // EVENTS
+      on_click: (callback) => {
+        el.addEventListener('click', () => {
+          callback().catch(console.error);
+        });
+      },
+      on_input: (callback) => {
+        el.addEventListener('keyup', () => {
+          callback(el.value || el.checked).catch(console.error);
+        });
+        el.addEventListener('change', ()=>{
+          callback(el.value || el.checked).catch(console.error);
+        });
       }
+      // TODO: add .on_submit
     };
   }
 
@@ -69,9 +100,9 @@ const { JSDOM } = require("jsdom");
 
   // Overwrite the Lua print
   lua.global.set("print", print);
-  // pretend to be bussinga for compatibility
+  // TODO: add location and query
   lua.global.set('window', {
-    browser: "bussinga",
+    browser: "bussinga", // pretend to be bussinga for compatibility
     true_browser: "yab"
 })
   // Use the legacy API
