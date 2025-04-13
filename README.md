@@ -22,7 +22,7 @@ Built on Electron, YAB offers enhanced security by running each Lua script in it
 
 ### Legacy API
 
-- **`fetch` Handling**: Due to limitations in Wasmoon, our primary Lua VM, asynchronous `fetch` calls are challenging to implement without changing the current Lua syntax on WebX. To mitigate this, YAB automatically rewrites `fetch` calls to use `await`. While this approach works, excessive use of `fetch` may lead to issues. No significant problems have been reported so far.
+- **`fetch` Handling**: Due to limitations in Wasmoon, our primary Lua VM, asynchronous `fetch` calls are challenging to implement without changing the current Lua syntax on WebX. To mitigate this, YAB automatically rewrites `fetch` calls to use `:await()`. Fengari does not natively have an `:await()` method to receive js promises, so for fengari the code is wrapped in a coroutine. While both of these approaches work, excessive use of `fetch` may lead to issues
 
 - **`window.browser` Compatibility**: Bussinga introduced several APIs that rely on checking `window.browser`. To maintain compatibility with older websites, YAB mimics Bussinga's behavior by returning `"bussinga"` for `window.browser`. To detect YAB specifically, check for `window.true_browser`.
 
