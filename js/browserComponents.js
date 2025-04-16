@@ -1,3 +1,10 @@
+import { EditorState } from "../node_modules/@codemirror/state";
+import { EditorView, basicSetup } from "../node_modules/@codemirror/basic-setup";
+import { StreamLanguage } from "../node_modules/@codemirror/stream-parser";
+import { lua } from "../node_modules/@codemirror/legacy-modes/mode/lua"; // Import Lua mode from legacy modes
+import { vscodeDark } from "../node_modules/@uiw/codemirror-theme-vscode";
+
+
 export class Browser {
     constructor() {
         this.ProcessManager = new ProcessManager();
@@ -35,8 +42,6 @@ export class Browser {
 class LayoutManager {
     constructor(tab_manager) {
         this.tabman = tab_manager;
-        this.input = document.getElementById('toolbar_searchbar');
-        this.highlight = document.getElementById('searchbar_highlight');
         this.address_bar = document.getElementById('toolbar_searchbar');
     }
 
@@ -46,6 +51,25 @@ class LayoutManager {
         document.getElementById('tab_newtab_button').addEventListener('click', () => {
             this.tabman.spawnTab('New Tab', true);
         });
+        //Split(['#split-0', '#split-1'])
+
+
+        const luaLanguage = StreamLanguage.define(lua);
+
+        const state = EditorState.create({
+          doc: "var b = 3;",
+          extensions: [
+            basicSetup,     // Basic editor setup (line numbers, keymaps, etc.)
+            luaLanguage,    // Apply Lua syntax highlighting
+            vscodeDark      // Optional: apply the VSCode dark theme
+          ]
+        });
+        
+        new EditorView({
+          state,
+          parent: document.querySelector('.editorContainer')
+        });
+
     }
 }
 
