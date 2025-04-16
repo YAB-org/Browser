@@ -19,6 +19,7 @@ Built on Electron, YAB offers enhanced security by running each Lua script in it
 - ~Neither Fengari or Wasmoon point out the line where an error occurs.~
 - Wasmoon degrades in performance when websites interact with the DOM a lot, Fengari is a lot better at this.
 - Both VMs suffer from some quirks and or edge-cases that can be found here: https://github.com/fengari-lua/fengari and https://github.com/ceifa/wasmoon
+- YAB allows you to use more than one DNS provider at the same time (multiple protocols)
 
 ### Legacy API
 
