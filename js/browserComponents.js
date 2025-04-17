@@ -51,7 +51,8 @@ class LayoutManager {
         CodeMirror(editorContainer, {
             lineNumbers: true,
             mode: 'lua',
-            value: 'local b = 3'
+            value: 'local b = 3',
+            theme: 'ayu-mirage'
         })
 
     }
