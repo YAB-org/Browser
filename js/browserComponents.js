@@ -1,10 +1,3 @@
-import { EditorState } from "../node_modules/@codemirror/state";
-import { EditorView, basicSetup } from "../node_modules/@codemirror/basic-setup";
-import { StreamLanguage } from "../node_modules/@codemirror/stream-parser";
-import { lua } from "../node_modules/@codemirror/legacy-modes/mode/lua"; // Import Lua mode from legacy modes
-import { vscodeDark } from "../node_modules/@uiw/codemirror-theme-vscode";
-
-
 export class Browser {
     constructor() {
         this.ProcessManager = new ProcessManager();
@@ -54,21 +47,12 @@ class LayoutManager {
         //Split(['#split-0', '#split-1'])
 
 
-        const luaLanguage = StreamLanguage.define(lua);
-
-        const state = EditorState.create({
-          doc: "var b = 3;",
-          extensions: [
-            basicSetup,     // Basic editor setup (line numbers, keymaps, etc.)
-            luaLanguage,    // Apply Lua syntax highlighting
-            vscodeDark      // Optional: apply the VSCode dark theme
-          ]
-        });
-        
-        new EditorView({
-          state,
-          parent: document.querySelector('.editorContainer')
-        });
+        var editorContainer = document.querySelector('.editorContainer')
+        CodeMirror(editorContainer, {
+            lineNumbers: true,
+            mode: 'lua',
+            value: 'local b = 3'
+        })
 
     }
 }
