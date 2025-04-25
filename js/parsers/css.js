@@ -1,5 +1,3 @@
-export const elements = ['html','head','body','h1','h2','h3','h4','h5','h6','div','a','p','ul','ol','li','button','hr','img','input','textarea','link','meta','script','style','select','option'];
-
 export function parse(content) {
   let rules = {};
   // Remove comments
@@ -10,9 +8,9 @@ export function parse(content) {
       // Selectors
       let selector = rule.split('{')[0].trim();
       selector = selector.split(',').map(s=>{
-        s = s.trim();
-        if (!elements.includes(s)) s = '.'+s;
-        return s;
+        s = s.replaceAll(/\.|\#/g, '').trim();
+        if (s==='*') return '*';
+        return `${s}, .${s}`;
       });
       // Properties
       let o = {};

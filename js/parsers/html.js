@@ -5,6 +5,7 @@ function subparse(content) {
   // Go through string and parse
   for (let i = 0; i<content.length; i++) {
     let stack = [];
+    let level = 0;
     let temp = {
       name: '',
       attributes: {},
@@ -17,28 +18,28 @@ function subparse(content) {
         char = content[i];
         stack.push(char);
         if (char==='<') {
-          stack = []
+          stack = [];
         }
       }
       stack.pop();
 
       let elem = stack.join('').trim().split(' ');
-      temp.name = elem[0].toLocaleLowerCase();
+      temp.name = elem[0].toLowerCase();
       if (temp.name.startsWith('/')) {
-        // ummmmm, lets ignore that
+        console.warn('[HTML PARSER] Closing tag found as start tag: '+temp.name.slice(1));
         continue;
       }
       if (temp.name.match(/^[a-zA-Z][a-zA-Z0-9-]*$/m)===null) {
-        console.warn('[HTML PARSER] Invalid element name '+temp.name)
+        console.warn('[HTML PARSER] Invalid element name '+temp.name);
       }
 
-      let attributes = elem.slice(1, elem.length).join(' ').match(/\b([a-zA-Z0-9]+)(=(".*?"|[^\s]+))?/g)??[];
+      let attributes = elem.slice(1, elem.length).join(' ').match(/\b([a-zA-Z][a-zA-Z0-9\-]*)(=(".*?"|[^\s]+))?/g)??[];
       let tempattr = {};
       attributes.forEach(attr => {
         attr = attr.split('=');
         let val = attr.slice(1,attr.length).join('=');
         if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1,-1);
-        tempattr[attr[0].toLocaleLowerCase()] = val;
+        tempattr[attr[0].toLowerCase()] = val;
       })
       temp.attributes = tempattr;
 
@@ -57,16 +58,21 @@ function subparse(content) {
           while (char !== '>' && i < content.length) {
             i++;
             char = content[i];
-            closingTag += char;
+            closingTag += char??'';
           }
-          closingTag = closingTag.slice(1, -1).toLocaleLowerCase();
+          closingTag = closingTag.slice(1, -1).toLowerCase();
           if (closingTag === temp.name) {
-            break;
+            if (level === 0) break;
+            level--;
+            innerContent += `</${closingTag}>`;
           } else {
             innerContent += `</${closingTag}>`;
           }
+        } else if (char === '<' && content.slice(i, i+temp.name.length+1)===('<'+temp.name)) {
+          level++;
+          innerContent += '<';
         } else {
-          innerContent += char;
+          innerContent += char??'';
         }
       }
 
@@ -85,10 +91,13 @@ function subparse(content) {
 }
 
 export function parse(content) {
-  // Remove comments and INVALID html doctype
-  content = content
-    .replaceAll(/<!--([^¬]|.)*?-->/g, '')
-    .replaceAll(/<!DOCTYPE html>/gi, '');
+  // Remove comments
+  content = content.replaceAll(/<!--([^¬]|.)*?-->/g, '');
+  // Handle ***INVALID*** html doctype
+  if ((/<!DOCTYPE html>/gi).test(content)) {
+    console.warn('[HTML PARSER] Invalid doctype html');
+    content = content.replaceAll(/<!DOCTYPE html>/gi, '');
+  }
   // Parse
   return subparse(content);
 }
