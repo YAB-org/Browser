@@ -160,7 +160,7 @@ html, body {
   align-items: center;
   display: flex;
   font-size: 15px;
-  margin-right: 9px;
+  margin-right: 20px;
 }
 
 .tab-disabled .tab_text {
@@ -209,7 +209,7 @@ html, body {
 }
 
 /* Hide when tab is small AND disabled */
-@container (max-width: 30px) {
+@container (max-width: 40px) {
   .tab.tab-disabled .tab_close_container {
       display: none;
   }

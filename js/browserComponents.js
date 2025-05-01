@@ -213,7 +213,7 @@ class LayoutManager {
             enableBasicAutocompletion: true,
             enableLiveAutocompletion: true,
             enableSnippets: false,
-            showPrintMargin: false
+            //showPrintMargin: false
         });
         Split(['#web_display', '#dev_tools'], {
             onDrag: () => {
@@ -399,15 +399,14 @@ class TabManager {
 
                 };
                 document.getElementById(this.targetDiv).appendChild(newTab);
-                console.log('got here!');
-
-
-                // add to registry
-                // TODO: Finish dis
-                // Attach event
 
                 let generatedTab = document.getElementById(pid);
-                console.log(generatedTab)
+                generatedTab.classList.add('tab_animation');
+                generatedTab.addEventListener('animationend', () => {
+                    generatedTab.style.width = "200px";
+                    generatedTab.style.minWidth = "20px";
+                    generatedTab.classList.remove('tab_animation');
+                })
                 generatedTab.querySelector('.tab_left').addEventListener('mousedown', () => {
                     this.setFocus(pid);
                     this.currentTab = pid;
@@ -458,27 +457,29 @@ class TabManager {
 
             let tabtodel = document.getElementById(pid)
 
-            tabtodel.style.width = '200px';
-            tabtodel.classList.remove('tab_animation');
+
             tabtodel.classList.add('tab_animation-close');
-
-            setTimeout(() => {
-
+            tabtodel.style.minWidth = "0px";
+            tabtodel.addEventListener('animationend', () => {
                 tabtodel.remove();
                 console.log(Object.keys(this.tabs).length);
                 console.log("it is " + Object.keys(this.tabs).length === 0);
-            }, 220);
-            if (Object.keys(this.tabs).length > 0) {
-                console.log('hallo?');
-                if (this.currentTab === pid) {
-                    this.setFocus(neighbour.id);
-                    console.log(neighbour);
-                }
 
-            }
-            if (Object.keys(this.tabs).length === 0) {
-                this.browserTerminate();
-            }
+
+                if (Object.keys(this.tabs).length > 0) {
+                    console.log('hallo?');
+                    if (this.currentTab === pid) {
+                        this.setFocus(neighbour.id);
+                        console.log(neighbour);
+                    }
+    
+                }
+                if (Object.keys(this.tabs).length === 0) {
+                    this.browserTerminate();
+                }
+            })
+
+        
 
         }
     }
