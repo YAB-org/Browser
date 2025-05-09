@@ -459,8 +459,8 @@ html, body {
 }
 
 .dev_tools {
-  height: 100%;
-  width: 500px;
+  display: flex;
+  flex-direction: column;
 }
 
 .dev_tools_elems {
@@ -496,9 +496,23 @@ html, body {
 
 .dev_content {
   position: absolute;
-}
-.dev_content {
   width: 100%;
   height: 100%;
 }
 
+.dev_tools_content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.dev_size_indicator {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 13px;
+  background: #ffffff85;
+  padding: 3px;
+  color: #202020;
+}

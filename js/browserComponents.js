@@ -207,6 +207,7 @@ class LayoutManager {
 
 
         const editor = ace.edit("editor");
+        window.editor = editor;
         editor.setTheme("ace/theme/ayu-mirage")
         editor.session.setMode("ace/mode/javascript");
         editor.setOptions({
@@ -215,11 +216,29 @@ class LayoutManager {
             enableSnippets: false,
             //showPrintMargin: false
         });
+
+        const indicator = document.getElementById('dev_size_indicator');
+        indicator.style.display = "none";
+        const style = window.getComputedStyle(document.getElementById('web_display'));
+        indicator.innerText = parseFloat(style.width) + "px * " + parseFloat(style.height); + "px"
+
         Split(['#web_display', '#dev_tools'], {
+
+            onDragStart: () => {
+                indicator.style.display = "block";
+              },
             onDrag: () => {
                 editor.resize();
-            }
+                indicator.innerText = parseFloat(style.width) + "px * " + parseFloat(style.height); + "px"
+            },
+            onDragEnd: () => {
+                indicator.style.display = "none";
+            },
+            minSize: [150, 300],
+            snapOffset: 0
         })
+
+        editor.resize();
 
         tippy('#toolbar_icon_options', {
             content: CitronJS.getContent('windows_minimize_svg'),
@@ -558,9 +577,9 @@ class WebView {
         this.targetDiv.querySelector("#_" + pid);
     }
     focusWebView(pid) {
-        this.targetDiv.querySelectorAll('div').forEach(div => {
-            div.classList.add('web_view-hidden');
-        })
+        this.targetDiv
+            .querySelectorAll('.web_view')
+            .forEach(div => div.classList.add('web_view-hidden'));
         this.targetDiv.querySelector("#_" + pid).classList.remove('web_view-hidden');
     }
 }
