@@ -1,5 +1,9 @@
 import '../media/main/theme_ace_dark.js'
 
+ace.config.setModuleUrl("ace/mode/htmlpp", 
+    "../media/languages/htmlpp-mode.js"
+  );
+
 export class Browser {
     constructor() {
         this.ProcessManager = new ProcessManager();
@@ -52,12 +56,71 @@ class LayoutManager {
         const editor = ace.edit("editor");
         window.editor = editor;
         editor.setTheme("ace/theme/yab-dark")
-        editor.session.setMode("ace/mode/lua");
+        editor.session.setMode("ace/mode/htmlpp");
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableLiveAutocompletion: true,
             enableSnippets: false,
-            //showPrintMargin: false
+            behavioursEnabled: true,
+            wrapBehavioursEnabled: true,
+            showPrintMargin: false
+        });
+
+
+        // the following is only for html++, should be removed or disabled for other languages
+        editor.commands.addCommand({
+            name: "customEnter",
+            bindKey: { win: "Enter", mac: "Enter" },
+            exec: function(editor) {
+                const session = editor.getSession();
+                const pos = editor.getCursorPosition();
+                const line = session.getLine(pos.row);
+                const before = line.substring(0, pos.column);
+                const after = line.substring(pos.column);
+        
+                // Check if the cursor is between opening and closing tags
+                const tagMatch = before.match(/<(\w+)[^>]*>$/);
+                const closingTagMatch = after.match(/^<\/(\w+)>/);
+                if (tagMatch && closingTagMatch && tagMatch[1] === closingTagMatch[1]) {
+                    // Determine the current indentation
+                    const currentIndent = before.match(/^\s*/)[0];
+                    const indent = session.getTabString();
+        
+                    // Insert newline with indentation
+                    editor.insert(`\n${currentIndent}${indent}\n${currentIndent}`);
+                    editor.navigateUp(1);
+                    editor.navigateLineEnd();
+                } else {
+                    // Default behavior
+                    editor.insert("\n");
+                }
+            },
+            multiSelectAction: "forEach",
+            scrollIntoView: "cursor",
+            readOnly: false
+        });
+        editor.commands.addCommand({
+            name: "insertQuoteSnippet",
+            bindKey: { win: "=", mac: "=" },
+            exec: function(editor) {
+                const session = editor.getSession();
+                const pos = editor.getCursorPosition();
+                const line = session.getLine(pos.row);
+                const before = line.substring(0, pos.column);
+                const after = line.substring(pos.column);
+        
+                // Check if the cursor is after an equals sign
+                if (before.endsWith("=")) {
+                    // Insert the snippet
+                    editor.insert(`"${editor.getSession().getTabString()}%cursor here%"`);
+                } else {
+                    // Default behavior
+                    editor.insert("=");
+                }
+            },
+            multiSelectAction: "forEach",
+            scrollIntoView: "cursor",
+            readOnly: false
         });
 
         const indicator = document.getElementById('dev_size_indicator');

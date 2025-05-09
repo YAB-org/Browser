@@ -67,7 +67,7 @@ ace.define('ace/theme/yab-dark', ['require', 'exports', 'module', 'ace/lib/dom']
     ' +
     // Selection
     '.ace-yab-dark .ace_marker-layer .ace_selection {\
-        background:rgb(35, 40, 45)\
+        background:rgb(58 67 76)\
     }\
     ' +
     '.ace-yab-dark.ace_multiselect .ace_selection.ace_start {\
@@ -191,6 +191,11 @@ ace.define('ace/theme/yab-dark', ['require', 'exports', 'module', 'ace/lib/dom']
         background-color: #22262b;\
         border: 1px solid #3d3d3d;\
         color: #9b9b9b;\
+    }\
+    ' +
+    '.ace-yab-dark .ace_snippet-marker {\
+    background: none !important; \
+    border: none !important;\
     }\
     ';
 
