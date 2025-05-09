@@ -1,161 +1,4 @@
-ace.define('ace/theme/ayu-mirage', ['require', 'exports', 'module', 'ace/lib/dom'], function (acequire, exports, module) {
-    exports.isDark = false
-    exports.cssClass = 'ace-ayu-mirage'
-    exports.cssText = '.ace-ayu-mirage .ace_gutter {\
-    background: #212733;\
-    color: rgb(125,127,129)\
-    }\
-    \
-    .ace-ayu-mirage .ace_print-margin {\
-    width: 1px;\
-    background: #e8e8e8\
-    }\
-    \
-    .ace-ayu-mirage {\
-    background-color: #212733;\
-    color: #D9D7CE\
-    }\
-    \
-    .ace-ayu-mirage .ace_cursor {\
-    color: #FFCC66\
-    }\
-    \
-    .ace-ayu-mirage .ace_marker-layer .ace_selection {\
-    background: #343F4C\
-    }\
-    \
-    .ace-ayu-mirage.ace_multiselect .ace_selection.ace_start {\
-    box-shadow: 0 0 3px 0px #212733;\
-    border-radius: 2px\
-    }\
-    \
-    .ace-ayu-mirage .ace_marker-layer .ace_step {\
-    background: rgb(198, 219, 174)\
-    }\
-    \
-    .ace-ayu-mirage .ace_marker-layer .ace_bracket {\
-    margin: -1px 0 0 -1px;\
-    border: 1px solid #FF0000\
-    }\
-    \
-    .ace-ayu-mirage .ace_marker-layer .ace_active-line {\
-    background: #242B38\
-    }\
-    \
-    .ace-ayu-mirage .ace_gutter-active-line {\
-    background-color: #242B38\
-    }\
-    \
-    .ace-ayu-mirage .ace_marker-layer .ace_selected-word {\
-    border: 1px solid #343F4C\
-    }\
-    \
-    .ace-ayu-mirage .ace_fold {\
-    background-color: #FFD580;\
-    border-color: #D9D7CE\
-    }\
-    \
-    .ace-ayu-mirage .ace_keyword.ace_operator {\
-    color: #F29E74\
-    }\
-    \
-    .ace-ayu-mirage .ace_constant.ace_language {\
-    color: #D4BFFF\
-    }\
-    \
-    .ace-ayu-mirage .ace_constant.ace_numeric {\
-    color: #D4BFFF\
-    }\
-    \
-    .ace-ayu-mirage .ace_constant.ace_character {\
-    color: #D4BFFF\
-    }\
-    \
-    .ace-ayu-mirage .ace_constant.ace_character.ace_escape {\
-    color: #95E6CB\
-    }\
-    \
-    .ace-ayu-mirage .ace_constant.ace_other {\
-    color: #D4BFFF\
-    }\
-    \
-    .ace-ayu-mirage .ace_support.ace_function {\
-    color: #F28779\
-    }\
-    \
-    .ace-ayu-mirage .ace_support.ace_constant {\
-    font-style: italic;\
-    color: #F29E74\
-    }\
-    \
-    .ace-ayu-mirage .ace_support.ace_class {\
-    font-style: italic;\
-    color: #5CCFE6\
-    }\
-    \
-    .ace-ayu-mirage .ace_support.ace_type {\
-    font-style: italic;\
-    color: #5CCFE6\
-    }\
-    \
-    .ace-ayu-mirage .ace_storage {\
-    color: #FFA759\
-    }\
-    \
-    .ace-ayu-mirage .ace_storage.ace_type {\
-    color: #FFA759\
-    }\
-    \
-    .ace-ayu-mirage .ace_invalid {\
-    color: #FF3333\
-    }\
-    \
-    .ace-ayu-mirage .ace_invalid.ace_deprecated {\
-    color: #FFFFFF;\
-    background-color: #FFA759\
-    }\
-    \
-    .ace-ayu-mirage .ace_string {\
-    color: #BAE67E\
-    }\
-    \
-    .ace-ayu-mirage .ace_string.ace_regexp {\
-    color: #95E6CB\
-    }\
-    \
-    .ace-ayu-mirage .ace_comment {\
-    font-style: italic;\
-    color: #5C6773\
-    }\
-    \
-    .ace-ayu-mirage .ace_variable {\
-    color: #D9D7CE\
-    }\
-    \
-    .ace-ayu-mirage .ace_variable.ace_language {\
-    font-style: italic;\
-    color: #5CCFE6\
-    }\
-    \
-    .ace-ayu-mirage .ace_variable.ace_parameter {\
-    color: #D4BFFF\
-    }\
-    \
-    .ace-ayu-mirage .ace_entity.ace_other.ace_attribute-name {\
-    color: #FFD580\
-    }\
-    \
-    .ace-ayu-mirage .ace_entity.ace_name.ace_function {\
-    color: #FFD580\
-    }\
-    \
-    .ace-ayu-mirage .ace_entity.ace_name.ace_tag {\
-    color: #5CCFE6\
-    }'
-    
-    var dom = acequire('../lib/dom')
-    dom.importCssString(exports.cssText, exports.cssClass)
-    })
+import '../media/main/theme_ace_dark.js'
 
 export class Browser {
     constructor() {
@@ -208,8 +51,8 @@ class LayoutManager {
 
         const editor = ace.edit("editor");
         window.editor = editor;
-        editor.setTheme("ace/theme/ayu-mirage")
-        editor.session.setMode("ace/mode/javascript");
+        editor.setTheme("ace/theme/yab-dark")
+        editor.session.setMode("ace/mode/lua");
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableLiveAutocompletion: true,
@@ -218,9 +61,9 @@ class LayoutManager {
         });
 
         const indicator = document.getElementById('dev_size_indicator');
+        const rect = document.getElementById('web_display').getBoundingClientRect();
         indicator.style.display = "none";
-        const style = window.getComputedStyle(document.getElementById('web_display'));
-        indicator.innerText = parseFloat(style.width) + "px * " + parseFloat(style.height); + "px"
+        indicator.innerHTML = `${rect.width.toFixed(2)}px * ${rect.height.toFixed(2)}px`
 
         Split(['#web_display', '#dev_tools'], {
 
@@ -229,7 +72,8 @@ class LayoutManager {
               },
             onDrag: () => {
                 editor.resize();
-                indicator.innerText = parseFloat(style.width) + "px * " + parseFloat(style.height); + "px"
+                const rect = document.getElementById('web_display').getBoundingClientRect();
+                indicator.innerHTML = `${rect.width.toFixed(2)}px * ${rect.height.toFixed(2)}px`
             },
             onDragEnd: () => {
                 indicator.style.display = "none";
@@ -325,7 +169,7 @@ class TabManager {
                 animation: 150,
                 preventOnFilter: true,
                 preventOnCancel: false,
-                easing: "cubic-bezier(1, 0, 0, 1)",
+                easing: "cubic-bezier(0.65, 0, 0.35, 1)",
                 onEnd: function() {
                     backend.getWindowData().then(data => {
                         let mouse = data.mouse;
