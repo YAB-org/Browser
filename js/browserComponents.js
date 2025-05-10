@@ -526,9 +526,9 @@ class WebView {
     async setHtml(pid, html) {
         console.log("hello?")
         const iframe = this.targetDiv.querySelector('#_' + pid);
-        const target = iframe.contentDocument.querySelector('body');
         //target.appendChild(html);
         iframe.onload = () => {
+            const target = iframe.contentDocument.querySelector('body');
             target.appendChild(html);
           };
         iframe.contentDocument.location.reload();
