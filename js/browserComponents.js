@@ -530,6 +530,7 @@ class WebView {
         iframe.onload = () => {
             const target = iframe.contentDocument.querySelector('body');
             target.appendChild(html);
+            
           };
         iframe.contentDocument.location.reload();
     }
