@@ -10,7 +10,7 @@ export class Browser {
         this.WebView = new WebView('web_display');
         this.TabManager = new TabManager('tab_sortable', 9999, this.ProcessManager, this.WebView, this.terminateBrowserInstance_safe);
         this.LayoutManager = new LayoutManager(this.TabManager);
-        this.NetworkManager = new NetworkManager();
+        this.NetworkManager = new NetworkManager(this.WebView);
 
     }
 
@@ -99,29 +99,7 @@ class LayoutManager {
             scrollIntoView: "cursor",
             readOnly: false
         });
-        editor.commands.addCommand({
-            name: "insertQuoteSnippet",
-            bindKey: { win: "=", mac: "=" },
-            exec: function(editor) {
-                const session = editor.getSession();
-                const pos = editor.getCursorPosition();
-                const line = session.getLine(pos.row);
-                const before = line.substring(0, pos.column);
-                const after = line.substring(pos.column);
         
-                // Check if the cursor is after an equals sign
-                if (before.endsWith("=")) {
-                    // Insert the snippet
-                    editor.insert(`"${editor.getSession().getTabString()}%cursor here%"`);
-                } else {
-                    // Default behavior
-                    editor.insert("=");
-                }
-            },
-            multiSelectAction: "forEach",
-            scrollIntoView: "cursor",
-            readOnly: false
-        });
 
         const indicator = document.getElementById('dev_size_indicator');
         const rect = document.getElementById('web_display').getBoundingClientRect();
@@ -212,6 +190,8 @@ class TabManager {
 
 		this.input = document.getElementById('toolbar_searchbar');
         this.highlight = document.getElementById('searchbar_highlight');
+
+        
     }
 
     init() {
@@ -308,8 +288,9 @@ class TabManager {
 
                 this.tabs[pid] = {
                     addressBar: "",
-                    currentURL: "yab://error/some-error",
-                    inheritedURL: "",
+                    currentURL: "",
+                    isMasked: false,
+                    mask: "",
                     title: "",
                     favicon: "",
                     timestamp: Date.now(),
@@ -418,6 +399,7 @@ class TabManager {
         document.getElementById(pid).classList.remove('tab-disabled');
 		this.address_bar.value = this.tabs[pid].addressBar;
 		this.address_highlight_update();
+        console.log(this.address_bar.value);
 
     }
 
@@ -465,6 +447,30 @@ class TabManager {
             this.highlight.scrollLeft = _this.input.scrollLeft;
         });
     }
+
+    async TravelTo(pid, target, masked = false, mask = "") {
+        // buss://example.it
+        const tab = this.tabs[pid];
+        if (masked) {
+            tab.isMasked = true;
+            tab.mask = mask;
+
+            if (this.currentTab == pid) {
+                this.address_bar.value = mask;
+            }
+        } else {
+            tab.isMasked = false;
+
+            if (this.currentTab == pid) {
+                this.address_bar.value = target;
+            }
+        }
+
+        let favicon = document.getElementById(pid).querySelector(".tab_icon");
+        favicon.innerHTML = CitronJS.getContent('tab_spinner');
+        await this.NetworkManager.fetchHTML(target);
+
+    }
 }
 
 class WebView {
@@ -486,14 +492,19 @@ class WebView {
     focusWebView(pid) {
         this.targetDiv
             .querySelectorAll('.web_view')
-            .forEach(div => div.classList.add('web_view-hidden'));
+            .forEach(iframe => iframe.classList.add('web_view-hidden'));
         this.targetDiv.querySelector("#_" + pid).classList.remove('web_view-hidden');
+    }
+
+    setHtml(pid, html) {
+        this.targetDiv.querySelector('#' + pid).contentWindow.document.body.innerHTML = html;
     }
 }
 
 
-class ProtocolManager {
-	constructor() {
+class NetworkManager {
+	constructor(webview) {
+        this.webview = webview;
 		this.native = {
 			yab: {
 				paths: {
@@ -527,6 +538,16 @@ class ProtocolManager {
 		}
 	}
 
+
+    fetch(url) {
+        const comp = url.split(':');
+        if (this.native.hasOwnProperty(comp[0])) {
+
+            
+        } else if (this.third_party.hasOwnProperty(comp[0])) {
+
+        }
+    }
 	get(protocol, domain, tld, path) {
 
 		// prot://sub.main.tld/hi/bye?q=valuea%20valueb&other=2&sort=relevance#fragment
@@ -546,13 +567,4 @@ class ProtocolManager {
 		}
 	}
 
-}
-
-class NetworkManager {
-    constructor() {
-
-    }
-    init() {
-
-    }
 }
