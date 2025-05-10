@@ -1,0 +1,11 @@
+<citron>
+    <export sample="native_newtab"></export>
+
+    <sample name="native_newtab">
+        <h1>This should appear on yab://newtab</h1>
+        <p>Native pages load so fast that the loading favicon is not visible. This will only work on real sites</p>
+    </sample>
+    <sample name="native_settings">
+        <h1>This should appear on yab://settings</h1>
+    </sample>
+</citron>

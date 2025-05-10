@@ -43,7 +43,7 @@
         <svg viewBox="25 25 50 50" class="tab_spinner"><circle r="20" cy="50" cx="50" class="tab_spinner_circle"></circle></svg>
     </sample>
     <sample name="doc_favicon">
-        
+
     </sample>
     <sample name="toolbar-icon-sidebar"><svg width="100%" height="100%" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="inherit-color"> <mask id="mask0_18_196" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20"> <rect width="20" height="20" fill="#D9D9D9"/> </mask> <g mask="url(#mask0_18_196)"> <path d="M6.25 6.66667V13.3333L9.58333 10L6.25 6.66667ZM4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM13.3333 15.8333H15.8333V4.16667H13.3333V15.8333ZM11.6667 15.8333V4.16667H4.16667V15.8333H11.6667Z" fill="currentColor"/> </g> </svg></sample>
     <sample name="toolbar-icon-home"><svg width="100%" height="100%" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_27_254)"> <path d="M17.9937 8.98438C17.9937 9.54688 17.525 9.9875 16.9937 9.9875H15.9937L16.0156 14.9937C16.0156 15.0781 16.0094 15.1625 16 15.2469V15.75C16 16.4406 15.4406 17 14.75 17H14.25C14.2156 17 14.1813 17 14.1469 16.9969C14.1031 17 14.0594 17 14.0156 17H13H12.25C11.5594 17 11 16.4406 11 15.75V15V13C11 12.4469 10.5531 12 10 12H8C7.44688 12 7 12.4469 7 13V15V15.75C7 16.4406 6.44063 17 5.75 17H5H4.00313C3.95625 17 3.90937 16.9969 3.8625 16.9937C3.825 16.9969 3.7875 17 3.75 17H3.25C2.55938 17 2 16.4406 2 15.75V12.25C2 12.2219 2 12.1906 2.00312 12.1625V9.9875H1C0.4375 9.9875 0 9.55 0 8.98438C0 8.70312 0.09375 8.45312 0.3125 8.23438L8.325 1.25C8.54375 1.03125 8.79375 1 9.0125 1C9.23125 1 9.48125 1.0625 9.66875 1.21875L17.65 8.23438C17.9 8.45312 18.025 8.70312 17.9937 8.98438Z" fill="currentColor"/> </g> <defs> <clipPath id="clip0_27_254"> <rect width="18" height="18" fill="currentColor"/> </clipPath> </defs> </svg></sample>
@@ -54,6 +54,6 @@
     <sample name="searchbar-icon-encryption"><svg width="100%" height="100%" viewBox="0 0 25 23" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M14 10V11H10V10C10 8.89543 10.8954 8 12 8C13.1046 8 14 8.89543 14 10ZM9 11V10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10V11C15.5523 11 16 11.4477 16 12V17C16 17.5523 15.5523 18 15 18H9C8.44772 18 8 17.5523 8 17V12C8 11.4477 8.44772 11 9 11Z" fill="currentColor"/> </svg></sample>
 
     <sample name="webview">
-        <iframe class="web_view web_view-hidden" id="{ id }"></iframe>
+        <iframe class="web_view web_view-hidden" id="{ id }" src=""></iframe>
     </sample>
 </citron>

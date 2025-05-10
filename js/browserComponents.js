@@ -8,9 +8,10 @@ export class Browser {
     constructor() {
         this.ProcessManager = new ProcessManager();
         this.WebView = new WebView('web_display');
-        this.TabManager = new TabManager('tab_sortable', 9999, this.ProcessManager, this.WebView, this.terminateBrowserInstance_safe);
-        this.LayoutManager = new LayoutManager(this.TabManager);
         this.NetworkManager = new NetworkManager(this.WebView);
+        this.TabManager = new TabManager('tab_sortable', 9999, this.ProcessManager, this.WebView, this.terminateBrowserInstance_safe, this.NetworkManager);
+        this.LayoutManager = new LayoutManager(this.TabManager);
+        
 
     }
 
@@ -175,7 +176,7 @@ class ProcessManager {
 }
 
 class TabManager {
-    constructor(target_id, max, engineInstance, webView, terminateBrowser) {
+    constructor(target_id, max, engineInstance, webView, terminateBrowser, NetworkManager) {
         this.ready = false;
         this.targetDiv = target_id;
         this.maxTabAmount = max;
@@ -187,6 +188,7 @@ class TabManager {
         this.browserTerminate = terminateBrowser;
         this.WebView = webView;
         this.address_bar = document.getElementById('toolbar_searchbar');
+        this.NetworkManager = NetworkManager;
 
 		this.input = document.getElementById('toolbar_searchbar');
         this.highlight = document.getElementById('searchbar_highlight');
@@ -236,6 +238,12 @@ class TabManager {
 				this.tabs[this.currentTab].addressBar = this.address_bar.value;
             	this.address_highlight_update();
         	});
+            this.input.addEventListener('keydown', (event) => {
+                if (event.key === "Enter") {
+                    console.log("enter key pressed")
+                    this.TravelTo(this.currentTab, this.address_bar.value)
+                }
+            })
 
             return;
         }
@@ -268,10 +276,6 @@ class TabManager {
 
     }
 
-    async TravelTo(pid, url, inherit) {
-
-    }
-
     async spawnTab(title, focused = false, options) {
         if (this.ready !== true) {
             console.error('[TabManager][ERROR]: TabManager is not ready yet.');
@@ -282,7 +286,6 @@ class TabManager {
                 const pid = await this.engine.spawnNewProcess();
                 this.WebView.spawnWebView(pid);
                 this.WebView.focusWebView(pid);
-                this.address_bar.focus();
 				this.address_bar.value = "";
 				this.address_highlight_update();
 
@@ -290,6 +293,7 @@ class TabManager {
                     addressBar: "",
                     currentURL: "",
                     isMasked: false,
+                    hiddenProtocol: true,
                     mask: "",
                     title: "",
                     favicon: "",
@@ -322,7 +326,7 @@ class TabManager {
                     this.terminateTab(pid);
                 });
                 this.currentAmount++;
-
+                this.TravelTo(this.currentTab, "yab://newtab")
 
             }
 
@@ -399,7 +403,7 @@ class TabManager {
         document.getElementById(pid).classList.remove('tab-disabled');
 		this.address_bar.value = this.tabs[pid].addressBar;
 		this.address_highlight_update();
-        console.log(this.address_bar.value);
+        this.hideProtocol();
 
     }
 
@@ -448,7 +452,18 @@ class TabManager {
         });
     }
 
+    hideProtocol() {
+        if (this.tabs[this.currentTab].hiddenProtocol == true) {
+            let proto = document.querySelector('.searchbar_proto');
+            if (proto) proto.style.display = 'none';
+        }
+        
+    }
+
     async TravelTo(pid, target, masked = false, mask = "") {
+        let favicon = document.getElementById(pid).querySelector(".tab_icon");
+        favicon.innerHTML = "";
+        favicon.appendChild(CitronJS.getContent('tab_spinner'));
         // buss://example.it
         const tab = this.tabs[pid];
         if (masked) {
@@ -457,18 +472,30 @@ class TabManager {
 
             if (this.currentTab == pid) {
                 this.address_bar.value = mask;
+                this.tabs[pid].addressBar = mask;
+                this.tabs[pid].currentURL = target;
+                this.address_highlight_update();
+                
             }
         } else {
             tab.isMasked = false;
 
             if (this.currentTab == pid) {
                 this.address_bar.value = target;
+                this.tabs[pid].addressBar = target;
+                this.tabs[pid].currentURL = target;
+                this.address_highlight_update();
             }
         }
-
-        let favicon = document.getElementById(pid).querySelector(".tab_icon");
-        favicon.innerHTML = CitronJS.getContent('tab_spinner');
-        await this.NetworkManager.fetchHTML(target);
+        if (this.tabs[pid].addressBar == "") {
+            this.address_bar.focus();
+        }
+        if (this.NetworkManager.native.hasOwnProperty(this.NetworkManager.URLToObject(target).protocol)) {
+            this.tabs[pid].hiddenProtocol = false;
+        } else { this.tabs[pid].hiddenProtocol = true }
+        await this.NetworkManager.fetch(target, pid);
+        favicon.innerHTML = "";
+        favicon.appendChild(CitronJS.getContent('tab_favicon_doc'));
 
     }
 }
@@ -496,8 +523,15 @@ class WebView {
         this.targetDiv.querySelector("#_" + pid).classList.remove('web_view-hidden');
     }
 
-    setHtml(pid, html) {
-        this.targetDiv.querySelector('#' + pid).contentWindow.document.body.innerHTML = html;
+    async setHtml(pid, html) {
+        console.log("hello?")
+        const iframe = this.targetDiv.querySelector('#_' + pid);
+        const target = iframe.contentDocument.querySelector('body');
+        //target.appendChild(html);
+        iframe.onload = () => {
+            target.appendChild(html);
+          };
+        iframe.contentDocument.location.reload();
     }
 }
 
@@ -507,14 +541,13 @@ class NetworkManager {
         this.webview = webview;
 		this.native = {
 			yab: {
-				paths: {
 					newtab: {
 						html: "native_newtab"
 					},
 					settings: {
 						html: "native_settings"
 					}
-				}
+				
 			}
 		}
 
@@ -539,15 +572,36 @@ class NetworkManager {
 	}
 
 
-    fetch(url) {
-        const comp = url.split(':');
-        if (this.native.hasOwnProperty(comp[0])) {
+    fetch(url, pid) {
+        const purl = this.URLToObject(url);
+        if (purl.protocol == "http") {
+            // localhost
+
+        } else if (this.native.hasOwnProperty(purl.protocol)) {
+            if (this.native[purl.protocol].hasOwnProperty(purl.domain)) {
+                this.webview.setHtml(pid, CitronJS.getContent(this.native[purl.protocol][purl.domain].html))
+            }
 
             
-        } else if (this.third_party.hasOwnProperty(comp[0])) {
-
+        } else if (this.third_party.hasOwnProperty(purl.protocol)) {
+            // buss:// or other
+        } else {
+            // error no protocol
         }
     }
+
+    URLToObject(url) {
+        let uri = new URL(url);
+        console.log(uri);
+        return {
+          protocol: uri.protocol.split(':')[0],
+          domain: uri.hostname,
+          port: uri.port,
+          path: uri.pathname,
+          query: uri.search
+        }
+    }
+
 	get(protocol, domain, tld, path) {
 
 		// prot://sub.main.tld/hi/bye?q=valuea%20valueb&other=2&sort=relevance#fragment
