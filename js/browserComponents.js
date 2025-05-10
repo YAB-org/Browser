@@ -326,7 +326,7 @@ class TabManager {
                     this.terminateTab(pid);
                 });
                 this.currentAmount++;
-                this.TravelTo(this.currentTab, "yab://newtab")
+                this.TravelTo(this.currentTab, "yab://newtab", true, "")
 
             }
 
@@ -466,6 +466,12 @@ class TabManager {
         favicon.appendChild(CitronJS.getContent('tab_spinner'));
         // buss://example.it
         const tab = this.tabs[pid];
+
+        if (this.NetworkManager.native.hasOwnProperty(this.NetworkManager.URLToObject(target).protocol)) {
+            this.tabs[pid].hiddenProtocol = false;
+        } else { this.tabs[pid].hiddenProtocol = true; console.log("its hidden") }
+        await this.NetworkManager.fetch(target, pid);
+        
         if (masked) {
             tab.isMasked = true;
             tab.mask = mask;
@@ -490,10 +496,7 @@ class TabManager {
         if (this.tabs[pid].addressBar == "") {
             this.address_bar.focus();
         }
-        if (this.NetworkManager.native.hasOwnProperty(this.NetworkManager.URLToObject(target).protocol)) {
-            this.tabs[pid].hiddenProtocol = false;
-        } else { this.tabs[pid].hiddenProtocol = true }
-        await this.NetworkManager.fetch(target, pid);
+        
         favicon.innerHTML = "";
         favicon.appendChild(CitronJS.getContent('tab_favicon_doc'));
 
@@ -530,7 +533,7 @@ class WebView {
         iframe.onload = () => {
             const target = iframe.contentDocument.querySelector('body');
             target.appendChild(html);
-            
+
           };
         iframe.contentDocument.location.reload();
     }
