@@ -403,7 +403,9 @@ class TabManager {
         document.getElementById(pid).classList.remove('tab-disabled');
 		this.address_bar.value = this.tabs[pid].addressBar;
 		this.address_highlight_update();
-        this.hideProtocol();
+        if (!this.tabs[pid].hiddenProtocol) {
+            this.hideProtocol();
+        }
 
     }
 
@@ -442,8 +444,8 @@ class TabManager {
         });
 
         this.input.addEventListener('blur', () => {
-            let proto = document.querySelector('.searchbar_proto');
-            if (proto) proto.style.display = 'none';
+            /*let proto = document.querySelector('.searchbar_proto');
+            if (proto) proto.style.display = 'none';*/
         });
 
         this.input.addEventListener("scroll", () => {
@@ -467,10 +469,17 @@ class TabManager {
         // buss://example.it
         const tab = this.tabs[pid];
 
+        console.log("checking this")
+
+        const res = await this.NetworkManager.fetch(target, pid);
+        if (!res) {
+            // its not a valid url, make it a search instead
+        }
         if (this.NetworkManager.native.hasOwnProperty(this.NetworkManager.URLToObject(target).protocol)) {
+            console.log("hi2")
             this.tabs[pid].hiddenProtocol = false;
         } else { this.tabs[pid].hiddenProtocol = true; console.log("its hidden") }
-        await this.NetworkManager.fetch(target, pid);
+        
         
         if (masked) {
             tab.isMasked = true;
@@ -497,8 +506,6 @@ class TabManager {
             this.address_bar.focus();
         }
         
-        favicon.innerHTML = "";
-        favicon.appendChild(CitronJS.getContent('tab_favicon_doc'));
 
     }
 }
@@ -550,7 +557,10 @@ class NetworkManager {
 					},
 					settings: {
 						html: "native_settings"
-					}
+					},
+                    error: {
+                        html: "native_error"
+                    }
 				
 			}
 		}
@@ -560,11 +570,11 @@ class NetworkManager {
 				primary: true,
 				type: "custom",
 				server1: {
-					address: "https://dns-one.webxplus.org/resolve",
+					address: "https://dns-one.webxplus.org/domain/{domain}/{tld}",
 					timeout: 30000
 				},
 				server2: {
-					address: "https://dns-two.webxplus.org/resolve",
+					address: "https://dns-two.webxplus.org/domain/{domain}/{tld}",
 					timeout: 30000
 				},
 				headers: {
@@ -578,31 +588,60 @@ class NetworkManager {
 
     fetch(url, pid) {
         const purl = this.URLToObject(url);
-        if (purl.protocol == "http") {
-            // localhost
-
-        } else if (this.native.hasOwnProperty(purl.protocol)) {
-            if (this.native[purl.protocol].hasOwnProperty(purl.domain)) {
-                this.webview.setHtml(pid, CitronJS.getContent(this.native[purl.protocol][purl.domain].html))
-            }
-
-            
-        } else if (this.third_party.hasOwnProperty(purl.protocol)) {
-            // buss:// or other
+        if(!purl) {
+            return false; // its not a domain, make it a search instead
         } else {
-            // error no protocol
+            if (purl.protocol == "http") {
+                // localhost
+    
+            } else if (this.native.hasOwnProperty(purl.protocol)) {
+                if (this.native[purl.protocol].hasOwnProperty(purl.domain)) {
+                    this.webview.setHtml(pid, CitronJS.getContent(this.native[purl.protocol][purl.domain].html))
+                }
+    
+                
+            } else if (this.third_party.hasOwnProperty(purl.protocol)) {
+                // buss:// or other
+                if (this.third_party.hasOwnProperty(purl.protocol)) {
+                    
+                    const controller = new AbortController();
+                    const timeout = this.third_party[purl.protocol].server1.timeout;
+                    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+                    fetch(this.third_party[purl.protocol].server1.address.replace('{domain}', purl.domain.split('.')[0]).replace('{tld}', purl.domain.split('.')[1], {
+                        signal: controller.signal
+                    }))
+                        .then(response => response.json())
+                        .then(data => console.log(data))
+                        .catch(err => {
+                            if (err.name === 'AbortError') {
+                                console.log('Request timed out');
+                            } else {
+                                console.error(err);
+                            }
+                        })
+                        .finally(() => clearTimeout(timeoutId));
+                }
+            } else {
+                // error no protocol
+            }
         }
+
     }
 
     URLToObject(url) {
-        let uri = new URL(url);
-        console.log(uri);
-        return {
-          protocol: uri.protocol.split(':')[0],
-          domain: uri.hostname,
-          port: uri.port,
-          path: uri.pathname,
-          query: uri.search
+        try {
+            let uri = new URL(url);
+            console.log(uri);
+            return {
+                protocol: uri.protocol.split(':')[0],
+                domain: uri.hostname,
+                port: uri.port,
+                path: uri.pathname,
+                query: uri.search
+            }
+        } catch(error) {
+            return false;
         }
     }
 
