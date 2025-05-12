@@ -571,11 +571,11 @@ class NetworkManager {
 				type: "custom",
 				server1: {
 					address: "https://dns-one.webxplus.org/domain/{domain}/{tld}",
-					timeout: 30000
+					timeout: 15000
 				},
 				server2: {
 					address: "https://dns-two.webxplus.org/domain/{domain}/{tld}",
-					timeout: 30000
+					timeout: 15000
 				},
 				headers: {
 					key: "value",
@@ -608,14 +608,16 @@ class NetworkManager {
                     const timeout = this.third_party[purl.protocol].server1.timeout;
                     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-                    fetch(this.third_party[purl.protocol].server1.address.replace('{domain}', purl.domain.split('.')[0]).replace('{tld}', purl.domain.split('.')[1], {
+                    fetch(this.third_party[purl.protocol].server1.address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
                         signal: controller.signal
-                    }))
+                    })
                         .then(response => response.json())
                         .then(data => console.log(data))
                         .catch(err => {
                             if (err.name === 'AbortError') {
                                 console.log('Request timed out');
+
+                                // use server2 instead, if server2 also times out log error 
                             } else {
                                 console.error(err);
                             }
