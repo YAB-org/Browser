@@ -1,0 +1,31 @@
+<citron>
+    <export sample="tab">
+        <var var="id"></var>
+        <var var="title"></var>
+    </export>
+    <export sample="tab_focused">
+        <var var="id"></var>
+        <var var="title"></var>
+    </export>
+
+    <sample name="tab">
+       <tab class="tab tab_animation tab-disabled" data-aos="fade-up" id="{ id }">
+            <div class="tab_left">
+                <div class="tab_icon"><svg viewBox="25 25 50 50" class="tab_spinner"><circle r="20" cy="50" cx="50" class="tab_spinner_circle"></circle></svg></div>
+                <div class="tab_text">{ title }</div>
+            </div>
+            <div class="tab_close_container"><svg aria-hidden="true" role="img" width="12" height="12" viewBox="0 0 12 12"><polygon fill-rule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"></polygon></svg></div>
+            
+        </tab>
+    </sample>
+    <sample name="tab_focused">
+       <tab class="tab tab_animation" data-aos="fade-up" id="{ id }">
+            <div class="tab_left">
+                <div class="tab_icon"></div>
+                <div class="tab_text">{ title }</div>
+            </div>
+            <div class="tab_close_container"><svg aria-hidden="true" role="img" width="12" height="12" viewBox="0 0 12 12"><polygon fill-rule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"></polygon></svg></div>
+            
+        </tab>
+    </sample>
+</citron>

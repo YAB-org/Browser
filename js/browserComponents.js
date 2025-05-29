@@ -607,18 +607,38 @@ class NetworkManager {
                     const controller = new AbortController();
                     const timeout = this.third_party[purl.protocol].server1.timeout;
                     const timeoutId = setTimeout(() => controller.abort(), timeout);
-
+                    
                     fetch(this.third_party[purl.protocol].server1.address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
-                        signal: controller.signal
+                        signal: controller.signal,
+                        headers: this.third_party[purl.protocol].headers // attach headers if there are any
                     })
                         .then(response => response.json())
                         .then(data => console.log(data))
                         .catch(err => {
                             if (err.name === 'AbortError') {
-                                console.log('Request timed out');
+                                console.log('Server 1 timed out');
 
-                                // use server2 instead, if server2 also times out log error 
+                                const controller = new AbortController();
+                                const timeout = this.third_party[purl.protocol].server2.timeout;
+                                const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+                                fetch(this.third_party[purl.protocol].server2.address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
+                                    signal: controller.signal,
+                                    headers: this.third_party[purl.protocol].headers // headers
+                                })
+                                    .then(response => response.json())
+                                    .then(data => console.log(data))
+                                    .catch(err => {
+                                        if (err.name === 'AbortError') {
+                                            console.log('Server 2 timed out');
+
+                                        } else {
+                                            console.error(err);
+                                        }
+                                    })
+                                    .finally(() => clearTimeout(timeoutId));
                             } else {
+                                console.log("bro really errored")
                                 console.error(err);
                             }
                         })
