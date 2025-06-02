@@ -1,0 +1,8 @@
+<citron>
+    <export sample="webview">
+        <var var="id"></var>
+    </export>
+    <sample name="webview">
+        <iframe class="web_view web_view-hidden" id="{ id }" src=""></iframe>
+    </sample>
+</citron>

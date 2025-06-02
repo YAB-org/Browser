@@ -9,8 +9,8 @@ export class Browser {
         this.ProcessManager = new ProcessManager();
         this.WebView = new WebView('web_display');
         this.NetworkManager = new NetworkManager(this.WebView);
-        this.TabManager = new TabManager('tab_sortable', 9999, this.ProcessManager, this.WebView, this.terminateBrowserInstance_safe, this.NetworkManager);
-        this.LayoutManager = new LayoutManager(this.TabManager);
+        this.BrowserController = new BrowserController('tab_sortable', 9999, this.ProcessManager, this.WebView, this.terminateBrowserInstance_safe, this.NetworkManager);
+        this.LayoutManager = new LayoutManager(this.BrowserController);
         
 
     }
@@ -19,7 +19,7 @@ export class Browser {
         try {
             this.ProcessManager.init();
             this.LayoutManager.init();
-            this.TabManager.init();
+            this.BrowserController.init();
             //this.NetworkManager.init();
         } catch (error) {
             console.error("BrowserInstance failed to start up: " + error);
@@ -175,7 +175,7 @@ class ProcessManager {
 
 }
 
-class TabManager {
+class BrowserController {
     constructor(target_id, max, engineInstance, webView, terminateBrowser, NetworkManager) {
         this.ready = false;
         this.targetDiv = target_id;
@@ -198,7 +198,7 @@ class TabManager {
 
     init() {
         if (!document.getElementById(this.targetDiv)) {
-            console.error('[TabManager][FATAL]: Cannot initialize. Target Tab Container "' + this.targetDiv + '" does not exist.');
+            console.error('[BrowserController][FATAL]: Cannot initialize. Target Tab Container "' + this.targetDiv + '" does not exist.');
             throw new Error();
         } else {
             this.ready = true;
@@ -278,7 +278,7 @@ class TabManager {
 
     async spawnTab(title, focused = false, options) {
         if (this.ready !== true) {
-            console.error('[TabManager][ERROR]: TabManager is not ready yet.');
+            console.error('[BrowserController][ERROR]: BrowserController is not ready yet.');
         } else {
 
             if (this.currentAmount < this.maxTabAmount) {
@@ -306,7 +306,7 @@ class TabManager {
                 const newTab = this.createTabSkeleton(title, pid, focused);
                 console.log(newTab);
                 if (focused === true) {
-                    document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
+                    document.querySelectorAll('.tab:not(.tab_disabled)').forEach(tab => tab.classList.add('tab_disabled'));
 
                 };
                 document.getElementById(this.targetDiv).appendChild(newTab);
@@ -335,7 +335,7 @@ class TabManager {
 
     terminateTab(pid) {
         if (this.ready !== true) {
-            console.error('[TabManager][ERROR]: TabManager is not ready yet.');
+            console.error('[BrowserController][ERROR]: BrowserController is not ready yet.');
         } else {
             // TODO: Handle closing a focused tab
             // Find and remove tab entry
@@ -369,7 +369,7 @@ class TabManager {
             let tabtodel = document.getElementById(pid)
 
 
-            tabtodel.classList.add('tab_animation-close');
+            tabtodel.classList.add('tab_animation_close');
             tabtodel.style.minWidth = "0px";
             tabtodel.addEventListener('animationend', () => {
                 tabtodel.remove();
@@ -399,8 +399,8 @@ class TabManager {
 		//this.tabs[this.currentTab].addressBar = this.address_bar.value;
         this.currentTab = pid;
         this.WebView.focusWebView(pid);
-        document.querySelectorAll('.tab:not(.tab-disabled)').forEach(tab => tab.classList.add('tab-disabled'));
-        document.getElementById(pid).classList.remove('tab-disabled');
+        document.querySelectorAll('.tab:not(.tab_disabled)').forEach(tab => tab.classList.add('tab_disabled'));
+        document.getElementById(pid).classList.remove('tab_disabled');
 		this.address_bar.value = this.tabs[pid].addressBar;
 		this.address_highlight_update();
         if (!this.tabs[pid].hiddenProtocol) {
@@ -529,8 +529,8 @@ class WebView {
     focusWebView(pid) {
         this.targetDiv
             .querySelectorAll('.web_view')
-            .forEach(iframe => iframe.classList.add('web_view-hidden'));
-        this.targetDiv.querySelector("#_" + pid).classList.remove('web_view-hidden');
+            .forEach(iframe => iframe.classList.add('web_view_hidden'));
+        this.targetDiv.querySelector("#_" + pid).classList.remove('web_view_hidden');
     }
 
     async setHtml(pid, html) {

@@ -34,7 +34,7 @@ html, body {
   border-bottom: 2px solid #52585D;
 }
 
-.toolbar-icon {
+.toolbar_icon {
   color: #52585D;
   width: 26px;
   height: 26px;
@@ -43,17 +43,17 @@ html, body {
   display: flex;
 }
 
-.toolbar-icon_enabled {
+.toolbar_icon_enabled {
   color: #8F969C;
   cursor: pointer;
   transition: 0.25s;
 }
-.toolbar-icon_enabled:hover {
+.toolbar_icon_enabled:hover {
   color: #bfc9d1;
   transform: scale(1.08);
 }
 
-.toolbar-icon_enabled:active {
+.toolbar_icon_enabled:active {
   transform: scale(0.9);
   transition: 0.1s;
 }
@@ -115,7 +115,7 @@ html, body {
   animation: expandOnce 400ms ease-out forwards;
 }
 
-.tab_animation-close {
+.tab_animation_close {
   animation: shrinkOnce 200ms ease-out forwards;
   padding: 0 !important;
 }
@@ -147,7 +147,7 @@ html, body {
   border-top-right-radius: 7px;
 }
 
-.tab-disabled {
+.tab_disabled {
   background: var(--bg-tab-disabled);
   border: none;
 }
@@ -163,7 +163,7 @@ html, body {
   margin-right: 20px;
 }
 
-.tab-disabled .tab_text {
+.tab_disabled .tab_text {
   color: var(--tab-text-color-disabled);
 }
 
@@ -210,10 +210,10 @@ html, body {
 
 /* Hide when tab is small AND disabled */
 @container (max-width: 40px) {
-  .tab.tab-disabled .tab_close_container {
+  .tab.tab_disabled .tab_close_container {
       display: none;
   }
-  .tab:not(.tab-disabled) .tab_left {
+  .tab:not(.tab_disabled) .tab_left {
     display: none;
   }
   .tab_text {
@@ -348,12 +348,12 @@ html, body {
   background: #292f35;
 }
 
-.toolbar-icon-sidebar {
+.toolbar_icon_sidebar {
   width: 28px;
   height: 28px;
 }
 
-.toolbar-icon-home {
+.toolbar_icon_home {
   width: 24px;
   height: 24px;
   margin-left: 10px;
@@ -361,27 +361,27 @@ html, body {
   margin-bottom: 2px;
 }
 
-.toolbar-icon-historyback {
+.toolbar_icon_historyback {
   width: 24px;
   height: 24px;
 }
 
-.toolbar-icon-historyforward {
+.toolbar_icon_historyforward {
   width: 24px;
   height: 24px;
   margin-left: -12px;
 }
 
-.toolbar-icon-downloads {
+.toolbar_icon_downloads {
   width: 32px;
   height: 32px;
 }
-.toolbar-icon-options {
+.toolbar_icon_options {
   width: 32px;
   height: 32px;
 }
 
-.searchbar-icon {
+.searchbar_icon {
   color: #52585D;
   width: 34px;
   height: 32px;
@@ -430,7 +430,7 @@ html, body {
   outline: none;
   border: none;
 }
-.web_view-hidden {
+.web_view_hidden {
   display: none;
 }
 

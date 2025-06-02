@@ -1,0 +1,135 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Wizard</title>
+</head>
+<body>
+    <style>
+        html {
+            -webkit-app-region: drag;
+        }
+        body {
+            width: 100%;
+            margin: 0px;
+            height: 100%;
+            font-family: Arial;
+        }
+        .app {
+            background: white;
+            border-radius: 36px;
+            padding-top: 26px;
+            padding-bottom: 26px;
+            padding-right: 30px;
+            padding-left: 30px;
+            gap: 29px;
+            height: -webkit-fill-available;
+            width: -webkit-fill-available;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .icon {
+            width: 51px;
+            height: auto;
+        }
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+        .text {
+            font-size: 27px;
+            font-weight: 800;
+            color: #210e0e;
+        }
+        .banner {
+            width: auto;
+            height: 100%;
+        }
+        .desc {
+            color: #7C7C7C;
+            font-size: 15px;
+        }
+        .desc-special {
+            color: #333333;
+            font-weight: bold;
+        }
+        .text-side {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .loading-text {
+            color: #656565;
+            font-size: 16px;
+        }
+        .loading-info {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            align-items: center;
+        }
+        .footer {
+            color: #C8C8C8;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        .text-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 33px;
+        }
+        .text-top {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .loading-icon {
+            width: 10px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 3px solid;
+            border-color: #656565 #0000;
+            animation: l1 1s infinite;
+        }
+        @keyframes l1 {to{transform: rotate(.5turn)}}
+    </style>
+    <div class="app" id="app">
+        <div class="text-side">
+            <div class="text-top">
+                <div class="branding">
+                    <div><img class="icon" src="../branding/yab_branding_icon.png" alt="" srcset=""></div>
+                    <div class="text">YAB Browser</div>
+                </div>
+                <div class="desc">
+                    YAB is a modern browser designed for the buss:// protocol by WebX+. Lightweight yet powerful, YAB offers a sleek and stable environment for exploring the buss web and now even third party protocols!
+                    <br><br>
+                    With full support for the latest WebX+ features, YAB makes experimentation easy and enjoyable. Each tab runs in its own dedicated process, ensuring that a misbehaving site won’t crash your entire browser—just close the tab directly from the taskmanager and keep going.
+                    <br><br>
+                    YAB also includes an extended, browser-specific API that builds on the core WebX+ system, enabling developers to push the boundaries of what’s possible on this new web.
+                    <br><br>
+                    <span class="desc-special">
+                        Get ready to browse differently.<br>Get ready for YAB.
+                    </span>
+                </div>
+            </div>
+            <div class="text-bottom">
+                <div class="loading-info">
+                    <div class="loading-icon"></div>
+                    <div class="loading-text">Checking for updates...</div>
+                </div>
+                <div class="footer">
+                    <div class="copyright">yab-org <b>CC BY-NC-SA</b></div>
+                    <div class="version">YAB v0.0.0</div>
+                </div>
+            </div>
+        </div>
+        <div class="banner-side">
+            <img class="banner" src="../branding/yab_branding_banner.png" alt="" srcset="">
+        </div>
+    </div>
+</body>
+</html>

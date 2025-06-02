@@ -7,6 +7,20 @@ const childProcess = require('child_process');
 Menu.setApplicationMenu(null);
 
 // Create browser window
+
+function createSplashWindow() {
+	let splashWindow = new BrowserWindow({
+		width: 880,
+		height: 560,
+		frame: false,
+		//alwaysOnTop: true,
+		transparent: true,
+		resizable: false
+  });
+  splashWindow.loadFile("pages/splash.html");
+  //splashWindow.openDevTools()
+}
+
 function createWindow() {
 	// Check if first use
 	let first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
@@ -62,6 +76,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+
+	createSplashWindow()
 	ipcMain.on('window-action', (event, data) => {
 		let win = BrowserWindow.fromWebContents(event.sender);
 		if (!win) return;

@@ -13,9 +13,11 @@
     <link rel="stylesheet" href="https://codemirror.net/5/theme/ayu-mirage.css">
     <!-- Citron -->
     <c-import src="../citronjs/navigation.xml"></c-import>
-    <c-import src="../citronjs/browser_elements.xml"></c-import>
     <c-import src="../citronjs/yab.xml"></c-import>
     <c-import src="../citronjs/titlebar.xml"></c-import>
+    <c-import src="../citronjs/webview.xml"></c-import>
+    <c-import src="../citronjs/toolbar.xml"></c-import>
+    <c-import src="../citronjs/favicons.xml"></c-import>
     <!-- Scripts -->
     <script src="../citronjs/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
@@ -54,13 +56,13 @@
       </div>
       <div class="main_screen">
         <div class="toolbar">
-          <div class="toolbar-icon toolbar-icon-sidebar"><sample name="toolbar-icon-sidebar"></sample></div>
-          <div class="toolbar-icon toolbar-icon-home toolbar-icon_enabled"><sample name="toolbar-icon-home"></sample></div>
-          <div class="toolbar-icon toolbar-icon-historyback"><sample name="toolbar-icon-historyback"></sample></div>
-          <div class="toolbar-icon toolbar-icon-historyforward"><sample name="toolbar-icon-historyforward"></sample></div>
+          <div class="toolbar_icon toolbar_icon-sidebar"><sample name="toolbar_icon-sidebar"></sample></div>
+          <div class="toolbar_icon toolbar_icon-home toolbar_icon_enabled"><sample name="toolbar_icon-home"></sample></div>
+          <div class="toolbar_icon toolbar_icon-historyback"><sample name="toolbar_icon-historyback"></sample></div>
+          <div class="toolbar_icon toolbar_icon-historyforward"><sample name="toolbar_icon-historyforward"></sample></div>
           <div class="progress_bar_container">
             <div class="toolbar_searchbar_components">
-              <div class="searchbar-encryption searchbar-icon"><sample name="searchbar-icon-encryption"></sample></div>
+              <div class="searchbar-encryption searchbar_icon"><sample name="searchbar_icon-encryption"></sample></div>
               <div class="toolbar_searchbar_container">
                 <input id="toolbar_searchbar" class="toolbar_searchbar">
                 <div id="searchbar_highlight" class="searchbar_highlight"></div>
@@ -68,8 +70,8 @@
             </div>
             <div class="progress_bar"></div>
           </div>
-          <div class="toolbar-icon toolbar-icon-downloads"><sample name="toolbar-icon-downloads"></sample></div>
-          <div class="toolbar-icon toolbar-icon-options toolbar-icon_enabled" id="toolbar_icon_options"><sample name="toolbar-icon-options"></sample></div>
+          <div class="toolbar_icon toolbar_icon-downloads"><sample name="toolbar_icon-downloads"></sample></div>
+          <div class="toolbar_icon toolbar_icon-options toolbar_icon_enabled" id="toolbar_icon_options"><sample name="toolbar_icon-options"></sample></div>
         </div>
         <div class="display_section">
           <div id="web_display" class="web_display">
