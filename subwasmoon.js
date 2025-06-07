@@ -9,7 +9,7 @@ const {
 const dom = new JSDOM(`<!DOCTYPE html>
 <html>
 <body>
-  <div class="hi">Initial Text</div>
+  <div class="hi" div="id">Initial Text</div>
   <a class="link" href="https://example.com">Example</a>
 </body>
 </html>`);
@@ -77,6 +77,8 @@ function legacy_get(selector, all) {
           el.addEventListener('click', () => {
               callback().catch(console.error);
           });
+          console.log("CLICKIIIING!")
+          el.click();
       },
       on_input: (callback) => {
           el.addEventListener('keyup', () => {
@@ -143,6 +145,12 @@ class LuaRunner {
       if (api === "legacy") {
           lua.global.set("get", legacy_get);
           lua.global.set("fetch", legacy_fetch)
+          lua.global.set("Promise", {
+  create: (executor) => new Promise(executor),
+  resolve: (val) => Promise.resolve(val),
+  reject: (err) => Promise.reject(err),
+  all: (list) => Promise.all(list)
+});
           lua.global.set("window", deepFreeze({
               browser: "bussinga",
               true_browser: "yab"
@@ -232,6 +240,38 @@ end
   const runner = new LuaRunner();
 
   const legacyCode = `
+
+
+  function async(callback)
+    return function(...)
+        local co = coroutine.create(callback)
+        local safe, result = coroutine.resume(co, ...)
+
+        return Promise.create(function(resolve, reject)
+            local checkresult
+            local step = function()
+                if coroutine.status(co) == "dead" then
+                    local send = safe and resolve or reject
+                    return send(result)
+                end
+
+                safe, result = coroutine.resume(co)
+                checkresult()
+            end
+
+            checkresult = function()
+                if safe and result == Promise.resolve(result) then
+                    result:finally(step)
+                else
+                    step()
+                end
+            end
+
+            checkresult()
+        end)
+    end
+end
+
 local item = get("hi")
   if item == nil then
     print("Element 'hi' not found!")
@@ -250,12 +290,15 @@ local item = get("hi")
     print("Updated href:", link.get_href())
   end
 
-  local response = fech({
+  print("hello there from lua")
+  get('hi').on_click(async(function()
+ local response = fetch({
     url = "https://dummyjson.com/test",
     method = "GET",
     headers = { ["Content-Type"] = "application/json" }
   })
-  print("Fetched response:", response)
+  print("Fetched async response with js callback:", response)
+end))
 `;
 
   // Run Lua code

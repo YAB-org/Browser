@@ -1,3 +1,7 @@
+import * as CssP from './parsers/css.js'
+import * as HTMLP from './parsers/html.js'
+
+
 import '../media/main/theme_ace_dark.js'
 
 ace.config.setModuleUrl("ace/mode/htmlpp", 
@@ -241,6 +245,7 @@ class BrowserController {
             this.input.addEventListener('keydown', (event) => {
                 if (event.key === "Enter") {
                     console.log("enter key pressed")
+                    this.input.blur();
                     this.TravelTo(this.currentTab, this.address_bar.value)
                 }
             })
@@ -472,9 +477,10 @@ class BrowserController {
         console.log("checking this")
 
         const res = await this.NetworkManager.fetch(target, pid);
-        if (!res) {
+        if (res == "error-abort") {
             // its not a valid url, make it a search instead
         }
+
         if (this.NetworkManager.native.hasOwnProperty(this.NetworkManager.URLToObject(target).protocol)) {
             console.log("hi2")
             this.tabs[pid].hiddenProtocol = false;
@@ -547,6 +553,24 @@ class WebView {
 }
 
 
+class User {
+    constructor() {}
+
+    getSettings(setting=undefined) {
+        if (undefined) {
+            // get the entire json file
+        } else {
+            // get specific property
+
+        }
+    }
+
+    setSettings() {
+           
+    }
+}
+
+
 class NetworkManager {
 	constructor(webview) {
         this.webview = webview;
@@ -561,8 +585,16 @@ class NetworkManager {
                     error: {
                         html: "native_error"
                     }
-				
-			}
+		    },
+            localhost: {
+
+            },
+            http: {
+
+            },
+            https: {
+
+            }
 		}
 
 		this.third_party = {
@@ -571,11 +603,11 @@ class NetworkManager {
 				type: "custom",
 				server1: {
 					address: "https://dns-one.webxplus.org/domain/{domain}/{tld}",
-					timeout: 15000
+					timeout: 10000
 				},
 				server2: {
 					address: "https://dns-two.webxplus.org/domain/{domain}/{tld}",
-					timeout: 15000
+					timeout: 10000
 				},
 				headers: {
 					key: "value",
@@ -588,64 +620,95 @@ class NetworkManager {
 
     fetch(url, pid) {
         const purl = this.URLToObject(url);
+        console.log(purl)
         if(!purl) {
             return false; // its not a domain, make it a search instead
         } else {
-            if (purl.protocol == "http") {
+            if (purl.protocol == "localhost") {
                 // localhost
     
+            } else if (purl.protocol == "http" || purl.protocol == "https") {
+                // not allow to make fetch
+
             } else if (this.native.hasOwnProperty(purl.protocol)) {
                 if (this.native[purl.protocol].hasOwnProperty(purl.domain)) {
                     this.webview.setHtml(pid, CitronJS.getContent(this.native[purl.protocol][purl.domain].html))
                 }
-    
-                
+
             } else if (this.third_party.hasOwnProperty(purl.protocol)) {
                 // buss:// or other
                 if (this.third_party.hasOwnProperty(purl.protocol)) {
+                     const _this = this;
+                    AbortFetch();
+
+                    function AbortFetch(server="server1") {
+                        const controller = new AbortController();
+                        const timeout = _this.third_party[purl.protocol][server].timeout;
+                        const timeoutId = setTimeout(() => controller.abort(), timeout);
                     
-                    const controller = new AbortController();
-                    const timeout = this.third_party[purl.protocol].server1.timeout;
-                    const timeoutId = setTimeout(() => controller.abort(), timeout);
-                    
-                    fetch(this.third_party[purl.protocol].server1.address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
-                        signal: controller.signal,
-                        headers: this.third_party[purl.protocol].headers // attach headers if there are any
-                    })
+                        fetch(_this.third_party[purl.protocol][server].address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
+                                signal: controller.signal,
+                                headers: _this.third_party[purl.protocol].headers
+                        })
                         .then(response => response.json())
-                        .then(data => console.log(data))
+                        .then(data => {
+                            try {
+                                fetch(data.ip.replace(/\/$/, '') + purl.path + purl.query)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        return { error:"response.notok" }
+                                    }
+                                    else {
+                                        const mime = response.headers.get('content-type');
+                                        if (mime.includes('text/html')) {
+                                            // display website, aka get its content, run lua
+                                        } else if (mime.includes('video/')) {
+                                            // display video player for compatible formats, else download and close close tab
+                                            if (mime == "video/mp4" || mime == "video/webm" || mime == "video/ogg") {
+                                                // we can try detecting if the os supports it, but its usually responses like "probably" or "maybe" lol, dont think its worth it
+                                            } else {
+
+                                            }
+                                        } else if (mime.includes('image/')) {
+                                            // display image player for compatible formats, else download and close close tab
+                                            if ( mime === "image/png" || mime === "image/jpeg" || mime === "image/webp" || mime === "image/gif" || mime === "image/avif" || mime === "image/bmp" || mime === "image/svg+xml" || mime === "image/x-icon" ) {
+
+                                            } else {
+                                                
+                                            }
+                                        } else if (mime.includes('application/')) {
+                                            // format json, else display as text for compatible formats, else download and close close tab
+                                        } else if (mime.includes('audio/')) {
+                                            // display audio player for compatible formats, else download and close tab
+                                        } else if (mime.includes('text/')) {
+                                            // display as text
+                                        } else {
+                                            // download the file and close tab
+                                        }
+                                    }
+                                })
+                            } catch(err) {
+                                return { error:"error.unknown", message:err }
+                            }
+
+                        })
                         .catch(err => {
                             if (err.name === 'AbortError') {
-                                console.log('Server 1 timed out');
+                                if (server == "server1") {
+                                    AbortFetch("server2");
+                                } else {
+                                    return { error:"error.abort", data:purl.protocol }
+                                }
 
-                                const controller = new AbortController();
-                                const timeout = this.third_party[purl.protocol].server2.timeout;
-                                const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-                                fetch(this.third_party[purl.protocol].server2.address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
-                                    signal: controller.signal,
-                                    headers: this.third_party[purl.protocol].headers // headers
-                                })
-                                    .then(response => response.json())
-                                    .then(data => console.log(data))
-                                    .catch(err => {
-                                        if (err.name === 'AbortError') {
-                                            console.log('Server 2 timed out');
-
-                                        } else {
-                                            console.error(err);
-                                        }
-                                    })
-                                    .finally(() => clearTimeout(timeoutId));
                             } else {
-                                console.log("bro really errored")
-                                console.error(err);
+                                return { error:"error.unknown", message:err }
                             }
                         })
                         .finally(() => clearTimeout(timeoutId));
+                    }
                 }
             } else {
-                // error no protocol
+                return { error:"error.unknown-protocol" }
             }
         }
 

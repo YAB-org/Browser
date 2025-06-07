@@ -1,27 +1,31 @@
 const {app, BrowserWindow, ipcMain, Menu, screen, utilityProcess} = require('electron');
+const { autoUpdater } = require("electron-updater");
 const path = require('node:path');
 const fs = require('node:fs');
 const userDataPath = app.getPath("userData");
 const childProcess = require('child_process');
+
+
 // Remove menu bar
 Menu.setApplicationMenu(null);
 
 // Create browser window
 
+let splashWindow;
+
 function createSplashWindow() {
-	let splashWindow = new BrowserWindow({
+	splashWindow = new BrowserWindow({
 		width: 880,
 		height: 560,
 		frame: false,
-		//alwaysOnTop: true,
 		transparent: true,
-		resizable: false
+		resizable: false,
+		//alwaysOnTop: true
   });
   splashWindow.loadFile("pages/splash.html");
-  //splashWindow.openDevTools()
 }
 
-function createWindow() {
+function createBrowserWindow() {
 	// Check if first use
 	let first_use = !fs.existsSync(path.join(userDataPath, 'user-data.json'));
 	first_use = false;
@@ -45,7 +49,6 @@ function createWindow() {
 	})
 
 	if (!first_use) win.maximize();
-  // Doesn't seem to work
 	// TODO: Remove traffic lights in macos
 	//win.setWindowButtonVisibility(false)
 
@@ -78,6 +81,31 @@ function createWindow() {
 app.whenReady().then(() => {
 
 	createSplashWindow()
+	autoUpdater.checkForUpdates();
+	setTimeout(() => {
+		splashWindow.hide();
+		setTimeout(() => {
+			createBrowserWindow();
+			splashWindow.destroy();
+		}, 1000);
+	}, 3000);
+	
+	autoUpdater.on("checking-for-update", () => {
+		console.log("checking for updates");
+		splashWindow.destroy();
+		createBrowserWindow()
+  	});
+	autoUpdater.on("update-not-available", (info) => {
+		console.log("not available");
+		createBrowserWindow()
+	});
+
+	autoUpdater.on("error", (err) => {
+		//splashWindow.webContents.send("update-status", `Error: ${err.message}`);
+		console.log("error occurred", err.message)
+		createBrowserWindow()
+	});
+
 	ipcMain.on('window-action', (event, data) => {
 		let win = BrowserWindow.fromWebContents(event.sender);
 		if (!win) return;
@@ -107,7 +135,7 @@ app.whenReady().then(() => {
 		}
 	});
 
-	createWindow()
+	
 })
 
 app.on('window-all-closed', () => {
@@ -163,7 +191,8 @@ ipcMain.on('terminate-process', (event, pid) => {
 });
 
 ipcMain.on('kill-process', (event, pid) => {
-
+	const child = subprocesses[pid];
+	child.kill();
 });
 
 ipcMain.on('reset-process', (event, pid) => {

@@ -518,6 +518,7 @@ html, body {
   background: #ffffff85;
   padding: 3px;
   color: #202020;
+  z-index: 3;
 }
 
 
