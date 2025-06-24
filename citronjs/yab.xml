@@ -4,8 +4,11 @@
     <export sample="native_error"></export>
 
     <sample name="native_newtab">
-        <h1>This should appear on yab://newtab</h1>
-        <p>Native pages load so fast that the loading favicon is not visible. This will only work on real sites</p>
+        <input type="text" class="hi" placeholder="Search anything...">
+        <style>
+            body {     width: auto;     display: flex;     flex-direction: column;     align-items: center;     justify-content: center;     height: -webkit-fill-available;     background: #1B1F23; }
+            .hi {     width: 60%;     background: #35393E;     border: 1px solid #52585D;     font-size: 18;     padding: 12px;     border-radius: 5px;     color: #A9A9A9; }
+        </style>
     </sample>
     <sample name="native_settings">
         <h1>This should appear on yab://settings</h1>

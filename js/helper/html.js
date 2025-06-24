@@ -1,8 +1,30 @@
+export function objToString(obj) {
+  /** Turns any valid html++ obj into a string. */
+  if (Array.isArray(obj)) {
+    return obj.map(item => objToString(item)).join('');
+  }
+
+  const { name, attributes = {}, content = '' } = obj;
+
+  const attrs = Object.entries(attributes)
+    .map(([k, v]) => ` ${k}="${v}"`)
+    .join('');
+
+  let inner = '';
+  if (typeof content === 'string') {
+    inner = content;
+  } else if (Array.isArray(content)) {
+    inner = content.map(child => objToString(child)).join('');
+  }
+
+  return `<${name}${attrs}>${inner}</${name}>`;
+}
+
+
 export const nonTerminatingElements = ['hr','img','input','textarea','link','meta','script'];
 
-function subparse(content) {
+function htmlpToObjParser(content) {
   let tree = [];
-  // Go through string and parse
   for (let i = 0; i<content.length; i++) {
     let stack = [];
     let level = 0;
@@ -78,7 +100,7 @@ function subparse(content) {
 
       if (innerContent.trim()) {
         if (innerContent.includes('<')) {
-          temp.content = subparse(innerContent.trim());
+          temp.content = htmlpToObjParser(innerContent.trim());
         } else {
           temp.content = innerContent;
         }
@@ -90,7 +112,8 @@ function subparse(content) {
   return tree;
 }
 
-export function parse(content) {
+export function htmlpToObj(content) {
+  /** Turns html++ string into an object. */
   // Remove comments
   content = content.replaceAll(/<!--([^¬]|.)*?-->/g, '');
   // Handle ***INVALID*** html doctype
@@ -99,5 +122,42 @@ export function parse(content) {
     content = content.replaceAll(/<!DOCTYPE html>/gi, '');
   }
   // Parse
-  return subparse(content);
+  return htmlpToObjParser(content);
+}
+
+
+export function fragmentToString(fragment) {
+  /** Turns html fragments into an object. */
+  const container = document.createElement('div');
+  container.appendChild(fragment.cloneNode(true));
+  return container.innerHTML;
+}
+
+export function fixScripts(obj) {
+  for (const node of obj) {
+    if (node.name === "script") {
+      node.attributes.type = "text/plain";
+    }
+    if (Array.isArray(node.content)) {
+      fixScripts(node.content);
+    }
+  }
+  return obj;
+} 
+
+export function getScripts(obj) {
+  let scripts = [];
+  for (const node of obj) {
+    if (node.name === "script") {
+      scripts.push(node.attributes.src);
+    }
+    if (Array.isArray(node.content)) {
+      scripts.push(...getScripts(node.content));
+    }
+  }
+  return scripts;
+}
+
+export function normalizePaths(paths) {
+  
 }

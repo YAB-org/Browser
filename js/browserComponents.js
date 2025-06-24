@@ -1,6 +1,5 @@
 import * as CssP from './parsers/css.js'
-import * as HTMLP from './parsers/html.js'
-
+import * as Helper from './helper/html.js'
 
 import '../media/main/theme_ace_dark.js'
 
@@ -476,7 +475,7 @@ class BrowserController {
 
         console.log("checking this")
 
-        const res = await this.NetworkManager.fetch(target, pid);
+        const res = await this.NetworkManager.getAddress(target, pid);
         if (res == "error-abort") {
             // its not a valid url, make it a search instead
         }
@@ -540,17 +539,30 @@ class WebView {
     }
 
     async setHtml(pid, html) {
-        console.log("hello?")
         const iframe = this.targetDiv.querySelector('#_' + pid);
         //target.appendChild(html);
         iframe.onload = () => {
-            const target = iframe.contentDocument.querySelector('body');
-            target.appendChild(html);
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
 
+            /*const target = iframe.contentDocument.querySelector('body');
+            target.appendChild(html);*/
+            if (typeof html !== 'string') {
+                html = Helper.fragmentToString(html);
+            }
+            doc.open();
+            doc.write(html); 
+            doc.close();
           };
         iframe.contentDocument.location.reload();
     }
-}
+
+    fragmentToString(fragment) {
+        const container = document.createElement('div');
+        container.appendChild(fragment.cloneNode(true));
+        return container.innerHTML;
+    }
+
+} 
 
 
 class User {
@@ -572,146 +584,209 @@ class User {
 
 
 class NetworkManager {
-	constructor(webview) {
+    constructor(webview) {
         this.webview = webview;
-		this.native = {
-			yab: {
-					newtab: {
-						html: "native_newtab"
-					},
-					settings: {
-						html: "native_settings"
-					},
-                    error: {
-                        html: "native_error"
-                    }
-		    },
-            localhost: {
+        this.native = {
+            yab: {
+                source: this.protYab
+            },
+            https: {
 
             },
             http: {
 
             },
-            https: {
+            localhost: {
 
-            }
-		}
-
-		this.third_party = {
-			buss: {
-				primary: true,
-				type: "custom",
-				server1: {
-					address: "https://dns-one.webxplus.org/domain/{domain}/{tld}",
-					timeout: 10000
-				},
-				server2: {
-					address: "https://dns-two.webxplus.org/domain/{domain}/{tld}",
-					timeout: 10000
-				},
-				headers: {
-					key: "value",
-					key: "value"
-				}
-			}
-		}
-	}
-
-
-    fetch(url, pid) {
-        const purl = this.URLToObject(url);
-        console.log(purl)
-        if(!purl) {
-            return false; // its not a domain, make it a search instead
-        } else {
-            if (purl.protocol == "localhost") {
-                // localhost
-    
-            } else if (purl.protocol == "http" || purl.protocol == "https") {
-                // not allow to make fetch
-
-            } else if (this.native.hasOwnProperty(purl.protocol)) {
-                if (this.native[purl.protocol].hasOwnProperty(purl.domain)) {
-                    this.webview.setHtml(pid, CitronJS.getContent(this.native[purl.protocol][purl.domain].html))
-                }
-
-            } else if (this.third_party.hasOwnProperty(purl.protocol)) {
-                // buss:// or other
-                if (this.third_party.hasOwnProperty(purl.protocol)) {
-                     const _this = this;
-                    AbortFetch();
-
-                    function AbortFetch(server="server1") {
-                        const controller = new AbortController();
-                        const timeout = _this.third_party[purl.protocol][server].timeout;
-                        const timeoutId = setTimeout(() => controller.abort(), timeout);
-                    
-                        fetch(_this.third_party[purl.protocol][server].address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
-                                signal: controller.signal,
-                                headers: _this.third_party[purl.protocol].headers
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            try {
-                                fetch(data.ip.replace(/\/$/, '') + purl.path + purl.query)
-                                .then(response => {
-                                    if (!response.ok) {
-                                        return { error:"response.notok" }
-                                    }
-                                    else {
-                                        const mime = response.headers.get('content-type');
-                                        if (mime.includes('text/html')) {
-                                            // display website, aka get its content, run lua
-                                        } else if (mime.includes('video/')) {
-                                            // display video player for compatible formats, else download and close close tab
-                                            if (mime == "video/mp4" || mime == "video/webm" || mime == "video/ogg") {
-                                                // we can try detecting if the os supports it, but its usually responses like "probably" or "maybe" lol, dont think its worth it
-                                            } else {
-
-                                            }
-                                        } else if (mime.includes('image/')) {
-                                            // display image player for compatible formats, else download and close close tab
-                                            if ( mime === "image/png" || mime === "image/jpeg" || mime === "image/webp" || mime === "image/gif" || mime === "image/avif" || mime === "image/bmp" || mime === "image/svg+xml" || mime === "image/x-icon" ) {
-
-                                            } else {
-                                                
-                                            }
-                                        } else if (mime.includes('application/')) {
-                                            // format json, else display as text for compatible formats, else download and close close tab
-                                        } else if (mime.includes('audio/')) {
-                                            // display audio player for compatible formats, else download and close tab
-                                        } else if (mime.includes('text/')) {
-                                            // display as text
-                                        } else {
-                                            // download the file and close tab
-                                        }
-                                    }
-                                })
-                            } catch(err) {
-                                return { error:"error.unknown", message:err }
-                            }
-
-                        })
-                        .catch(err => {
-                            if (err.name === 'AbortError') {
-                                if (server == "server1") {
-                                    AbortFetch("server2");
-                                } else {
-                                    return { error:"error.abort", data:purl.protocol }
-                                }
-
-                            } else {
-                                return { error:"error.unknown", message:err }
-                            }
-                        })
-                        .finally(() => clearTimeout(timeoutId));
-                    }
-                }
-            } else {
-                return { error:"error.unknown-protocol" }
             }
         }
 
+        this.third_party = {
+            buss: {
+                primary: true,
+                type: "custom",
+                server1: {
+                    address: "https://dns-one.webxplus.org/domain/{domain}/{tld}",
+                    timeout: 10000
+                },
+                server2: {
+                    address: "https://dns-two.webxplus.org/domain/{domain}/{tld}",
+                    timeout: 10000
+                },
+                headers: {
+                    key: "value",
+                    key: "value"
+                }
+            }
+        }
+
+        this.dev_tools = {
+            tabid: {
+                console: [
+                    { type:"warning", message: "Hello World"}
+                ],
+                tree: {
+                    content: "html"
+                },
+                network: [
+                    { id: 0, name: "image.png", origin: "(self)", status: "--", size: "", time:"" }
+                ],
+                source: [
+                    { thread: "Main Thread", content: [
+                        { id: 0, status: "override/unavailable/notready/failed", content:"" }
+                    ]}
+                ],
+                storage: {},
+                process: {}
+            },
+        }
+
+        this.cache_duration = 7200;
+
+        this.cache = {
+            buss: {
+                "site.example": {
+                    "/main.lua": "content"
+                }
+            }
+        }
+
+        this.overrides = {
+            buss: {
+                "site.example": {
+                    "/main.lua": "content"
+                }
+            }
+        }
+    }
+
+    protYab = async(pid, purl) => {
+        console.log("hmm", purl)
+        if (purl.domain === "newtab") {
+            console.log(this)
+            this.webview.setHtml(pid, CitronJS.getContent('native_newtab'))
+            // here
+        }
+    }
+
+
+    spawnDevToolWindow (pid) {}
+    pushConsoleEntry (pid, type, message) {}
+    clearConsoleEntries (pid) {}
+
+    pushDevFetchRecord(pid, fetch) {}
+    updateDevFetchRecord(pid, FetchId, fetch) {}
+
+    setSourceRecord(pid, thread, content) {}
+    updateSourceRecord(pid, thread, id) {}
+
+
+    async getOriginServer(purl, server) {
+        const controller = new AbortController();
+        const timeout = this.third_party[purl.protocol][server].timeout;
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        console.log(purl)
+        return fetch(this.third_party[purl.protocol][server].address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
+                signal: controller.signal,
+                headers: this.third_party[purl.protocol].headers
+            })
+            .then(response => response.json())
+            .then(data => {
+                clearTimeout(timeoutId)
+
+                let recordEntry = null;
+
+                for (const record of data) {
+                    if (record.type === "WEB" && record.name === domain) {
+                        recordEntry = record;
+                        break;
+                    }
+                }
+                if (recordEntry) {
+                    return recordEntry.replace(/\/$/, '');
+                } else {
+                    return { error: "error.dns" }
+                }
+            })
+            .catch(err => {
+                if (err.name === 'AbortError') {
+                    clearTimeout(timeoutId)
+                    return { error: "error.abort" }
+                } else {
+                    clearTimeout(timeoutId)
+                    return { error: "error.unknown", data: err }
+                }
+            })
+            .finally(() => clearTimeout(timeoutId));
+    }
+
+    async getAddress(url, pid) {
+        const purl = this.URLToObject(url);
+        if (!purl) {
+            return { error: "error.noturl" }
+        } else {
+            if (this.native.hasOwnProperty(purl.protocol)) {
+                this.native[purl.protocol].source(pid, purl);
+
+            } else if (this.third_party.hasOwnProperty(purl.protocol)) { 
+                let res;
+                res = await this.getOriginServer(purl, "server1");
+                console.log(res)
+                if (res.error) {
+                    if (res.error == "error.abort") {
+                        res = this.getOriginServer(purl, "server2");
+                        if (res.error == "error.abort") {
+                            return { error: "error.abort" }
+
+                        } else if (res.error == "error.unknown") {
+                            return { error: "error.unknown", data: res.data }
+
+                        }
+                    } else if (res.error == "error.unknown") {
+                        return { error: "error.unknown", data: res.data }
+                    } else {
+                        return { error: "error.generic" }
+                    }
+                }
+
+                try {
+                    fetch(res + purl.path + purl.query)
+                        .then(response => {
+                            if (!response.ok) {
+                                return { error: "response.notok" }
+                            } else {
+                                const mime = response.headers.get('content-type');
+                                if (mime.includes('text/html')) {
+                                    response.text().then(htmlString => {
+                                        let obj = Helper.htmlpToObj(htmlString);
+                                        // obj = Helper.fixScripts(obj)
+                                        const scripts = Helper.getScripts(obj);
+
+                                        scripts = scripts.map((script) => {
+                                            try {
+                                                return new URL(script).href;
+                                            } catch (err) {
+                                                const bare = new URL(res).origin;
+                                                const temp = new URL(script, bare + purl.path);
+                                                return res.replace(/\/+$/, '') + '/' + temp.pathname.replace(/^\/+/, '');
+                                            }
+                                        })
+
+                                        this.webview.setHtml(obj)
+                                    })
+                                }
+                            }
+                        })
+
+                } catch (err) {
+
+                }
+
+
+            } else {
+
+            }
+        }
     }
 
     URLToObject(url) {
@@ -725,28 +800,28 @@ class NetworkManager {
                 path: uri.pathname,
                 query: uri.search
             }
-        } catch(error) {
+        } catch (error) {
             return false;
         }
     }
 
-	get(protocol, domain, tld, path) {
+    get(protocol, domain, tld, path) {
 
-		// prot://sub.main.tld/hi/bye?q=valuea%20valueb&other=2&sort=relevance#fragment
-		let example = {
-			protocol: "prot",
-			domain: "sub.main",
-			tld: "tld",
-			path: {
-				"segments": ["hi", "bye"],
-				"query": {
-				  "q": "valuea valueb",
-				  "other": "2",
-				  "sort": "relevance"
-				},
-				"fragment": "fragment"
-			}
-		}
-	}
+        // prot://sub.main.tld/hi/bye?q=valuea%20valueb&other=2&sort=relevance#fragment
+        let example = {
+            protocol: "prot",
+            domain: "sub.main",
+            tld: "tld",
+            path: {
+                "segments": ["hi", "bye"],
+                "query": {
+                    "q": "valuea valueb",
+                    "other": "2",
+                    "sort": "relevance"
+                },
+                "fragment": "fragment"
+            }
+        }
+    }
 
 }

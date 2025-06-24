@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+
 body {
-    background-color: var(--bg-page);
+  background-color: var(--bg-page);
 }
 
 html {
-    overflow: hidden;
-    font-family: "Inter", serif;
-    font-optical-sizing: auto;
+  overflow: hidden;
+  font-family: "Inter", serif;
+  font-optical-sizing: auto;
 }
 
 html, body {
@@ -26,16 +27,13 @@ html, body {
   background: var(--bg-toolbar);
   display: flex;
   align-items: center;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding: 8px 16px;
   gap: 10px;
-  border-bottom: 2px solid #52585D;
+  border-bottom: 2px solid var(--border-toolbar);
 }
 
 .toolbar_icon {
-  color: #52585D;
+  color: var(--toolbar-icon-color);
   width: 26px;
   height: 26px;
   align-items: center;
@@ -44,12 +42,13 @@ html, body {
 }
 
 .toolbar_icon_enabled {
-  color: #8F969C;
+  color: var(--toolbar-icon-enabled-color);
   cursor: pointer;
   transition: 0.25s;
 }
+
 .toolbar_icon_enabled:hover {
-  color: #bfc9d1;
+  color: var(--toolbar-icon-enabled-hover);
   transform: scale(1.08);
 }
 
@@ -57,6 +56,7 @@ html, body {
   transform: scale(0.9);
   transition: 0.1s;
 }
+
 .main_screen {
   display: flex;
   flex-direction: column;
@@ -68,11 +68,9 @@ html, body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  /* justify-content: flex-start; */
   padding-left: 8px;
   padding-top: 1px;
   gap: 10px;
-  overflow: hidden;
   overflow-x: auto;
 }
 
@@ -103,8 +101,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 0 5px;
   flex-shrink: 5;
   container-type: inline-size;
   border: 1px solid var(--tab-border-color);
@@ -194,7 +191,7 @@ html, body {
 }
 
 .tab_close_container:hover {
-  background: #73737324;
+  background: var(--tab-hover-bg);
   fill: var(--tab-close-hover-fill);
 }
 
@@ -203,15 +200,13 @@ html, body {
   fill: var(--tab-close-active-fill);
 }
 
-/* Always display the close container when needed */
 .tab .tab_close_container {
   display: flex;
 }
 
-/* Hide when tab is small AND disabled */
 @container (max-width: 40px) {
   .tab.tab_disabled .tab_close_container {
-      display: none;
+    display: none;
   }
   .tab:not(.tab_disabled) .tab_left {
     display: none;
@@ -220,8 +215,6 @@ html, body {
     display: none;
   }
 }
-
-/* favicon test */
 
 .tab_spinner {
   width: 18px;
@@ -265,39 +258,40 @@ html, body {
   -webkit-app-region: drag;
 }
 
-
-
 .toolbar_searchbar_container {
   position: relative;
   width: 100%;
 }
-.toolbar_searchbar_container .toolbar_searchbar, .toolbar_searchbar_container .searchbar_highlight {
+
+.toolbar_searchbar_container .toolbar_searchbar,
+.toolbar_searchbar_container .searchbar_highlight {
   font-family: "Inter";
   font-size: 15px;
   line-height: 1.5;
-  letter-spacing: normal;
   white-space: pre;
   padding: 2px;
   box-sizing: border-box;
   overflow: hidden;
   font-feature-settings: "calt" off;
 }
+
 .toolbar_searchbar_container .toolbar_searchbar {
   width: 100%;
-  caret-color: #7C7C7C;
+  caret-color: var(--searchbar-color);
   color: transparent;
   background: transparent;
 }
+
 .toolbar_searchbar_container .searchbar_highlight {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 31px;
   display: flex;
   align-items: center;
   pointer-events: none;
-  color: #A9A9A9;
+  color: var(--searchbar-highlight);
   z-index: 1;
 }
 
@@ -307,18 +301,15 @@ html, body {
   height: 31px;
 }
 
-/* Extra styling */
 .searchbar_proto {
-  color: #7C7C7C;
+  color: var(--searchbar-color);
 }
 .searchbar_port {
-  color: #dca86d;
+  color: var(--searchbar-port);
 }
 .searchbar_path {
-  color: #7C7C7C;
+  color: var(--searchbar-path);
 }
-
-
 
 .toolbar_searchbar:focus {
   border: none;
@@ -329,14 +320,15 @@ html, body {
   border: none;
 }
 
-.toolbar_searchbar_components:has(#toolbar_searchbar:focus) {
-  background: #292f35;
+.toolbar_searchbar_components:has(#toolbar_searchbar:focus),
+.toolbar_searchbar_components:hover {
+  background: var(--searchbar-focus-bg);
 }
 
 .toolbar_searchbar_components {
   width: 100%;
-  background: #1B1F23;
-  border: 2px solid #52585D;
+  background: var(--searchbar-bg);
+  border: 2px solid var(--border-toolbar);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -344,8 +336,14 @@ html, body {
   transition: 0.25s;
 }
 
-.toolbar_searchbar_components:hover {
-  background: #292f35;
+.toolbar_icon_sidebar,
+.toolbar_icon_home,
+.toolbar_icon_historyback,
+.toolbar_icon_historyforward,
+.toolbar_icon_downloads,
+.toolbar_icon_options {
+  width: 24px;
+  height: 24px;
 }
 
 .toolbar_icon_sidebar {
@@ -354,35 +352,15 @@ html, body {
 }
 
 .toolbar_icon_home {
-  width: 24px;
-  height: 24px;
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-bottom: 2px;
-}
-
-.toolbar_icon_historyback {
-  width: 24px;
-  height: 24px;
+  margin: 0 10px 2px;
 }
 
 .toolbar_icon_historyforward {
-  width: 24px;
-  height: 24px;
   margin-left: -12px;
 }
 
-.toolbar_icon_downloads {
-  width: 32px;
-  height: 32px;
-}
-.toolbar_icon_options {
-  width: 32px;
-  height: 32px;
-}
-
 .searchbar_icon {
-  color: #52585D;
+  color: var(--toolbar-icon-color);
   width: 34px;
   height: 32px;
   margin-top: -1px;
@@ -390,12 +368,12 @@ html, body {
 }
 
 .tab_button {
-  background: #2F3337;
-  border: none;
+  background: var(--tab-button-bg);
+  border: var(--tab-button-border);
   min-width: 23px;
   height: 23px;
   border-radius: 4px;
-  color: #6b6b6b;
+  color: var(--tab-button-color);
   font-size: 18px;
   transition: 0.25s;
   display: flex;
@@ -406,20 +384,21 @@ html, body {
 }
 
 .tab_button:hover {
-  background: #484e54;
+  background: var(--tab-button-hover-bg);
   transform: scale(1.08);
 }
+
 .tab_button:active {
   transform: scale(0.9);
   transition: 0.1s;
 }
-
 
 .web_display {
   position: relative;
   width: 100%;
   height: 100%;
 }
+
 .web_view {
   position: absolute;
   top: 0;
@@ -430,13 +409,14 @@ html, body {
   outline: none;
   border: none;
 }
+
 .web_view_hidden {
   display: none;
 }
 
 .devtools_editor {
   height: 100%;
-  width:  100%;
+  width: 100%;
 }
 
 .display_section {
@@ -451,7 +431,7 @@ html, body {
 }
 
 .gutter {
-  background-color: #323539;
+  background-color: var(--drag-space-bg);
   background-repeat: no-repeat;
   background-position: 50%;
 }
@@ -475,15 +455,14 @@ html, body {
 .dev_tools_menu {
   display: flex;
   justify-content: space-between;
-  background: #272A2D;
-  border-bottom: 2px solid #52585D;
-  display: flex;
+  background: var(--devtools-bg);
+  border-bottom: 2px solid var(--border-toolbar);
   align-items: center;
-  padding-left: 7px;
-  padding-right: 7px;
+  padding: 0 7px;
 }
+
 .dev_tools_elem {
-  color: #A7ADB2;
+  color: var(--tab-text-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -493,7 +472,7 @@ html, body {
 }
 
 .dev_tools_elem:hover {
-  background: #d9d9d91b;
+  background: var(--devtools-elem-hover-bg);
   border-radius: 5px;
 }
 
@@ -515,25 +494,15 @@ html, body {
   right: 0;
   top: 0;
   font-size: 13px;
-  background: #ffffff85;
+  background: var(--devtools-size-indicator-bg);
   padding: 3px;
-  color: #202020;
+  color: var(--devtools-size-indicator-color);
   z-index: 3;
 }
-
 
 .progress_bar_container {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.progress_bar {
-  background: rgb(0, 123, 255);
-  height: 2px;
-  width: 20%;
-  margin-top: -3px;
-  margin-left: 5px;
-  margin-right: 5px;
 }

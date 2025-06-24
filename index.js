@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu, screen, utilityProcess} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, screen, utilityProcess, session} = require('electron');
 const { autoUpdater } = require("electron-updater");
 const path = require('node:path');
 const fs = require('node:fs');
@@ -70,7 +70,23 @@ function createBrowserWindow() {
 	win.on('unmaximize', sendState);
   win.show();
 
+	session.defaultSession.on('will-download', async (event, item) => {
+		const fileName = item.getFilename();
+		const filePath = path.join(app.getPath('downloads'), fileName);
+		item.setSavePath(filePath);
 
+		const tempExt = path.extname(fileName);
+    	const tempPath = path.join(app.getPath('temp'), `temp_icon${tempExt}`);
+		try {
+			fs.writeFileSync(tempPath, '');
+			const icon = await app.getFileIcon(tempPath, { size:'large' });
+			// send icon to main
+			fs.unlinkSync(tempPath);
+		} catch (err) {
+			// cant get icon put a placeholder or nothing
+		}
+
+	})
   app.on('child-process-gone', (event, details) => {
 	console.log(`Child process of type ${details.type} with name ${details.name} and service name ${details.serviceName} has exited.`);
 	console.log(`Reason: ${details.reason}, Exit Code: ${details.exitCode}`);
