@@ -3,6 +3,6 @@
         <var var="id"></var>
     </export>
     <sample name="webview">
-        <iframe class="web_view web_view-hidden" id="{ id }" src=""></iframe>
+        <iframe class="web_view web_view-hidden" id="{ id }" srcdoc=""></iframe>
     </sample>
 </citron>

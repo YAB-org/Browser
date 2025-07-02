@@ -43,10 +43,8 @@ CitronJS.addEntry = function (file, src) {
         CitronJS.ObCache[exportSample.getAttribute('sample')] = entry;
         
     }
-    
-
 }
-
+ 
 CitronJS.handleImports = async function (src) {
     const response = await fetch(src);
     if (!response.ok) {

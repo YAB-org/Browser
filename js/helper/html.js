@@ -136,7 +136,7 @@ export function fragmentToString(fragment) {
 export function fixScripts(obj) {
   for (const node of obj) {
     if (node.name === "script") {
-      node.attributes.type = "text/plain";
+      // here
     }
     if (Array.isArray(node.content)) {
       fixScripts(node.content);
@@ -149,7 +149,10 @@ export function getScripts(obj) {
   let scripts = [];
   for (const node of obj) {
     if (node.name === "script") {
-      scripts.push(node.attributes.src);
+      scripts.push({
+        src: node.attributes.src,
+        api: node.attributes.api || "legacy"
+      });
     }
     if (Array.isArray(node.content)) {
       scripts.push(...getScripts(node.content));

@@ -224,3 +224,8 @@ ipcMain.on('reset-process', (event, pid) => {
 		console.log("Reset process " + pid + " with new tpid: " + new_child.pid) // Integer
 	})
 })
+
+ipcMain.on("execute-lua", (event, pid, lua, api) => {
+	console.log('Execute Lua for PID:', pid);
+  	console.log(`Lua Code: with api ${api}`, lua);
+})

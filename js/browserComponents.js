@@ -453,8 +453,8 @@ class BrowserController {
         });
 
         this.input.addEventListener("scroll", () => {
-            this.highlight.scrollTop = _this.input.scrollTop;
-            this.highlight.scrollLeft = _this.input.scrollLeft;
+            this.highlight.scrollTop = this.input.scrollTop;
+            this.highlight.scrollLeft = this.input.scrollLeft;
         });
     }
 
@@ -547,6 +547,7 @@ class WebView {
             /*const target = iframe.contentDocument.querySelector('body');
             target.appendChild(html);*/
             if (typeof html !== 'string') {
+                console.log(html)
                 html = Helper.fragmentToString(html);
             }
             doc.open();
@@ -554,12 +555,6 @@ class WebView {
             doc.close();
           };
         iframe.contentDocument.location.reload();
-    }
-
-    fragmentToString(fragment) {
-        const container = document.createElement('div');
-        container.appendChild(fragment.cloneNode(true));
-        return container.innerHTML;
     }
 
 } 
@@ -606,11 +601,11 @@ class NetworkManager {
                 primary: true,
                 type: "custom",
                 server1: {
-                    address: "https://dns-one.webxplus.org/domain/{domain}/{tld}",
+                    address: "https://dns-one.webxplus.org/v2/resolve/{domain}/{tld}",
                     timeout: 10000
                 },
                 server2: {
-                    address: "https://dns-two.webxplus.org/domain/{domain}/{tld}",
+                    address: "https://dns-one.webxplus.org/v2/resolve/{domain}/{tld}",
                     timeout: 10000
                 },
                 headers: {
@@ -696,14 +691,16 @@ class NetworkManager {
 
                 let recordEntry = null;
 
+                console.log("Debug #01", data)
                 for (const record of data) {
-                    if (record.type === "WEB" && record.name === domain) {
+                    if (record.type === "WEB" && record.name === purl.domain) {
                         recordEntry = record;
                         break;
                     }
                 }
                 if (recordEntry) {
-                    return recordEntry.replace(/\/$/, '');
+                    console.log("Debig #02", recordEntry)
+                    return recordEntry.value.replace(/\/$/, '');
                 } else {
                     return { error: "error.dns" }
                 }
@@ -731,7 +728,7 @@ class NetworkManager {
             } else if (this.third_party.hasOwnProperty(purl.protocol)) { 
                 let res;
                 res = await this.getOriginServer(purl, "server1");
-                console.log(res)
+                console.log("debug #00 res1:", res)
                 if (res.error) {
                     if (res.error == "error.abort") {
                         res = this.getOriginServer(purl, "server2");
@@ -760,19 +757,46 @@ class NetworkManager {
                                     response.text().then(htmlString => {
                                         let obj = Helper.htmlpToObj(htmlString);
                                         // obj = Helper.fixScripts(obj)
-                                        const scripts = Helper.getScripts(obj);
+                                        let scripts = Helper.getScripts(obj);
+                                    
+                                        console.log("scripts", scripts)
 
-                                        scripts = scripts.map((script) => {
-                                            try {
-                                                return new URL(script).href;
-                                            } catch (err) {
-                                                const bare = new URL(res).origin;
-                                                const temp = new URL(script, bare + purl.path);
-                                                return res.replace(/\/+$/, '') + '/' + temp.pathname.replace(/^\/+/, '');
+                                        this.webview.setHtml(pid, Helper.objToString(obj))
+
+                                        scripts = scripts.map(({ src, api }) => {
+                                        let href;
+                                        try {
+                                            // if src is already an absolute URL, this will succeed
+                                            href = new URL(src).href;
+                                        } catch (err) {
+                                            // otherwise build it relative to your base
+                                            const baseOrigin = new URL(res).origin;        // e.g. "https://example.com"
+                                            const temp = new URL(src, baseOrigin + purl.path);
+                                            // ensure we don't end up with duplicated slashes
+                                            href = res.replace(/\/+$/, '') + '/' + temp.pathname.replace(/^\/+/, '');
+                                        }
+                                        return { href, api };
+                                        });
+
+                                        for (const { href, api } of scripts) {
+                                        fetch(href)
+                                            .then(response => {
+                                            const contentType = response.headers.get('Content-Type') || '';
+                                            if (contentType.includes("text/plain") || contentType.includes("text/lua") || contentType.includes("text/x-lua") || contentType.includes("application/lua") ||  contentType.includes("application/x-lua")) {
+                                                return response.text();
+                                            } else {
+                                                return null;
                                             }
-                                        })
+                                            })
+                                            .then(code => {
+                                            if (code !== null) {
+                                                process.executeLua(pid, code, api);
+                                            }
+                                            });
+                                        }
 
-                                        this.webview.setHtml(obj)
+                                        console.log("Debug #04", scripts);
+
                                     })
                                 }
                             }

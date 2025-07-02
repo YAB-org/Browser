@@ -35,7 +35,9 @@ contextBridge.exposeInMainWorld('process', {
   },
   terminate: (pid) => ipcRenderer.send('terminate-process', pid),
   kill: (pid) => ipcRenderer.send('kill-process', pid),
-  resetProcess: (pid) => ipcRenderer.send('reset-process', pid)
+  resetProcess: (pid) => ipcRenderer.send('reset-process', pid),
+
+  executeLua: (pid, lua, api) => ipcRenderer.send('execute-lua', pid, lua, api),
 });
 
 // Main -> Renderer
