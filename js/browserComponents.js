@@ -57,7 +57,7 @@ class LayoutManager {
         
 
 
-        const editor = ace.edit("editor");
+        /*const editor = ace.edit("editor");
         window.editor = editor;
         editor.setTheme("ace/theme/yab-dark")
         editor.session.setMode("ace/mode/htmlpp");
@@ -68,7 +68,7 @@ class LayoutManager {
             behavioursEnabled: true,
             wrapBehavioursEnabled: true,
             showPrintMargin: false
-        });
+        });*/
 
 
         // the following is only for html++, should be removed or disabled for other languages
@@ -620,16 +620,15 @@ class NetworkManager {
                 console: [
                     { type:"warning", message: "Hello World"}
                 ],
-                tree: {
-                    content: "html"
-                },
+                tree: "html",
                 network: [
                     { id: 0, name: "image.png", origin: "(self)", status: "--", size: "", time:"" }
                 ],
                 source: [
                     { thread: "Main Thread", content: [
                         { id: 0, status: "override/unavailable/notready/failed", content:"" }
-                    ]}
+                    ]
+                    }
                 ],
                 storage: {},
                 process: {}
@@ -653,6 +652,26 @@ class NetworkManager {
                 }
             }
         }
+
+
+        document.getElementById('dev_selec_tree').onclick = function () {
+            
+        }
+        const editor = ace.edit("editor");
+        window.editor = editor;
+        editor.setTheme("ace/theme/yab-dark")
+        editor.session.setMode("ace/mode/htmlpp");
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: false,
+            behavioursEnabled: true,
+            wrapBehavioursEnabled: true,
+            showPrintMargin: false,
+            readOnly: true
+        });
+
+
     }
 
     protYab = async(pid, purl) => {
@@ -665,7 +684,26 @@ class NetworkManager {
     }
 
 
-    spawnDevToolWindow (pid) {}
+    spawnDevToolWindow (pid) {
+        this.dev_tools[pid] = {
+            console: [],
+            tree: "",
+            network: [],
+            source: [],
+            storage: {},
+            process: {}
+        }
+    }
+
+    setDevTree (pid, tree) {
+        if (this.dev_tools[pid]) {
+            this.dev_tools[pid].tree = tree;
+            editor.setValue(tree);
+            editor.getSession().selection.clearSelection();
+            
+        }
+    }
+
     pushConsoleEntry (pid, type, message) {}
     clearConsoleEntries (pid) {}
 
@@ -758,21 +796,21 @@ class NetworkManager {
                                         let obj = Helper.htmlpToObj(htmlString);
                                         // obj = Helper.fixScripts(obj)
                                         let scripts = Helper.getScripts(obj);
-                                    
-                                        console.log("scripts", scripts)
 
-                                        this.webview.setHtml(pid, Helper.objToString(obj))
+                                        this.spawnDevToolWindow(pid);
+                                        this.setDevTree(pid, htmlString);
+                                        console.log("This should appear", response)
+                                        this.webview.setHtml(pid, Helper.objToString(obj));
 
                                         scripts = scripts.map(({ src, api }) => {
                                         let href;
                                         try {
-                                            // if src is already an absolute URL, this will succeed
+                                            
                                             href = new URL(src).href;
                                         } catch (err) {
-                                            // otherwise build it relative to your base
-                                            const baseOrigin = new URL(res).origin;        // e.g. "https://example.com"
+                                            
+                                            const baseOrigin = new URL(res).origin;        
                                             const temp = new URL(src, baseOrigin + purl.path);
-                                            // ensure we don't end up with duplicated slashes
                                             href = res.replace(/\/+$/, '') + '/' + temp.pathname.replace(/^\/+/, '');
                                         }
                                         return { href, api };

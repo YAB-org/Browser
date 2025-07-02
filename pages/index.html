@@ -65,7 +65,7 @@
             <div class="toolbar_searchbar_components">
               <div class="searchbar-encryption searchbar_icon"><sample name="searchbar_icon_encryption"></sample></div>
               <div class="toolbar_searchbar_container">
-                <input id="toolbar_searchbar" class="toolbar_searchbar">
+                <input id="toolbar_searchbar" class="toolbar_searchbar" placeholder="Search or enter URL">
                 <div id="searchbar_highlight" class="searchbar_highlight"></div>
               </div>
             </div>
@@ -89,11 +89,32 @@
               <div class="dev_tools_close">x</div>
             </div>
             <div class="dev_tools_content">
-              <div class="dev_content" id="dev_tree">content</div>
-              <div class="dev_content" id="dev_console">content</div>
-              <div class="dev_content" id="dev_network">content</div>
-              <div class="dev_content" id="dev_source">
+              <div class="dev_content" id="dev_tree">
                 <div class="devtools_editor" id="editor"></div>
+              </div>
+              <div class="dev_content" id="dev_console">
+                <div class="dev_console_logs">
+                  <div class="dev_console_init_message"></div>
+                  <div class="dev_console_warn_message"></div>
+                  <div class="dev_console_error_message"></div>
+                  <div class="dev_console_print_message"></div>
+                </div>
+                <div class="dev_console_input"></div>
+              </div>
+              <div class="dev_content" id="dev_network">
+                <div class="dev_network_records">
+                  <div class="dev_network_record"></div>
+                  <div class="dev_network_record"></div>
+                  <div class="dev_network_record"></div>
+                </div>
+                <div class="dev_network_info"></div>
+              </div>
+              <div class="dev_content" id="dev_source">
+                <div class="dev_source_sources"></div>
+                <div class="dev_source_editor_container">
+                  <div class="dev_source_editor_tools"></div>
+                  <div class="dev_source_editor"></div>
+                </div>
               </div>
             </div>
           </div>
