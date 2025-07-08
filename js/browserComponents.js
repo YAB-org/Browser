@@ -50,7 +50,7 @@ class LayoutManager {
 
     init() {
 
-        // Initialize tab management functionality
+        // tab "+" button
         document.getElementById('tab_newtab_button').addEventListener('click', () => {
             this.tabman.spawnTab('New Tab', true);
         });
@@ -71,7 +71,7 @@ class LayoutManager {
         });*/
 
 
-        // the following is only for html++, should be removed or disabled for other languages
+        // custom html++ new line command
         editor.commands.addCommand({
             name: "customEnter",
             bindKey: { win: "Enter", mac: "Enter" },
@@ -105,11 +105,13 @@ class LayoutManager {
         });
         
 
+        // dev tools website size indicator
         const indicator = document.getElementById('dev_size_indicator');
         const rect = document.getElementById('web_display').getBoundingClientRect();
         indicator.style.display = "none";
         indicator.innerHTML = `${rect.width.toFixed(2)}px * ${rect.height.toFixed(2)}px`
 
+        // split web display and dev tools
         Split(['#web_display', '#dev_tools'], {
 
             onDragStart: () => {
@@ -124,11 +126,13 @@ class LayoutManager {
                 indicator.style.display = "none";
             },
             minSize: [150, 300],
-            snapOffset: 0
+            snapOffset: 0,
+            cursor: 'w-resize'
         })
 
         editor.resize();
 
+        // options button
         tippy('#toolbar_icon_options', {
             content: CitronJS.getContent('windows_minimize_svg'),
             placement: 'bottom-end',
@@ -137,6 +141,18 @@ class LayoutManager {
             interactive: true,
             allowHTML: true,
         });
+
+        // split network fetch panel
+        Split(['#dev_network_name', '#dev_network_origin','#dev_network_type','#dev_network_status','#dev_network_size','#dev_network_time'], {
+            minSize: 20,
+            snapOffset: 0,
+            gutter: (index, direction) => {
+                const gutter = document.createElement('div')
+                gutter.className = `dev-network-gutter gutter-${direction}`
+                return gutter
+            },
+            gutterSize: 3,
+        })
 
     }
 }
@@ -479,6 +495,8 @@ class BrowserController {
         if (res == "error-abort") {
             // its not a valid url, make it a search instead
         }
+        favicon.innerHTML = "";
+        favicon.appendChild(CitronJS.getContent('doc_favicon'));
 
         if (this.NetworkManager.native.hasOwnProperty(this.NetworkManager.URLToObject(target).protocol)) {
             console.log("hi2")

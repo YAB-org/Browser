@@ -57,8 +57,7 @@
       </div>
       <div class="main_screen">
         <div class="toolbar">
-          <div class="toolbar_icon toolbar_icon-sidebar"><sample name="toolbar_icon_sidebar"></sample></div>
-          <div class="toolbar_icon toolbar_icon_home toolbar_icon_enabled"><sample name="toolbar_icon-home"></sample></div>
+          <div class="toolbar_icon toolbar_icon_home toolbar_icon_enabled"><sample name="toolbar_icon_home"></sample></div>
           <div class="toolbar_icon toolbar_icon_historyback"><sample name="toolbar_icon_historyback"></sample></div>
           <div class="toolbar_icon toolbar_icon_historyforward"><sample name="toolbar_icon_historyforward"></sample></div>
           <div class="progress_bar_container">
@@ -89,10 +88,10 @@
               <div class="dev_tools_close">x</div>
             </div>
             <div class="dev_tools_content">
-              <div class="dev_content" id="dev_tree">
+              <div class="dev_content" id="dev_tree" style="display:none">
                 <div class="devtools_editor" id="editor"></div>
               </div>
-              <div class="dev_content" id="dev_console">
+              <div class="dev_content" id="dev_console" style="display:none">
                 <div class="dev_console_logs">
                   <div class="dev_console_init_message"></div>
                   <div class="dev_console_warn_message"></div>
@@ -102,14 +101,53 @@
                 <div class="dev_console_input"></div>
               </div>
               <div class="dev_content" id="dev_network">
-                <div class="dev_network_records">
-                  <div class="dev_network_record"></div>
-                  <div class="dev_network_record"></div>
-                  <div class="dev_network_record"></div>
+                <div class="dev_network_table">
+                  <div class="dev_network_table_element" id="dev_network_name">
+                    <div class="dev_network_element_header">Name</div>
+                    <div class="dev_network_element_values">
+                      <div class="dev_network_element_value">image.png</div>
+                      <div class="dev_network_element_value">fsh.fake.api</div>
+                    </div>
+                  </div>
+                  <div class="dev_network_table_element" id="dev_network_origin">
+                    <div class="dev_network_element_header">Origin</div>
+                    <div class="dev_network_element_values">
+                      <div class="dev_network_element_value">(self)</div>
+                      <div class="dev_network_element_value">./index.lua</div>
+                    </div>
+                  </div>
+                  <div class="dev_network_table_element" id="dev_network_type">
+                    <div class="dev_network_element_header">Type</div>
+                    <div class="dev_network_element_values">
+                      <div class="dev_network_element_value">fetch</div>
+                      <div class="dev_network_element_value">script</div>
+                    </div>
+                  </div>
+                  <div class="dev_network_table_element" id="dev_network_status">
+                    <div class="dev_network_element_header">Status</div>
+                    <div class="dev_network_element_values">
+                      <div class="dev_network_element_value">200</div>
+                      <div class="dev_network_element_value">404</div>
+                    </div>
+                  </div>
+                  <div class="dev_network_table_element" id="dev_network_size">
+                    <div class="dev_network_element_header">Size</div>
+                    <div class="dev_network_element_values">
+                      <div class="dev_network_element_value">2.1mb</div>
+                      <div class="dev_network_element_value">--</div>
+                    </div>
+                  </div>
+                  <div class="dev_network_table_element" id="dev_network_time">
+                    <div class="dev_network_element_header">Time</div>
+                    <div class="dev_network_element_values">
+                      <div class="dev_network_element_value">23ms</div>
+                      <div class="dev_network_element_value">--</div>
+                    </div>
+                  </div>
                 </div>
                 <div class="dev_network_info"></div>
               </div>
-              <div class="dev_content" id="dev_source">
+              <div class="dev_content" id="dev_source" style="display:none">
                 <div class="dev_source_sources"></div>
                 <div class="dev_source_editor_container">
                   <div class="dev_source_editor_tools"></div>

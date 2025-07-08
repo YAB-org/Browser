@@ -39,4 +39,10 @@
   --tab-button-hover-bg: #484e54;
   --tab-button-color: #6b6b6b;
   --tab-button-border: none;
+
+  --dev-network-gutter-bg: #595f66;
+  --dev-network-hover-gutter-bg: #747c85;
+  --dev-network-element-header-bg: #272A2D;
+
+  --dev-panel-bg: #1b1f24;
 }
