@@ -250,6 +250,45 @@ class BrowserController {
                 }
             });
 
+            const back = document.getElementById('toolbar_icon_historyback')
+            const forward = document.getElementById('toolbar_icon_historyforward')
+
+            back.addEventListener('click', () => {
+                if (back.classList.contains('toolbar_icon_enabled')) {
+                    // safeguard escaping index
+                    console.log(this.tabs[this.currentTab].historyIndex)
+                    if (this.tabs[this.currentTab].historyIndex > 0) {
+                        this.tabs[this.currentTab].historyIndex -= 1;
+
+                        if (this.tabs[this.currentTab].navigationHistory[this.tabs[this.currentTab].historyIndex].isMasked) {
+                            this.TravelTo(this.currentTab, this.tabs[this.currentTab].navigationHistory[this.tabs[this.currentTab].historyIndex].url, false, true, this.tabs[this.currentTab].navigationHistory.mask)
+                        } else {
+                            this.TravelTo(this.currentTab, this.tabs[this.currentTab].navigationHistory[this.tabs[this.currentTab].historyIndex].url, false)
+                        }
+                    } else {
+                        // corrupt
+                    }
+                    
+                }
+            })
+            forward.addEventListener('click', () => {
+                if (forward.classList.contains('toolbar_icon_enabled')) {
+                    // safeguard escaping index
+                    if (this.tabs[this.currentTab].historyIndex < this.tabs[this.currentTab].navigationHistory.length -1) {
+                        this.tabs[this.currentTab].historyIndex += 1;
+
+                        if (this.tabs[this.currentTab].navigationHistory[this.tabs[this.currentTab].historyIndex].isMasked) {
+                            this.TravelTo(this.currentTab, this.tabs[this.currentTab].navigationHistory[this.tabs[this.currentTab].historyIndex].url, false, true, this.tabs[this.currentTab].navigationHistory.mask)
+                        } else {
+                            this.TravelTo(this.currentTab, this.tabs[this.currentTab].navigationHistory[this.tabs[this.currentTab].historyIndex].url, false)
+                        }
+                    } else {
+                        // corrupt
+                    }
+                    
+                }
+            })
+
             this.startEventEmitters();
 
 			this.setupUrlHighlighting();
@@ -261,6 +300,12 @@ class BrowserController {
                 if (event.key === "Enter") {
                     console.log("enter key pressed")
                     this.input.blur();
+                    if (this.tabs[this.currentTab].navigationHistory.length -1 > this.tabs[this.currentTab].historyIndex) {
+                        let index = this.tabs[this.currentTab].historyIndex;
+                        if (index !== -1) {
+                            this.tabs[this.currentTab].navigationHistory = this.tabs[this.currentTab].navigationHistory.slice(0, index + 1);
+                        }
+                    }
                     this.TravelTo(this.currentTab, this.address_bar.value)
                 }
             })
@@ -296,7 +341,7 @@ class BrowserController {
 
     }
 
-    async spawnTab(title, focused = false, options) {
+    async spawnTab(title, focused = false) {
         if (this.ready !== true) {
             console.error('[BrowserController][ERROR]: BrowserController is not ready yet.');
         } else {
@@ -317,7 +362,8 @@ class BrowserController {
                     mask: "",
                     title: "",
                     favicon: "",
-                    timestamp: Date.now(),
+                    created: Date.now(),
+                    historyIndex: -1,
                     navigationHistory: []
                 };
                 this.currentTab = pid;
@@ -346,7 +392,7 @@ class BrowserController {
                     this.terminateTab(pid);
                 });
                 this.currentAmount++;
-                this.TravelTo(this.currentTab, "yab://newtab", true, "")
+                this.TravelTo(this.currentTab, "yab://newtab", true, true, "")
 
             }
 
@@ -427,6 +473,25 @@ class BrowserController {
             this.hideProtocol();
         }
 
+        const back = document.getElementById('toolbar_icon_historyback')
+        const forward = document.getElementById('toolbar_icon_historyforward')
+
+        if (this.tabs[pid].historyIndex == 0) {
+            if (this.tabs[pid].navigationHistory.length -1 > 0) {
+                // show forward
+                forward.classList.add('toolbar_icon_enabled')
+                back.classList.remove('toolbar_icon_enabled')
+            }
+        } else if (this.tabs[pid].historyIndex == this.tabs[pid].navigationHistory.length - 1){
+            // show backward
+            back.classList.add('toolbar_icon_enabled')
+            forward.classList.remove('toolbar_icon_enabled')
+        } else {
+            // show both
+            forward.classList.add('toolbar_icon_enabled')
+            back.classList.add('toolbar_icon_enabled')
+        }
+
     }
 
     cleanup() {
@@ -482,29 +547,64 @@ class BrowserController {
         
     }
 
-    async TravelTo(pid, target, masked = false, mask = "") {
+    async TravelTo(pid, target, recordToHistory = true, masked = false, mask = "") {
         let favicon = document.getElementById(pid).querySelector(".tab_icon");
         favicon.innerHTML = "";
         favicon.appendChild(CitronJS.getContent('tab_spinner'));
-        // buss://example.it
-        const tab = this.tabs[pid];
-
-        console.log("checking this")
-
         const res = await this.NetworkManager.getAddress(target, pid);
         if (res == "error-abort") {
             // its not a valid url, make it a search instead
         }
+        const tab = this.tabs[pid];  
+        console.log("INPUT", this.address_bar)
+
+        tab.isMasked = masked ? true : false;
+        tab.addressBar = masked ? mask : target;
+        this.address_bar.value = masked ? mask : target;
+        tab.currentURL = target;
+        
+        console.trace("historyIndex incremented", tab.historyIndex);
+        if (recordToHistory) {
+            tab.historyIndex += 1;
+        
+            if (tab.isMasked) {
+                try {
+                    const test = new URL(tab.mask);
+                    tab.navigationHistory.push({
+                        timestamp: Date.now(),
+                        url: tab.mask,
+                        title: tab.title,
+                        isMasked: false
+                    })
+                } catch(err) {
+                    tab.navigationHistory.push({
+                        timestamp: Date.now(),
+                        url: tab.currentURL,
+                        title: tab.title,
+                        isMasked: true,
+                        mask: tab.mask
+
+                    })
+                }
+            } else {
+                tab.navigationHistory.push({
+                    timestamp: Date.now(),
+                    url: tab.currentURL,
+                    title: tab.title,
+                    isMasked: false
+                })
+            }
+        }
+        
         favicon.innerHTML = "";
         favicon.appendChild(CitronJS.getContent('doc_favicon'));
 
         if (this.NetworkManager.native.hasOwnProperty(this.NetworkManager.URLToObject(target).protocol)) {
-            console.log("hi2")
             this.tabs[pid].hiddenProtocol = false;
-        } else { this.tabs[pid].hiddenProtocol = true; console.log("its hidden") }
+        } else { this.tabs[pid].hiddenProtocol = true; }
+         this.address_highlight_update();
         
-        
-        if (masked) {
+        /*if (masked) {
             tab.isMasked = true;
             tab.mask = mask;
 
@@ -524,9 +624,29 @@ class BrowserController {
                 this.tabs[pid].currentURL = target;
                 this.address_highlight_update();
             }
-        }
+        }*/
         if (this.tabs[pid].addressBar == "") {
             this.address_bar.focus();
+        }
+
+        if (this.currentTab == pid) {
+            const back = document.getElementById('toolbar_icon_historyback')
+            const forward = document.getElementById('toolbar_icon_historyforward')
+
+            if (this.tabs[pid].historyIndex == 0) {
+                if (this.tabs[pid].navigationHistory.length -1 > 0) {
+                    forward.classList.add('toolbar_icon_enabled')
+                    back.classList.remove('toolbar_icon_enabled')
+                }
+            } else if (this.tabs[pid].historyIndex == this.tabs[pid].navigationHistory.length - 1){
+                // show backward
+                back.classList.add('toolbar_icon_enabled')
+                forward.classList.remove('toolbar_icon_enabled')
+            } else {
+                // show both
+                forward.classList.add('toolbar_icon_enabled')
+                back.classList.add('toolbar_icon_enabled')
+            }
         }
         
 

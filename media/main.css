@@ -34,8 +34,6 @@ html, body {
 
 .toolbar_icon {
   color: var(--toolbar-icon-color);
-  width: 26px;
-  height: 26px;
   align-items: center;
   justify-content: center;
   display: flex;
@@ -337,35 +335,14 @@ html, body {
   transition: 0.25s;
 }
 
-.toolbar_icon_sidebar,
-.toolbar_icon_home,
-.toolbar_icon_historyback,
-.toolbar_icon_historyforward,
-.toolbar_icon_downloads,
-.toolbar_icon_options {
-  width: 24px;
-  height: 24px;
-}
-
-.toolbar_icon_sidebar {
-  width: 28px;
-  height: 28px;
-}
-
-.toolbar_icon_home {
-  margin: 0 10px 2px;
-}
-
-.toolbar_icon_historyforward {
-  margin-left: -12px;
-}
 
 .searchbar_icon {
   color: var(--toolbar-icon-color);
-  width: 34px;
-  height: 32px;
-  margin-top: -1px;
-  margin-right: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 .tab_button {
@@ -582,4 +559,16 @@ html, body {
 
 .dev_network_element_value:nth-child(even) {
   background-color: #384653;
+}
+
+.extensions_field {
+  background: #3C4248;
+  height: 28px;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 6px;
+  border: 2px solid #52585D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
