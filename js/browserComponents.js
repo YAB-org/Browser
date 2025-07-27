@@ -164,8 +164,6 @@ class ProcessManager {
         this.process_count = 0;
         this.controlled_term = [];
         this.tabman = tabman;
-
-        console.log(this.tabman);
     }
 
     init() {
@@ -174,9 +172,6 @@ class ProcessManager {
 
     async spawnNewProcess() {
         const pid = await window.process.spawn();
-        console.log("renderer received: ");
-        console.log(pid);
-
         return pid;
     }
 
@@ -252,11 +247,18 @@ class BrowserController {
 
             const back = document.getElementById('toolbar_icon_historyback')
             const forward = document.getElementById('toolbar_icon_historyforward')
+            const reload = document.getElementById('searchbar_icon_reload')
 
+            reload.addEventListener('click', () => {
+                if (this.tabs[this.currentTab].isMasked) {
+                    this.TravelTo(this.currentTab, this.tabs[this.currentTab].currentURL, false, true, this.tabs[this.currentTab].mask)
+                } else {
+                    this.TravelTo(this.currentTab, this.tabs[this.currentTab].currentURL, efalse)
+                }
+            })
             back.addEventListener('click', () => {
                 if (back.classList.contains('toolbar_icon_enabled')) {
                     // safeguard escaping index
-                    console.log(this.tabs[this.currentTab].historyIndex)
                     if (this.tabs[this.currentTab].historyIndex > 0) {
                         this.tabs[this.currentTab].historyIndex -= 1;
 
@@ -298,7 +300,6 @@ class BrowserController {
         	});
             this.input.addEventListener('keydown', (event) => {
                 if (event.key === "Enter") {
-                    console.log("enter key pressed")
                     this.input.blur();
                     if (this.tabs[this.currentTab].navigationHistory.length -1 > this.tabs[this.currentTab].historyIndex) {
                         let index = this.tabs[this.currentTab].historyIndex;
@@ -368,9 +369,7 @@ class BrowserController {
                 };
                 this.currentTab = pid;
 
-                console.log(pid);
                 const newTab = this.createTabSkeleton(title, pid, focused);
-                console.log(newTab);
                 if (focused === true) {
                     document.querySelectorAll('.tab:not(.tab_disabled)').forEach(tab => tab.classList.add('tab_disabled'));
 
@@ -411,7 +410,6 @@ class BrowserController {
             const currentElem = document.getElementById(pid); // or however you determine it
             // Remove tab element
             const lastChild = container.lastElementChild;
-            console.log(lastChild);
             let neighbour = null;
 
             if (currentElem === lastChild) {
@@ -439,15 +437,11 @@ class BrowserController {
             tabtodel.style.minWidth = "0px";
             tabtodel.addEventListener('animationend', () => {
                 tabtodel.remove();
-                console.log(Object.keys(this.tabs).length);
-                console.log("it is " + Object.keys(this.tabs).length === 0);
 
 
                 if (Object.keys(this.tabs).length > 0) {
-                    console.log('hallo?');
                     if (this.currentTab === pid) {
                         this.setFocus(neighbour.id);
-                        console.log(neighbour);
                     }
     
                 }
@@ -552,11 +546,11 @@ class BrowserController {
         favicon.innerHTML = "";
         favicon.appendChild(CitronJS.getContent('tab_spinner'));
         const res = await this.NetworkManager.getAddress(target, pid);
+        console.log("RES", res)
         if (res == "error-abort") {
             // its not a valid url, make it a search instead
         }
-        const tab = this.tabs[pid];  
-        console.log("INPUT", this.address_bar)
+        const tab = this.tabs[pid];
 
         tab.isMasked = masked ? true : false;
         tab.addressBar = masked ? mask : target;
@@ -685,7 +679,6 @@ class WebView {
             /*const target = iframe.contentDocument.querySelector('body');
             target.appendChild(html);*/
             if (typeof html !== 'string') {
-                console.log(html)
                 html = Helper.fragmentToString(html);
             }
             doc.open();
@@ -813,10 +806,8 @@ class NetworkManager {
     }
 
     protYab = async(pid, purl) => {
-        console.log("hmm", purl)
         if (purl.domain === "newtab") {
-            console.log(this)
-            this.webview.setHtml(pid, CitronJS.getContent('native_newtab'))
+            this.webview.setHtml(pid, CitronJS.getContent('native_error'))
             // here
         }
     }
@@ -856,7 +847,6 @@ class NetworkManager {
         const controller = new AbortController();
         const timeout = this.third_party[purl.protocol][server].timeout;
         const timeoutId = setTimeout(() => controller.abort(), timeout);
-        console.log(purl)
         return fetch(this.third_party[purl.protocol][server].address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
                 signal: controller.signal,
                 headers: this.third_party[purl.protocol].headers
@@ -867,7 +857,6 @@ class NetworkManager {
 
                 let recordEntry = null;
 
-                console.log("Debug #01", data)
                 for (const record of data) {
                     if (record.type === "WEB" && record.name === purl.domain) {
                         recordEntry = record;
@@ -875,7 +864,6 @@ class NetworkManager {
                     }
                 }
                 if (recordEntry) {
-                    console.log("Debig #02", recordEntry)
                     return recordEntry.value.replace(/\/$/, '');
                 } else {
                     return { error: "error.dns" }
@@ -904,7 +892,6 @@ class NetworkManager {
             } else if (this.third_party.hasOwnProperty(purl.protocol)) { 
                 let res;
                 res = await this.getOriginServer(purl, "server1");
-                console.log("debug #00 res1:", res)
                 if (res.error) {
                     if (res.error == "error.abort") {
                         res = this.getOriginServer(purl, "server2");
@@ -937,7 +924,6 @@ class NetworkManager {
 
                                         this.spawnDevToolWindow(pid);
                                         this.setDevTree(pid, htmlString);
-                                        console.log("This should appear", response)
                                         this.webview.setHtml(pid, Helper.objToString(obj));
 
                                         scripts = scripts.map(({ src, api }) => {
@@ -970,9 +956,6 @@ class NetworkManager {
                                             }
                                             });
                                         }
-
-                                        console.log("Debug #04", scripts);
-
                                     })
                                 }
                             }
@@ -992,7 +975,6 @@ class NetworkManager {
     URLToObject(url) {
         try {
             let uri = new URL(url);
-            console.log(uri);
             return {
                 protocol: uri.protocol.split(':')[0],
                 domain: uri.hostname,
