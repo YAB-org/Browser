@@ -1,9 +1,5 @@
-const {
-  LuaFactory
-} = require("wasmoon");
-const {
-  JSDOM
-} = require("jsdom");
+const { LuaFactory } = require("yab-wasmoon");
+const { JSDOM } = require("jsdom");
 
 // Create a shared DOM that all Lua engines will reference.
 const dom = new JSDOM(`<!DOCTYPE html>

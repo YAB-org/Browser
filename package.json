@@ -25,9 +25,7 @@
   "dependencies": {
     "electron": "^33.2.0",
     "electron-updater": "^6.6.2",
-    "fengari": "^0.1.4",
     "jsdom": "^26.0.0",
-    "sync-request": "^6.1.0",
-    "wasmoon": "^1.16.0"
+    "yab-wasmoon": "^1.16.0"
   }
 }
