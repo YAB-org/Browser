@@ -1,7 +1,6 @@
 // Window gets initiated
 import { Browser } from './browserComponents.js'
 
-// new BrowserInstance()
 document.addEventListener('DOMContentLoaded', function() {
 /*    Sortable.create(tab_sortable, {
         swapThreshold: 0.90,
@@ -25,10 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener("CitronReady", () => {
         const BrowserInstance = new Browser();
-        BrowserInstance.init();
 
         // TODO: Remove exposed browser instance
         window.BrowserInstance = BrowserInstance;
-        //window.Wave = WaveInstance;
     });
 });
