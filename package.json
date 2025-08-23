@@ -26,6 +26,6 @@
     "electron": "^33.2.0",
     "electron-updater": "^6.6.2",
     "jsdom": "^26.0.0",
-    "yab-wasmoon": "^1.16.0"
+    "wasmoon-async-fix": "^1.17.3"
   }
 }

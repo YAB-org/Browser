@@ -1,0 +1,95 @@
+<citron>
+    <export sample="native_settings"></export>
+    <export sample="native_newtab"></export>
+    <export sample="native_error">
+        <var var="error"></var>
+    </export>
+    <sample name="native_error">
+        <div class="native_error">
+            <div class="head_container">
+                <div class="head_error_icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="51px" viewBox="0 -960 960 960" width="51px" fill="currentColor">
+                        <path d="M240-800v200-200 640-9.5 9.5-640Zm0 720q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v174q-19-7-39-10.5t-41-3.5v-120H520v-200H240v640h254q8 23 20 43t28 37H240Zm396-20-56-56 84-84-84-84 56-56 84 84 84-84 56 56-83 84 83 84-56 56-84-83-84 83Z" />
+                    </svg>
+                </div>
+                <div class="head_text">Sorry, something went wrong</div>
+            </div>
+            <div class="subhead">{ subheader }</div>
+            <div class="error_indicator">Error -> <span class="error_code">{ errorcode }</span>
+            </div>
+            <div class="suggestion_box">
+                <div class="suggestion_head">How do I fix this?</div>
+                <div class="suggestion_list"> { suggestions } </div>
+            </div>
+        </div>
+    </sample>
+    <sample name="native_newtab">
+        <input type="text" class="hi" placeholder="Search anything..." />
+    </sample>
+    <sample name="native_settings">
+        <div class="native_settings">
+            <div class="settings_nav">
+                <div class="settings_header">
+                    <span class="settings_header_title">Browser Settings</span>
+                    <span class="settings_header_desc">Customize your Browser Experience</span>
+                </div>
+                <div class="settings_nav_items">
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M200-120q-33 0-56.5-23.5T120-200v-250h280v330H200Zm280 0v-330h360v250q0 33-23.5 56.5T760-120H480ZM120-530v-230q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v230H120Z"/></svg></div>
+                        <div class="settings_nav_item_text">Overview</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M346-140 100-386q-10-10-15-22t-5-25q0-13 5-25t15-22l230-229-106-106 62-65 400 400q10 10 14.5 22t4.5 25q0 13-4.5 25T686-386L440-140q-10 10-22 15t-25 5q-13 0-25-5t-22-15Zm47-506L179-432h428L393-646Zm399 526q-36 0-61-25.5T706-208q0-27 13.5-51t30.5-47l42-54 44 54q16 23 30 47t14 51q0 37-26 62.5T792-120Z"/></svg></div>
+                        <div class="settings_nav_item_text">Appearance &amp; Layout</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M824-120 568-376q-12-13-25.5-26.5T516-428q38-24 61-64t23-88q0-75-52.5-127.5T420-760q-75 0-127.5 52.5T240-580q0 6 .5 11.5T242-557q-18 2-39.5 8T164-535q-2-11-3-22t-1-23q0-109 75.5-184.5T420-840q109 0 184.5 75.5T680-580q0 43-13.5 81.5T629-428l251 252-56 56ZM240-80l-12-60q-12-5-22.5-10.5T184-164l-58 18-40-68 46-40q-2-13-2-26t2-26l-46-40 40-68 58 18q11-8 21.5-13.5T228-420l12-60h80l12 60q12 5 22.5 10.5T376-396l58-18 40 68-46 40q2 13 2 26t-2 26l46 40-40 68-58-18q-11 8-21.5 13.5T332-140l-12 60h-80Zm40-120q33 0 56.5-23.5T360-280q0-33-23.5-56.5T280-360q-33 0-56.5 23.5T200-280q0 33 23.5 56.5T280-200Z"/></svg></div>
+                        <div class="settings_nav_item_text">Search &amp; Tabs</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-200q-33 0-56.5-23.5T80-280v-400q0-33 23.5-56.5T160-760h640q33 0 56.5 23.5T880-680v400q0 33-23.5 56.5T800-200H160Zm160-120h320v-80H320v80ZM200-440h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80ZM200-560h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Z"/></svg></div>
+                        <div class="settings_nav_item_text">Keyboard Shortcuts</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M838-65 720-183v89h-80v-226h226v80h-90l118 118-56 57ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 20-2 40t-6 40h-82q5-20 7.5-40t2.5-40q0-20-2.5-40t-7.5-40H654q3 20 4.5 40t1.5 40q0 20-1.5 40t-4.5 40h-80q3-20 4.5-40t1.5-40q0-20-1.5-40t-4.5-40H386q-3 20-4.5 40t-1.5 40q0 20 1.5 40t4.5 40h134v80H404q12 43 31 82.5t45 75.5q20 0 40-2.5t40-4.5v82q-20 2-40 4.5T480-80ZM170-400h136q-3-20-4.5-40t-1.5-40q0-20 1.5-40t4.5-40H170q-5 20-7.5 40t-2.5 40q0 20 2.5 40t7.5 40Zm34-240h118q9-37 22.5-72.5T376-782q-55 18-99 54.5T204-640Zm172 462q-18-34-31.5-69.5T322-320H204q29 51 73 87.5t99 54.5Zm28-462h152q-12-43-31-82.5T480-798q-26 36-45 75.5T404-640Zm234 0h118q-29-51-73-87.5T584-782q18 34 31.5 69.5T638-640Z"/></svg></div>
+                        <div class="settings_nav_item_text">Network</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg></div>
+                        <div class="settings_nav_item_text">Downloads</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M418-340q25 25 63 23.5t55-27.5l224-336-336 224q-26 18-28.5 54.5T418-340ZM204-160q-22 0-40.5-9.5T134-198q-26-47-40-97.5T80-400q0-83 31.5-156T197-683q54-54 127-85.5T480-800q82 0 154 31t126 84.5q54 53.5 86 125T879-406q1 55-12.5 107.5T825-198q-11 19-29.5 28.5T755-160H204Z"/></svg></div>
+                        <div class="settings_nav_item_text">Resources</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M352-120H200q-33 0-56.5-23.5T120-200v-152q48 0 84-30.5t36-77.5q0-47-36-77.5T120-568v-152q0-33 23.5-56.5T200-800h160q0-42 29-71t71-29q42 0 71 29t29 71h160q33 0 56.5 23.5T800-720v160q42 0 71 29t29 71q0 42-29 71t-71 29v160q0 33-23.5 56.5T720-120H568q0-50-31.5-85T460-240q-45 0-76.5 35T352-120Z"/></svg></div>
+                        <div class="settings_nav_item_text">Manage Extensions</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg></div>
+                        <div class="settings_nav_item_text">Lua VM</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q82 0 155.5 35T760-706v-94h80v240H600v-80h110q-41-56-101-88t-129-32q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200q105 0 183.5-68T756-440h82q-15 137-117.5 228.5T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg></div>
+                        <div class="settings_nav_item_text">Updates</div>
+                    </div>
+                    <div class="settings_nav_item">
+                        <div class="settings_nav_item_icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M520-600v-80h120v-160h80v160h120v80H520Zm120 480v-400h80v400h-80Zm-400 0v-160H120v-80h320v80H320v160h-80Zm0-320v-400h80v400h-80Z"/></svg></div>
+                        <div class="settings_nav_item_text">Other</div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings_view">
+                <div class="settings_content">
+                    <div class="settings_view_title1">Appearance Layout</div>
+                    <div class="settings_view_desc1">Customize how your browser looks and feels</div>
+                    <div class="settings_view_card">
+                        <span class="settings_view_title2">Theme</span>
+                        <div class="settings_view_desc2">Choose your preferred color scheme</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </sample>
+</citron>

@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+*/
+@import url('../media/fonts/Inter.css');
 
 
 body {
@@ -571,4 +573,92 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.tippy-box[data-theme~='tab_preview'] .tippy-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+}
+
+.tippy-box[data-theme~='tab_preview'] {
+  padding: 0px;
+  width: 213px;
+  border: 1px solid #717171;
+  border-radius: 7px;
+  background: #16191c;
+  overflow: hidden;
+}
+
+.tab_preview_img {
+  height: 120px;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+.tab_preview_ram {
+  background: #282e34;
+  padding: 5px;
+  color: #6f7b85;
+  font-size: 12px;
+}
+
+.tab_preview_title {
+  padding: 12px;
+  font-weight: 600;
+}
+
+.tab_preview_address {
+  padding: 12px;
+  margin-top: -25px;
+  color: gray;
+  font-size: 12px;
+}
+
+/* TOOLBAR MENU */
+
+.tippy-box[data-theme~='toolbar_menu'] {
+  background: #16191c;
+  padding: 5px;
+  min-width: 250px;
+  border-radius: 7px;
+  border: 1px solid #717171; 
+}
+
+.menu_item {
+  padding: 7px;
+  height: 20px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 12px;
+  padding-right: 12px;
+  transition: 0.25s;
+}
+
+.menu_item:hover {
+  background: #d9d9d916;
+  cursor: pointer;
+}
+.menu_item:active {
+  scale: 0.95;
+}
+
+.menu_item_text {
+  color: #B2B2B2;
+}
+
+.menu_item_keybind {
+  color: #757575;
+  font-size: 13px;
+}
+
+.menu_separator {
+  width: 100%;
+  height: 1px;
+  background: #3D3D3D;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }

@@ -134,7 +134,9 @@ class LayoutManager {
 
         // options button
         tippy('#toolbar_icon_options', {
-            content: CitronJS.getContent('windows_minimize_svg'),
+            content: CitronJS.getContent('toolbar_menu'),
+            theme: "toolbar_menu",
+            html: true,
             placement: 'bottom-end',
             arrow: false,
             trigger: 'click',
@@ -142,6 +144,7 @@ class LayoutManager {
             allowHTML: true,
         });
 
+       
         // split network fetch panel
         Split(['#dev_network_name', '#dev_network_origin','#dev_network_type','#dev_network_status','#dev_network_size','#dev_network_time'], {
             minSize: 20,
@@ -159,7 +162,6 @@ class LayoutManager {
 
 class ProcessManager {
     constructor(tabman) {
-        // Track active processes
         this.processes = new Map();
         this.process_count = 0;
         this.controlled_term = [];
@@ -185,16 +187,21 @@ class ProcessManager {
         return;
     }
 
+    async getProcessMemoryUsageMB(pid) {
+        const u = await window.process.getMemoryUsageMB(pid);
+        return u.toFixed(1);
+    }
+
 
 
 }
 
 class BrowserController {
-    constructor(target_id, max, engineInstance, webView, terminateBrowser, NetworkManager) {
+    constructor(target_id, max, processManager, webView, terminateBrowser, NetworkManager) {
         this.ready = false;
         this.targetDiv = target_id;
         this.maxTabAmount = max;
-        this.engine = engineInstance;
+        this.processes = processManager;
         this.tabs = {};
         this.initTabs = this.tabs;
         this.currentTab = 0;
@@ -253,7 +260,7 @@ class BrowserController {
                 if (this.tabs[this.currentTab].isMasked) {
                     this.TravelTo(this.currentTab, this.tabs[this.currentTab].currentURL, false, true, this.tabs[this.currentTab].mask)
                 } else {
-                    this.TravelTo(this.currentTab, this.tabs[this.currentTab].currentURL, efalse)
+                    this.TravelTo(this.currentTab, this.tabs[this.currentTab].currentURL, false)
                 }
             })
             back.addEventListener('click', () => {
@@ -349,7 +356,7 @@ class BrowserController {
 
             if (this.currentAmount < this.maxTabAmount) {
 
-                const pid = await this.engine.spawnNewProcess();
+                const pid = await this.processes.spawnNewProcess();
                 this.WebView.spawnWebView(pid);
                 this.WebView.focusWebView(pid);
 				this.address_bar.value = "";
@@ -361,11 +368,12 @@ class BrowserController {
                     isMasked: false,
                     hiddenProtocol: true,
                     mask: "",
-                    title: "",
+                    title: title,
                     favicon: "",
                     created: Date.now(),
                     historyIndex: -1,
-                    navigationHistory: []
+                    navigationHistory: [],
+                    preview: undefined,
                 };
                 this.currentTab = pid;
 
@@ -375,6 +383,33 @@ class BrowserController {
 
                 };
                 document.getElementById(this.targetDiv).appendChild(newTab);
+
+                const self = this;
+
+                this.tabs[pid].preview = tippy('[id="' + pid + `"]`, {
+                    allowHTML: true,
+                    placement: 'bottom',
+                    theme: 'tab_preview',
+                    arrow: false,
+                    async onShow(instance) {
+                        const iframe = document.getElementById('_' + pid);
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const bgColor = (() => {
+                            const color = getComputedStyle((document.getElementById('_' + pid).contentDocument || document.getElementById('_' + pid).contentWindow.document).body).backgroundColor;
+                            return color.includes('rgba') && color.endsWith(', 0)') ? '#FFFFFF' : color;
+                        })();
+                        const dataUrl = await domtoimage.toPng(iframeDoc.documentElement, {
+                            /*width: iframe.width,
+                            height: iframe.height,
+                            canvasWidth: iframe.width,
+                            canvasHeight: iframe.height,*/
+                            bgcolor: bgColor
+                        })
+                        instance.setProps({
+                            content: `<div class="tab_preview_title">${self.tabs[pid].title}</div><div class="tab_preview_address">${self.tabs[pid].currentURL}</div><img class="tab_preview_img" src="${dataUrl}"><div class="tab_preview_ram">Memory Usage - ${await self.processes.getProcessMemoryUsageMB(pid)} mb</div>`
+                        })
+                    },
+                });
 
                 let generatedTab = document.getElementById(pid);
                 generatedTab.classList.add('tab_animation');
@@ -404,7 +439,7 @@ class BrowserController {
         } else {
             // TODO: Handle closing a focused tab
             // Find and remove tab entry
-            this.engine.terminateProcess(pid);
+            this.processes.terminateProcess(pid);
             this.WebView.deleteWebView(pid);
             const container = document.getElementById(this.targetDiv); // or document.getElementById('myDiv')
             const currentElem = document.getElementById(pid); // or however you determine it
@@ -455,7 +490,7 @@ class BrowserController {
         }
     }
 
-    setFocus(pid) {
+    async setFocus(pid) {
 		//this.tabs[this.currentTab].addressBar = this.address_bar.value;
         this.currentTab = pid;
         this.WebView.focusWebView(pid);
@@ -469,7 +504,7 @@ class BrowserController {
 
         const back = document.getElementById('toolbar_icon_historyback')
         const forward = document.getElementById('toolbar_icon_historyforward')
-
+        console.log("yahooooooooooooooooooo1")
         if (this.tabs[pid].historyIndex == 0) {
             if (this.tabs[pid].navigationHistory.length -1 > 0) {
                 // show forward
@@ -485,6 +520,7 @@ class BrowserController {
             forward.classList.add('toolbar_icon_enabled')
             back.classList.add('toolbar_icon_enabled')
         }
+        
 
     }
 
@@ -556,8 +592,10 @@ class BrowserController {
         tab.addressBar = masked ? mask : target;
         this.address_bar.value = masked ? mask : target;
         tab.currentURL = target;
+
         
-        console.trace("historyIndex incremented", tab.historyIndex);
+        
+
         if (recordToHistory) {
             tab.historyIndex += 1;
         
@@ -588,6 +626,7 @@ class BrowserController {
                     isMasked: false
                 })
             }
+
         }
         
         favicon.innerHTML = "";
@@ -642,7 +681,6 @@ class BrowserController {
                 back.classList.add('toolbar_icon_enabled')
             }
         }
-        
 
     }
 }
@@ -670,12 +708,12 @@ class WebView {
         this.targetDiv.querySelector("#_" + pid).classList.remove('web_view_hidden');
     }
 
-    async setHtml(pid, html) {
+    async setHtml(pid, html, CssInjection = []) {
         const iframe = this.targetDiv.querySelector('#_' + pid);
         //target.appendChild(html);
         iframe.onload = () => {
             const doc = iframe.contentDocument || iframe.contentWindow.document;
-
+            
             /*const target = iframe.contentDocument.querySelector('body');
             target.appendChild(html);*/
             if (typeof html !== 'string') {
@@ -684,6 +722,16 @@ class WebView {
             doc.open();
             doc.write(html); 
             doc.close();
+
+            if (CssInjection) {
+                CssInjection.forEach(link => {
+                    const head = doc.head || doc.getElementsByTagName('head')[0];
+                    const newLink = doc.createElement('link');
+                    newLink.rel = 'stylesheet';
+                    newLink.href = link;
+                    head.appendChild(newLink);
+                })
+            }
           };
         iframe.contentDocument.location.reload();
     }
@@ -807,8 +855,11 @@ class NetworkManager {
 
     protYab = async(pid, purl) => {
         if (purl.domain === "newtab") {
-            this.webview.setHtml(pid, CitronJS.getContent('native_error'))
-            // here
+            this.webview.setHtml(pid, CitronJS.getContent('native_error'), ['../media/native/native_error.css'])
+
+        } else if (purl.domain === "settings") {
+            this.webview.setHtml(pid, CitronJS.getContent('native_settings'), ['../media/native/native_settings.css'])
+            
         }
     }
 
@@ -925,6 +976,7 @@ class NetworkManager {
                                         this.spawnDevToolWindow(pid);
                                         this.setDevTree(pid, htmlString);
                                         this.webview.setHtml(pid, Helper.objToString(obj));
+                                        process.setHtml(pid, Helper.objToString(obj))
 
                                         scripts = scripts.map(({ src, api }) => {
                                         let href;
@@ -951,9 +1003,9 @@ class NetworkManager {
                                             }
                                             })
                                             .then(code => {
-                                            if (code !== null) {
-                                                process.executeLua(pid, code, api);
-                                            }
+                                                if (code !== null) {
+                                                    process.executeLua(pid, code, api);
+                                                }
                                             });
                                         }
                                     })

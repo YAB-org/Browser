@@ -5,7 +5,6 @@ const fs = require('node:fs');
 const userDataPath = app.getPath("userData");
 const childProcess = require('child_process');
 
-
 // Remove menu bar
 Menu.setApplicationMenu(null);
 
@@ -185,9 +184,12 @@ ipcMain.handle('spawn-process', async (event) => {
 	stdio: 'pipe'
   });
 
-	subprocesses[pid] = child;
 	child.on('spawn', () => {
-		console.log("spawned process with fpid: " + pid + " and tpid: " + child.pid) // Integer
+		console.log("spawned process with fpid: " + pid + " and tpid: " + child.pid)
+		subprocesses[pid] = {
+			child: child,
+			tpid: child.pid
+		}
 	});
 	child.on('error', (error) => {
 		console.error('Utility process encountered an error:', error);
@@ -198,34 +200,67 @@ ipcMain.handle('spawn-process', async (event) => {
     child.stderr.on('data', (data) => {
         console.error(`Utility stderr: ${data.toString()}`);
     });
+	child.on('message', (message) => {
+		/*if (message.type.startsWith('editRquest/legacy/')) {
+
+		} else if (message.type.startsWith('editRequest/v2/')) {
+			
+		}*/
+	})
 	return pid;
 });
 
 ipcMain.on('terminate-process', (event, pid) => {
-	const child = subprocesses[pid];
+	const child = subprocesses[pid].child;
 	child.kill();
 });
 
 ipcMain.on('kill-process', (event, pid) => {
-	const child = subprocesses[pid];
+	const child = subprocesses[pid].child;
 	child.kill();
 });
 
 ipcMain.on('reset-process', (event, pid) => {
-	const old_child = subprocesses[pid];
+	const old_child = subprocesses[pid].child;
 	console.log(subprocesses[pid]);
 	old_child.kill();
 	const new_child = utilityProcess.fork(path.join(__dirname, 'sub_wasmoon.js'), [], {
 		serviceName: pid.toString()
 	  });
-	subprocesses[pid] = new_child;
 	
 	  new_child.on('spawn', () => {
-		console.log("Reset process " + pid + " with new tpid: " + new_child.pid) // Integer
+		console.log("Reset process " + pid + " with new tpid: " + new_child.pid)
+		subprocesses[pid] = {
+			child: new_child,
+			tpid: new_child.pid
+		}
 	})
 })
 
 ipcMain.on("execute-lua", (event, pid, lua, api) => {
-	console.log('Execute Lua for PID:', pid);
-  	console.log(`Lua Code: with api ${api}`, lua);
+	setTimeout(function () {
+		const child = subprocesses[pid].child;
+		child.postMessage({ type: "code", code: lua, api: api })
+	}, 250)
+	
 })
+
+ipcMain.on("set-html", (event, pid, html) => {
+	setTimeout(function () {
+		const child = subprocesses[pid].child;
+		child.postMessage({ type: "html", html: html })
+	}, 250)
+})
+
+ipcMain.handle('get-memory-mb', (event, pid) => {
+	const child = subprocesses[pid];
+	const metric = app.getAppMetrics().find(m => m.pid == child.tpid);
+
+	if (!metric) return 0;
+	
+	if (process.platform === "win32") {
+		return metric.memory.privateBytes / 1000;
+	} else {
+		return metric.memory.workingSetSize / 1000;
+	}
+});

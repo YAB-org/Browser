@@ -1,18 +1,9 @@
-const { LuaFactory } = require("yab-wasmoon");
+const { LuaFactory } = require('wasmoon-async-fix')
 const { JSDOM } = require("jsdom");
 
-// Create a shared DOM that all Lua engines will reference.
-const dom = new JSDOM(`<!DOCTYPE html>
-<html>
-<body>
-  <div class="hi" div="id">Initial Text</div>
-  <a class="link" href="https://example.com">Example</a>
-</body>
-</html>`);
-const document = dom.window.document;
+let dom;
+let document;
 
-
-// Allows read-only objects
 function deepFreeze(obj) {
   Object.getOwnPropertyNames(obj).forEach(function(prop) {
       const value = obj[prop];
@@ -23,9 +14,8 @@ function deepFreeze(obj) {
   return Object.freeze(obj);
 }
 
-// Legacy API functions
+
 function legacy_get(selector, all) {
-  // Try querySelector with the given selector; if not, try class lookup.
   let el = document.querySelector(selector) || document.querySelector('.' + selector);
   if (!el) {
       console.warn(`Element '${selector}' was not found.`);
@@ -34,17 +24,16 @@ function legacy_get(selector, all) {
   let tag = el.tagName.toLowerCase();
   return {
       key: el,
-      // GETTER FUNCTIONS
       get_contents: () => el.value || el.checked || el.textContent,
       get_content: () => el.value || el.checked || el.textContent,
       get_href: () => el.getAttribute("href") || "",
       get_source: () => el.getAttribute("src") || "",
       get_opacity: () => el.style.opacity || "1",
       get_css_name: () => el.className || el.tagName,
-      // SETTER FUNCTIONS
       set_contents: function(newValue) {
           if (['input', 'textarea'].includes(tag)) {
               el.value = newValue;
+              process.parentPort.postMessage({ type: "editRequest/legacy/set_contents" })
               return;
           }
           el.textContent = newValue;
@@ -124,100 +113,48 @@ class LuaRunner {
       this.document = document;
   }
 
-  /**
-   * Runs Lua code using a newly-created Lua engine with the provided API.
-   * @param {string} code - The Lua code to execute.
-   * @param {string} api - The type of API to inject ("legacy", "v2", etc.).
-   */
-  async runLua(code, api) {
+  async runLua(code, api, pid) {
       const lua = await new LuaFactory().createEngine();
       this.luaInstances.push(lua);
 
-      // Set common globals. printE is global because the error handler needs it. there isnt a better way.
       lua.global.set("printe", printError);
       lua.global.set("print", print);
 
-      // LEGACY API
       if (api === "legacy") {
           lua.global.set("get", legacy_get);
-          lua.global.set("fetch", legacy_fetch)
-          lua.global.set("Promise", {
-  create: (executor) => new Promise(executor),
-  resolve: (val) => Promise.resolve(val),
-  reject: (err) => Promise.reject(err),
-  all: (list) => Promise.all(list)
-});
+          lua.global.set("fetch", legacy_fetch);
           lua.global.set("window", deepFreeze({
               browser: "bussinga",
               true_browser: "yab"
           }));
-          code = code.replaceAll(/fetch\(\s*?\{([^¬]|¬)*?\}\s*?\)/g, (match) => `${match}:await()`);
       } else if (api === "v2") {
-          // NEW API STUFF
           lua.global.set("printw", printWarn);
 
       }
 
-      // Count lines
-      const countLines = (str) => (str === '' ? 0 : str.split('\n').length);
-      const userCodeLineCount = countLines(code);
-
-      // Lua error-handling wrapper
-      const wrappedCode = `local function runScript()
-  ${code}
-end
-
-local function extract_line_number(traceback)
-for line in traceback:gmatch("[^\\r\\n]+") do
-  local lineno = line:match('%[string ".-"%]:(%d+):')
-  if lineno then
-    return tonumber(lineno)
-  end
-end
-return nil
-end
+      const wrappedCode = `local function runScript() ${code} end
 
 local function errorHandler(err)
-local info = debug.getinfo(2, "Sl") or { source = "?", currentline = 0 }
-local tb = debug.traceback("", 2)
-local filtered = {}
-for line in tb:gmatch("[^\\r\\n]+") do
-  if not line:find("^%s*%[C%]") then
-    table.insert(filtered, line)
-  end
-end
-local filteredTraceback = table.concat(filtered, " | ")
-return string.format("%s - %s", extract_line_number(filteredTraceback) - 1 or "?", tostring(err))
+  -- The error message usually contains line info like: "stdin:3: attempt to call a nil value"
+  -- We'll extract "stdin:3" part (or chunk name + line number)
+  local lineInfo = string.match(err, ":(%d+):")
+  local lineNum = tonumber(lineInfo) or -1
+  return "Error at line " .. lineNum .. ": " .. err
 end
 
-local ok, errMsg = xpcall(runScript, errorHandler)
-if not ok then
-printe("Error at line " .. errMsg)
+local success, result = xpcall(runScript, errorHandler)
+if not success then
+  printe(result)
 end
 `;
 
       try {
           await lua.doString(wrappedCode);
       } catch (error) {
-          // Sometimes errors can be catched within LUA especially naming errors, meanwhile syntax errors are catched outside (most, not all)
-          const regex = /:(\d+):\s*(.*)/;
-          const match = regex.exec(error);
-          if (match) {
-              const errorLine = parseInt(match[1], 10);
-              // im trying to get the proper line here since the users code starts on line 1. we have to deduct 1 to get the real errorline
-              if (errorLine < 1 || errorLine > (userCodeLineCount + 1)) {
-                  printError('Error outside of user scope, is something intervening? - ' + error);
-              } else {
-                  printError('Error at line ' + errorLine - 1 + ' - ' + match[2]);
-              }
-          } else {
-              // theres like so many types of errors, this is basically for anything else
-              printError('Error - ' + error);
-          }
+          console.log("UHM ERROR", error)
       }
   }
 
-  // closes all if that hasnt already happened. it might throw insignificant errors if its already closed
   async endAll() {
       for (const lua of this.luaInstances) {
           try {
@@ -226,79 +163,29 @@ end
               // ignore
           }
       }
-      // Reset the list.
       this.luaInstances = [];
   }
 }
 
 
-(async () => {
+
   const runner = new LuaRunner();
 
-  const legacyCode = `
 
+//process.parentPort.postMessage("Message from utility to main")
 
-  function async(callback)
-    return function(...)
-        local co = coroutine.create(callback)
-        local safe, result = coroutine.resume(co, ...)
+process.parentPort.on('message', (e) => {
+  process.parentPort.postMessage("got" + e.data)
 
-        return Promise.create(function(resolve, reject)
-            local checkresult
-            local step = function()
-                if coroutine.status(co) == "dead" then
-                    local send = safe and resolve or reject
-                    return send(result)
-                end
+  if (e.data.type == "code") {
+    runner.runLua(e.data.code, e.data.api)
 
-                safe, result = coroutine.resume(co)
-                checkresult()
-            end
+  } else if (e.data.type == "html") {
+    console.log(e.data.html)
+    dom = new JSDOM(e.data.html);
+    document = dom.window.document;
 
-            checkresult = function()
-                if safe and result == Promise.resolve(result) then
-                    result:finally(step)
-                else
-                    step()
-                end
-            end
+  }
+})
 
-            checkresult()
-        end)
-    end
-end
-
-local item = get("hi")
-  if item == nil then
-    print("Element 'hi' not found!")
-  else
-    print("Original contents:", item.get_contents())
-    item.set_contents("Hello, Lua!")
-    print("Updated contents:", item.get_contents())
-  end
-
-  local link = get("link")
-  if link == nil then
-    print("Element 'link' not found!")
-  else
-    print("Original href:", link.get_href())
-    link.set_href("buss://dingle.it")
-    print("Updated href:", link.get_href())
-  end
-
-  print("hello there from lua")
-  get('hi').on_click(async(function()
- local response = fetch({
-    url = "https://dummyjson.com/test",
-    method = "GET",
-    headers = { ["Content-Type"] = "application/json" }
-  })
-  print("Fetched async response with js callback:", response)
-end))
-`;
-
-  // Run Lua code
-  await runner.runLua(legacyCode, "legacy");
-
-  // await runner.runLua(otherCode, "otherAPI");
-})();
+console.log("usage", process.memoryUsage())

@@ -1,0 +1,19 @@
+body {
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: -webkit-fill-available;
+  background: #1B1F23;
+}
+
+.hi {
+  width: 60%;
+  background: #35393E;
+  border: 1px solid #52585D;
+  font-size: 18;
+  padding: 12px;
+  border-radius: 5px;
+  color: #A9A9A9;
+}
