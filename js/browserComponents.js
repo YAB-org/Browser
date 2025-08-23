@@ -167,7 +167,7 @@ class BrowserController {
             
         // Create tabs via '+' button
         document.getElementById('tab_newtab_button').addEventListener('click', () => {
-            this.tabman.spawnTab('New Tab', true);
+            this.spawnTab('New Tab', true);
         });
 
             // TOOLBAR
@@ -780,7 +780,6 @@ class BrowserController {
         if (!purl) {
             return { error: "error.noturl" }
         } else {
-            console.log("PROTOCOl", purl.protocol)
             if (this.NetworkLocalProtocols.hasOwnProperty(purl.protocol)) {
                 this.NetworkLocalProtocols[purl.protocol].source(pid, purl);
 
