@@ -54,7 +54,6 @@ class BrowserController {
 
         this.LayoutTabContainerID = 'tab_sortable';
         this.LayoutInputAddressBar = document.getElementById('toolbar_searchbar');
-		this.LayoutInputInput = document.getElementById('toolbar_searchbar');
         this.LayoutHighlight = document.getElementById('searchbar_highlight');
 
         this.NetworkCacheDuration = 7200;
@@ -235,13 +234,13 @@ class BrowserController {
             // Makes sure different parts of a url have different colors to allow for better readability
 
 			this.LayoutInputSetupHighlighting();
-        	this.LayoutInputInput.addEventListener('input', () => {
+        	this.LayoutInputAddressBar.addEventListener('input', () => {
 				this.TabList[this.currentTab].addressBar = this.LayoutInputAddressBar.value;
             	this.LayoutInputHighlightUpdate();
         	});
-            this.LayoutInputInput.addEventListener('keydown', (event) => {
+            this.LayoutInputAddressBar.addEventListener('keydown', (event) => {
                 if (event.key === "Enter") {
-                    this.LayoutInputInput.blur();
+                    this.LayoutInputAddressBar.blur();
                     if (this.TabList[this.currentTab].navigationHistory.length -1 > this.TabList[this.currentTab].historyIndex) {
                         let index = this.TabList[this.currentTab].historyIndex;
                         if (index !== -1) {
@@ -342,7 +341,7 @@ class BrowserController {
     // SEARCHBAR INPUT HIGHLIGHTING
 
 	LayoutInputHighlightUpdate() {
-        let final = this.LayoutInputInput.value;
+        let final = this.LayoutInputAddressBar.value;
         final = final
             .replaceAll('<', '&lt;')
             .replace(/.+?:\/\//, '<span class="searchbar_proto">$&</span>')
@@ -351,20 +350,20 @@ class BrowserController {
         this.LayoutHighlight.innerHTML = final;
     };
     LayoutInputSetupHighlighting() {
-        this.LayoutInputInput.addEventListener('focus', () => {
-            this.LayoutInputInput.select();
+        this.LayoutInputAddressBar.addEventListener('focus', () => {
+            this.LayoutInputAddressBar.select();
             let proto = document.querySelector('.searchbar_proto');
             if (proto) proto.style.display = '';
         });
 
-        this.LayoutInputInput.addEventListener('blur', () => {
+        this.LayoutInputAddressBar.addEventListener('blur', () => {
             /*let proto = document.querySelector('.searchbar_proto');
             if (proto) proto.style.display = 'none';*/
         });
 
-        this.LayoutInputInput.addEventListener("scroll", () => {
-            this.LayoutHighlight.scrollTop = this.LayoutInputInput.scrollTop;
-            this.LayoutHighlight.scrollLeft = this.LayoutInputInput.scrollLeft;
+        this.LayoutInputAddressBar.addEventListener("scroll", () => {
+            this.LayoutHighlight.scrollTop = this.LayoutInputAddressBar.scrollTop;
+            this.LayoutHighlight.scrollLeft = this.LayoutInputAddressBar.scrollLeft;
         });
     }
 
