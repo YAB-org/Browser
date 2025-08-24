@@ -158,7 +158,6 @@ CitronJS.handleSample = async function (sampleNode) {
     }
 }
 function convertXmlToHtmlSelfClosingTags(html) {
-    console.log(html)
     return html.replace(/<(\w+)([^>]*)\/>/g, '<$1$2></$1>');
 }
 

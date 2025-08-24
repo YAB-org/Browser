@@ -53,6 +53,7 @@ class BrowserController {
         this.terminate = closeApp.close;
 
         this.LayoutTabContainerID = 'tab_sortable';
+        this.LayoutWebViewContainerID = "web_display";
         this.LayoutInputAddressBar = document.getElementById('toolbar_searchbar');
         this.LayoutHighlight = document.getElementById('searchbar_highlight');
 
@@ -195,7 +196,7 @@ class BrowserController {
                             this.TravelTo(this.currentTab, this.TabList[this.currentTab].navigationHistory[this.TabList[this.currentTab].historyIndex].url, false)
                         }
                     } else {
-                        // corrupt
+                        console.log("CORRUPTION DETECTED")
                     }
                     
                 }
@@ -529,15 +530,19 @@ class BrowserController {
 
         const back = document.getElementById('toolbar_icon_historyback')
         const forward = document.getElementById('toolbar_icon_historyforward')
-        console.log("yahooooooooooooooooooo1")
         if (this.TabList[pid].historyIndex == 0) {
-            if (this.TabList[pid].navigationHistory.length -1 > 0) {
+            if (this.TabList[pid].navigationHistory.length - 1 > 0) {
                 // show forward
                 forward.classList.add('toolbar_icon_enabled')
+                back.classList.remove('toolbar_icon_enabled')
+            } else {
+                // show none
+                forward.classList.remove('toolbar_icon_enabled')
                 back.classList.remove('toolbar_icon_enabled')
             }
         } else if (this.TabList[pid].historyIndex == this.TabList[pid].navigationHistory.length - 1){
             // show backward
+            console.log("HIIII THERE, value of navigationhistory", this.TabList[pid].navigationHistory.length - 1)
             back.classList.add('toolbar_icon_enabled')
             forward.classList.remove('toolbar_icon_enabled')
         } else {
@@ -680,22 +685,22 @@ class BrowserController {
         const webview = CitronJS.getContent('webview', {
             id: "_" + pid
         });
-        document.getElementById(this.LayoutTabContainerID).appendChild(webview);
+        document.getElementById(this.LayoutWebViewContainerID).appendChild(webview);
     }
 
     WebviewFocusFrame(pid) {
-        document.getElementById(this.LayoutTabContainerID)
+        document.getElementById(this.LayoutWebViewContainerID)
             .querySelectorAll('.web_view')
             .forEach(iframe => iframe.classList.add('web_view_hidden'));
-        document.getElementById(this.LayoutTabContainerID).querySelector("#_" + pid).classList.remove('web_view_hidden');
+        document.getElementById(this.LayoutWebViewContainerID).querySelector("#_" + pid).classList.remove('web_view_hidden');
     }
 
     WebviewRemoveFrame(pid) {
-        document.getElementById(this.LayoutTabContainerID).querySelector("#_" + pid);
+        document.getElementById(this.LayoutWebViewContainerID).querySelector("#_" + pid);
     }
 
     async WebviewSetFrameHTML(pid, html, CssInjection = []) {
-        const iframe = document.getElementById(this.LayoutTabContainerID).querySelector('#_' + pid);
+        const iframe = document.getElementById(this.LayoutWebViewContainerID).querySelector('#_' + pid);
         //target.appendChild(html);
         iframe.onload = () => {
             const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -739,11 +744,11 @@ class BrowserController {
 
     async NetworkDNSExchange(purl, server) {
         const controller = new AbortController();
-        const timeout = this.third_party[purl.protocol][server].timeout;
+        const timeout = this.NetworkThirdPartyProtocols[purl.protocol][server].timeout;
         const timeoutId = setTimeout(() => controller.abort(), timeout);
-        return fetch(this.third_party[purl.protocol][server].address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
+        return fetch(this.NetworkThirdPartyProtocols[purl.protocol][server].address.replace('{domain}', purl.domain.split('.').at(-2)).replace('{tld}', purl.domain.split('.').at(-1)), {
                 signal: controller.signal,
-                headers: this.third_party[purl.protocol].headers
+                headers: this.NetworkThirdPartyProtocols[purl.protocol].headers
             })
             .then(response => response.json())
             .then(data => {
@@ -783,7 +788,7 @@ class BrowserController {
             if (this.NetworkLocalProtocols.hasOwnProperty(purl.protocol)) {
                 this.NetworkLocalProtocols[purl.protocol].source(pid, purl);
 
-            } else if (this.third_party.hasOwnProperty(purl.protocol)) { 
+            } else if (this.NetworkThirdPartyProtocols.hasOwnProperty(purl.protocol)) { 
                 let res;
                 res = await this.NetworkDNSExchange(purl, "server1");
                 if (res.error) {
@@ -816,8 +821,8 @@ class BrowserController {
                                         // obj = Helper.fixScripts(obj)
                                         let scripts = Helper.getScripts(obj);
 
-                                        this.spawnDevToolWindow(pid);
-                                        this.setDevTree(pid, htmlString);
+                                        //this.spawnDevToolWindow(pid);
+                                        //this.setDevTree(pid, htmlString);
                                         this.WebviewSetFrameHTML(pid, Helper.objToString(obj));
                                         process.setHtml(pid, Helper.objToString(obj))
 
