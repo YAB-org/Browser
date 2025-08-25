@@ -9,8 +9,9 @@ ace.config.setModuleUrl("ace/mode/htmlpp",
 
 export class Browser {
     constructor() {
+        this.LangRegistry = new LangRegistry("zh-Hans-CN");
         this.ProcessManager = new ProcessManager();
-        this.BrowserController = new BrowserController(9999, this.ProcessManager);
+        this.BrowserController = new BrowserController(9999, this.ProcessManager, this.LangRegistry);
         
 
     }
@@ -39,12 +40,21 @@ class ProcessManager {
         const u = await window.process.getMemoryUsageMB(pid);
         return u.toFixed(1);
     }
+
+    sendHTMLData(pid, html) {
+        window.process.setHtml(pid, html)
+    }
+
+    requestLuaExecution(pid, code, api) {
+        window.process.executeLua(pid, code, api);
+    }
 }
 
 
 class BrowserController {
-    constructor(max, ProcessManager) {
+    constructor(max, ProcessManager, LangRegistry) {
         this.ProcessManager = ProcessManager;
+        this.LangRegistry = LangRegistry;
 
         this.TabList = {};
         this.MaximumTabCount = max;
@@ -146,14 +156,15 @@ class BrowserController {
         // Set Up Tabbar
         if (document.getElementById(this.LayoutTabContainerID)) {
 
-            this.spawnTab('New Tab', true);
+            this.spawnTab('yab:blank', true);
             Sortable.create(document.getElementById(this.LayoutTabContainerID), {
-                swapThreshold: 0.90,
-                animation: 150,
+                //swapThreshold: 0.90,
+                animation: 250,
                 preventOnFilter: true,
+                direction: 'horizontal',
                 preventOnCancel: false,
-                easing: "cubic-bezier(0.65, 0, 0.35, 1)",
-                onEnd: function() {
+                //easing: "cubic-bezier(0.65, 0, 0.35, 1)",
+                /*onEnd: function() {
                     backend.getWindowData().then(data => {
                         let mouse = data.mouse;
                         let bounds = data.bounds; //document.getElementById('titlebar').getBoundingClientRect()
@@ -163,12 +174,12 @@ class BrowserController {
                             mouse.y >= bounds.y &&
                             mouse.y <= bounds.y + bounds.height;
                     })
-                }
+                }*/
             });
             
         // Create tabs via '+' button
         document.getElementById('tab_newtab_button').addEventListener('click', () => {
-            this.spawnTab('New Tab', true);
+            this.spawnTab('yab:blank', true);
         });
 
             // TOOLBAR
@@ -396,12 +407,19 @@ class BrowserController {
                     isMasked: false,
                     hiddenProtocol: true,
                     mask: "",
-                    title: title,
+                    _title: "",
                     favicon: "",
                     created: Date.now(),
                     historyIndex: -1,
                     navigationHistory: [],
                     preview: undefined,
+                    get title() {
+                        return this._title;
+                    },
+                    set title(value) {
+                        this._title = value;
+                        document.getElementById(pid).querySelector(".tab_text").textContent = value;
+                    }
                 };
                 this.currentTab = pid;
 
@@ -411,6 +429,8 @@ class BrowserController {
 
                 };
                 document.getElementById(this.LayoutTabContainerID).appendChild(newTab);
+
+                this.TabList[pid].title = title;
 
                 const self = this;
 
@@ -460,60 +480,51 @@ class BrowserController {
 
     // Terminate a Tab and its Process
     terminateTab(pid) {
-        if (this.ready !== true) {
-            console.error('[BrowserController][ERROR]: BrowserController is not ready yet.');
-        } else {
-            // TODO: Handle closing a focused tab
-            // Find and remove tab entry
-            this.ProcessManager.terminateProcess(pid);
-            this.WebviewRemoveFrame(pid);
-            const container = document.getElementById(this.LayoutTabContainerID); // or document.getElementById('myDiv')
-            const currentElem = document.getElementById(pid); // or however you determine it
-            // Remove tab element
-            const lastChild = container.lastElementChild;
-            let neighbour = null;
+        // Find and remove tab entry
+        this.ProcessManager.terminateProcess(pid);
+        this.WebviewRemoveFrame(pid);
+        const container = document.getElementById(this.LayoutTabContainerID); // or document.getElementById('myDiv')
+        const currentElem = document.getElementById(pid); // or however you determine it
+        // Remove tab element
+        const lastChild = container.lastElementChild;
+        let neighbour = null;
 
-            if (currentElem === lastChild) {
-                // If the current element is the last child, get its previous sibling (to the left)
+        if (currentElem === lastChild) {
+            // If the current element is the last child, get its previous sibling (to the left)
+            neighbour = currentElem.previousElementSibling;
+        } else {
+            // currentElem is not the last child of the DIV.
+            if (currentElem !== lastChild && !this.TabList.hasOwnProperty(lastChild.id)) {
+                // If the container's last child is NOT in the list, get currentElem's previous sibling
                 neighbour = currentElem.previousElementSibling;
             } else {
-                // currentElem is not the last child of the DIV.
-                if (currentElem !== lastChild && !this.TabList.hasOwnProperty(lastChild.id)) {
-                    // If the container's last child is NOT in the list, get currentElem's previous sibling
-                    neighbour = currentElem.previousElementSibling;
-                } else {
-                    // If the container's last child IS in the list, get currentElem's next sibling (to the right)
-                    neighbour = currentElem.nextElementSibling;
-                }
+                // If the container's last child IS in the list, get currentElem's next sibling (to the right)
+                neighbour = currentElem.nextElementSibling;
             }
-
-            delete this.TabList[pid];
-
-            this.CurrentTabCount--;
-
-            let tabtodel = document.getElementById(pid)
-
-
-            tabtodel.classList.add('tab_animation_close');
-            tabtodel.style.minWidth = "0px";
-            tabtodel.addEventListener('animationend', () => {
-                tabtodel.remove();
-
-
-                if (Object.keys(this.TabList).length > 0) {
-                    if (this.currentTab === pid) {
-                        this.setFocus(neighbour.id);
-                    }
-    
-                }
-                if (Object.keys(this.TabList).length === 0) {
-                    this.browserTerminate();
-                }
-            })
-
-        
-
         }
+
+        delete this.TabList[pid];
+
+        this.CurrentTabCount--;
+
+        let tabtodel = document.getElementById(pid)
+
+        tabtodel.classList.add('tab_animation_close');
+        tabtodel.style.minWidth = "0px";
+        tabtodel.addEventListener('animationend', () => {
+            tabtodel.remove();
+
+
+            if (Object.keys(this.TabList).length > 0) {
+                if (this.currentTab === pid) {
+                    this.setFocus(neighbour.id);
+                }
+
+            }
+            if (Object.keys(this.TabList).length === 0) {
+                this.terminate();
+            }
+        })
     }
 
     // Set the focus on a Tab
@@ -621,7 +632,7 @@ class BrowserController {
             }
 
         }
-        
+
         favicon.innerHTML = "";
         favicon.appendChild(CitronJS.getContent('doc_favicon'));
 
@@ -735,6 +746,7 @@ class BrowserController {
     NetworkNativeYabProtocol = async(pid, purl) => {
         if (purl.domain === "newtab") {
             this.WebviewSetFrameHTML(pid, CitronJS.getContent('native_error'), ['../media/native/native_error.css'])
+            this.TabList[pid].title = this.LangRegistry.getItem('tab.newtab');
 
         } else if (purl.domain === "settings") {
             this.WebviewSetFrameHTML(pid, CitronJS.getContent('native_settings'), ['../media/native/native_settings.css'])
@@ -823,9 +835,9 @@ class BrowserController {
 
                                         //this.spawnDevToolWindow(pid);
                                         //this.setDevTree(pid, htmlString);
+                                        this.TabList[pid].title = this.LangRegistry.getItem('tab.default');
                                         this.WebviewSetFrameHTML(pid, Helper.objToString(obj));
-                                        process.setHtml(pid, Helper.objToString(obj))
-
+                                        this.ProcessManager.sendHTMLData(pid, Helper.objToString(obj));
                                         scripts = scripts.map(({ src, api }) => {
                                         let href;
                                         try {
@@ -852,7 +864,7 @@ class BrowserController {
                                             })
                                             .then(code => {
                                                 if (code !== null) {
-                                                    process.executeLua(pid, code, api);
+                                                    this.ProcessManager.requestLuaExecution(pid, code, api);
                                                 }
                                             });
                                         }
@@ -890,3 +902,42 @@ class BrowserController {
 }
 
 
+class LangRegistry {
+    constructor (language) {
+        this.locale = language;
+        this.Registry = {
+            "en-US": {
+                "toolbar.searchbar.placeholder":"Search or enter URL",
+                "tab.newtab":"New Tab",
+                "tab.default":"Document"
+            },
+            "es-ES": {
+                "toolbar.searchbar.placeholder":"Buscar o introducir una URL",
+                "tab.newtab":"Nueva Pestaña",
+                "tab.default":"Documento"
+            },
+            "zh-Hans-CN": {
+                "toolbar.searchbar.placeholder":"搜索或输入网址",
+                "tab.newtab":"新标签",
+                "tab.default":"文档"
+            },
+            "nl-NL": {
+                "toolbar.searchbar.placeholder":"Zoeken of voer URL in",
+                "tab.newtab":"Nieuw tabblad",
+                "tab.default":"Document"
+            }
+        }
+    }
+
+    getItem(item, language = undefined) {
+        language = language || this.locale;
+
+        if (this.Registry[language] && this.Registry[language][item] !== undefined) {
+            return this.Registry[language][item];
+        }
+        if (this.Registry[this.locale] && this.Registry[this.locale][item] !== undefined) {
+            return this.Registry[this.locale][item];
+        }
+        return item;
+    }
+}

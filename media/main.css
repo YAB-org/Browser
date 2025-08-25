@@ -31,7 +31,6 @@ html, body {
   align-items: center;
   padding: 8px 16px;
   gap: 10px;
-  border-bottom: 2px solid var(--border-toolbar);
 }
 
 .toolbar_icon {
@@ -373,10 +372,12 @@ html, body {
   transition: 0.1s;
 }
 
-.web_display {
+.web_panel {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  border-radius: 7px;
 }
 
 .web_view {
@@ -385,7 +386,6 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: white;
   outline: none;
   border: none;
 }
@@ -403,6 +403,8 @@ html, body {
   display: flex;
   flex-direction: row;
   height: 100%;
+  padding: 10px;
+  background: #2f3337;
 }
 
 .split {
@@ -411,7 +413,7 @@ html, body {
 }
 
 .gutter {
-  background-color: var(--drag-space-bg);
+  background-color: transparent;
   background-repeat: no-repeat;
   background-position: 50%;
   transition: all 0.25s cubic-bezier(0.985, -0.624, 0.613, 1.039) !important;
@@ -433,9 +435,11 @@ html, body {
   cursor: col-resize;
 }
 
-.dev_tools {
+.dev_tools_panel {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border-radius: 7px;
 }
 
 .dev_tools_elems {
