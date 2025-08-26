@@ -902,6 +902,41 @@ class BrowserController {
 }
 
 
+
+// Basic layout for changing the tabs in this.Tablist[pid] to use the Tab class instead of an object
+class Tab {
+    constructor(pid, controller) {
+        this.pid = pid
+        this.addressBar = ""
+        this.currentURL = ""
+        this.isMasked = ""
+        this.mask = ""
+        this._title = ""
+        this._favicon = ""
+        this.created = Date.now()
+        this.historyIndex = -1
+        this.navigationHistory = []
+        this.preview = undefined
+    }
+    get title() {
+        return this._title;
+    }
+    set title(value) {
+        this._title = value;
+        document.getElementById(pid).querySelector(".tab_text").textContent = value;
+    }
+    get favicon() {
+        return this._favicon;
+    }
+    set favicon(value) {
+        let favicon = document.getElementById(pid).querySelector('.tab_icon');
+        favicon.innerHTML = "";
+        favicon.appendChild(value);
+    }
+
+}
+
+
 class LangRegistry {
     constructor (language) {
         this.locale = language;
@@ -925,6 +960,11 @@ class LangRegistry {
                 "toolbar.searchbar.placeholder":"Zoeken of voer URL in",
                 "tab.newtab":"Nieuw tabblad",
                 "tab.default":"Document"
+            },
+            "de-DE": {
+                "toolbar.searchbar.placeholder":"Suchen oder URL eingeben",
+                "tab.newtab":"Neuer Tab",
+                "tab.default":"Dokument"               
             }
         }
     }

@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }); */
 
+    document.addEventListener('aos:in', ({ detail }) => {
+        console.log('animated in', detail);
+    });
 
     document.addEventListener("CitronReady", () => {
         const BrowserInstance = new Browser();

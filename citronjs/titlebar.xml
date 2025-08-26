@@ -9,7 +9,7 @@
     </export>
 
     <sample name="tab">
-       <tab class="tab tab_animation tab-disabled" data-aos="fade-up" id="{ id }">
+       <tab class="tab tab_animation tab-disabled" data-aos="fade-up" data-aos-once="true" id="{ id }">
             <div class="tab_left">
                 <div class="tab_icon"><svg viewBox="25 25 50 50" class="tab_spinner"><circle r="20" cy="50" cx="50" class="tab_spinner_circle"></circle></svg></div>
                 <div class="tab_text">{ title }</div>
@@ -19,7 +19,7 @@
         </tab>
     </sample>
     <sample name="tab_focused">
-       <tab class="tab tab_animation" data-aos="fade-up" id="{ id }">
+       <tab class="tab tab_animation" data-aos="fade-up" data-aos-once="true" id="{ id }">
             <div class="tab_left">
                 <div class="tab_icon"></div>
                 <div class="tab_text">{ title }</div>
