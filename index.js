@@ -8,7 +8,7 @@ const childProcess = require('child_process');
 // Remove menu bar
 Menu.setApplicationMenu(null);
 
-// Create browser window
+// Create browser window test
 
 let splashWindow;
 
