@@ -13,6 +13,7 @@
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css'>
     <link rel="stylesheet" href="https://codemirror.net/5/theme/ayu-mirage.css">
     <!-- Citron -->
+    <c-import src="../citronjs/icons.xml"></c-import>
     <c-import src="../citronjs/navigation.xml"></c-import>
     <c-import src="../citronjs/yab.xml"></c-import>
     <c-import src="../citronjs/titlebar.xml"></c-import>
@@ -79,84 +80,26 @@
           <div class="toolbar_icon toolbar_icon_enabled" id="toolbar_icon_options"><sample name="toolbar_icon_options"></sample></div>
         </div>
         <div class="display_section">
-          <div id="web_display" class="web_panel">
+          <div id="web_display" class="panel">
             <div class="dev_size_indicator" id="dev_size_indicator">0px * 0px</div>
           </div>
-          <div class="dev_tools_panel" id="dev_tools">
-            <div class="dev_tools_menu">
-              <div class="dev_tools_elems">
-                <div class="dev_tools_elem" id="dev_selec_tree">Tree</div>
-                <div class="dev_tools_elem" id="dev_selec_console">Console</div>
-                <div class="dev_tools_elem" id="dev_selec_network">Network</div>
-                <div class="dev_tools_elem" id="dev_selec_source">Source</div>
+          <div class="panel webtool_panel" id="dev_tools">
+            <div class="webtool_menu">
+              <div class="webtool_menu_select">
+                <sample name="webtools_select"></sample>
               </div>
-              <div class="dev_tools_close">x</div>
-            </div>
-            <div class="dev_tools_content">
-              <div class="dev_content" id="dev_tree" style="display:none">
-                <div class="devtools_editor" id="editor"></div>
+              <div class="webtool_menu_items">
+                <div class="webtool_menu_item">Tree</div>
+                <div class="webtool_menu_item">Console</div>
+                <div class="webtool_menu_item">Network</div>
+                <div class="webtool_menu_item">Source</div>
               </div>
-              <div class="dev_content" id="dev_console" style="display:none">
-                <div class="dev_console_logs">
-                  <div class="dev_console_init_message"></div>
-                  <div class="dev_console_warn_message"></div>
-                  <div class="dev_console_error_message"></div>
-                  <div class="dev_console_print_message"></div>
+              <div class="webtool_menu_alt">
+                <div class="webtool_menu_alt_ext">
+                  <sample name="webtools_alt_ext"></sample>
                 </div>
-                <div class="dev_console_input"></div>
-              </div>
-              <div class="dev_content" id="dev_network">
-                <div class="dev_network_table">
-                  <div class="dev_network_table_element" id="dev_network_name">
-                    <div class="dev_network_element_header">Name</div>
-                    <div class="dev_network_element_values">
-                      <div class="dev_network_element_value">image.png</div>
-                      <div class="dev_network_element_value">fsh.fake.api</div>
-                    </div>
-                  </div>
-                  <div class="dev_network_table_element" id="dev_network_origin">
-                    <div class="dev_network_element_header">Origin</div>
-                    <div class="dev_network_element_values">
-                      <div class="dev_network_element_value">(self)</div>
-                      <div class="dev_network_element_value">./index.lua</div>
-                    </div>
-                  </div>
-                  <div class="dev_network_table_element" id="dev_network_type">
-                    <div class="dev_network_element_header">Type</div>
-                    <div class="dev_network_element_values">
-                      <div class="dev_network_element_value">fetch</div>
-                      <div class="dev_network_element_value">script</div>
-                    </div>
-                  </div>
-                  <div class="dev_network_table_element" id="dev_network_status">
-                    <div class="dev_network_element_header">Status</div>
-                    <div class="dev_network_element_values">
-                      <div class="dev_network_element_value">200</div>
-                      <div class="dev_network_element_value">404</div>
-                    </div>
-                  </div>
-                  <div class="dev_network_table_element" id="dev_network_size">
-                    <div class="dev_network_element_header">Size</div>
-                    <div class="dev_network_element_values">
-                      <div class="dev_network_element_value">2.1mb</div>
-                      <div class="dev_network_element_value">--</div>
-                    </div>
-                  </div>
-                  <div class="dev_network_table_element" id="dev_network_time">
-                    <div class="dev_network_element_header">Time</div>
-                    <div class="dev_network_element_values">
-                      <div class="dev_network_element_value">23ms</div>
-                      <div class="dev_network_element_value">--</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="dev_network_info"></div>
-              </div>
-              <div class="dev_content" id="dev_source" style="display:none">
-                <div class="dev_source_sources"></div>
-                <div class="dev_source_editor_container">
-                  <div class="dev_source_editor_tools"></div>
-                  <div class="dev_source_editor"></div>
+                <div class="webtool_menu_alt_close">
+                  <sample name="webtools_alt_close"></sample>
                 </div>
               </div>
             </div>

@@ -163,7 +163,7 @@ end
               // ignore
           }
       }
-      this.luaInstances = [];
+      this.luaInstances = [];  
   }
 }
 
