@@ -1,6 +1,7 @@
 # YAB — Yet Another Browser
 
-<img src="https://github.com/user-attachments/assets/98eb93dc-1c81-48f2-9900-cd81dace8c8c" alt="yabicon" width="120" />
+<img width="120" height="auto" alt="YAB" src="https://github.com/user-attachments/assets/a3d40b8b-d935-42e8-b657-278ebfd689a6" />
+
 
 **YAB** is a modern browser designed for WebX. It supports both the legacy Lua API (used by Bussinga) and the new standard WebX API, ensuring compatibility with both older and newer websites.
 
