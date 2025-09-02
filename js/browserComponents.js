@@ -11,7 +11,7 @@ export class Browser {
     constructor() {
         this.LangRegistry = new LangRegistry("zh-Hans-CN");
         this.ProcessManager = new ProcessManager();
-        this.BrowserController = new BrowserController(9999, this.ProcessManager, this.LangRegistry);
+        this.BrowserController = new BrowserController(9999, this.ProcessManager, this.LangRegistry, Tab);
         
 
     }
@@ -29,7 +29,6 @@ class ProcessManager {
     terminateProcess(pid) {
         window.process.terminate(pid);
     }
-
 
     async resetProcess(pid) {
         await window.process.resetProcess(pid);
@@ -52,9 +51,10 @@ class ProcessManager {
 
 
 class BrowserController {
-    constructor(max, ProcessManager, LangRegistry) {
+    constructor(max, ProcessManager, LangRegistry, TabClass) {
         this.ProcessManager = ProcessManager;
         this.LangRegistry = LangRegistry;
+        this.Tab = TabClass;
 
         this.TabList = {};
         this.MaximumTabCount = max;
@@ -271,7 +271,7 @@ class BrowserController {
             indicator.style.display = "none";
             indicator.innerHTML = `${rect.width.toFixed(2)}px * ${rect.height.toFixed(2)}px`
 
-            const editor = ace.edit("editor");
+            /*const editor = ace.edit("editor");
             window.editor = editor;
             editor.setTheme("ace/theme/yab-dark")
             editor.session.setMode("ace/mode/htmlpp");
@@ -284,34 +284,7 @@ class BrowserController {
                 showPrintMargin: false,
                 readOnly: true
             });
-
-            editor.commands.addCommand({
-                name: "customEnter",
-                bindKey: { win: "Enter", mac: "Enter" },
-                exec: function(editor) {
-                    const session = editor.getSession();
-                    const pos = editor.getCursorPosition();
-                    const line = session.getLine(pos.row);
-                    const before = line.substring(0, pos.column);
-                    const after = line.substring(pos.column);
-            
-                    const tagMatch = before.match(/<(\w+)[^>]*>$/);
-                    const closingTagMatch = after.match(/^<\/(\w+)>/);
-                    if (tagMatch && closingTagMatch && tagMatch[1] === closingTagMatch[1]) {
-                        const currentIndent = before.match(/^\s*/)[0];
-                        const indent = session.getTabString();
-            
-                        editor.insert(`\n${currentIndent}${indent}\n${currentIndent}`);
-                        editor.navigateUp(1);
-                        editor.navigateLineEnd();
-                    } else {
-                        editor.insert("\n");
-                    }
-                },
-                multiSelectAction: "forEach",
-                scrollIntoView: "cursor",
-                readOnly: false
-            });
+            */
 
             // Split Dev Tools from Webview and make them resizable with SplitJS
             Split(['#web_display', '#dev_tools'], {
@@ -401,27 +374,10 @@ class BrowserController {
 				this.LayoutInputAddressBar.value = "";
 				this.LayoutInputHighlightUpdate();
 
-                this.TabList[pid] = {
-                    addressBar: "",
-                    currentURL: "",
-                    isMasked: false,
-                    hiddenProtocol: true,
-                    mask: "",
-                    _title: "",
-                    favicon: "",
-                    created: Date.now(),
-                    historyIndex: -1,
-                    navigationHistory: [],
-                    preview: undefined,
-                    get title() {
-                        return this._title;
-                    },
-                    set title(value) {
-                        this._title = value;
-                        document.getElementById(pid).querySelector(".tab_text").textContent = value;
-                    }
-                };
+                this.TabList[pid] = new this.Tab(pid, this);
                 this.currentTab = pid;
+
+                const Tab = this.TabList[pid];
 
                 const newTab = this.HelperCreateTabSkeleton(title, pid, focused);
                 if (focused === true) {
@@ -430,11 +386,11 @@ class BrowserController {
                 };
                 document.getElementById(this.LayoutTabContainerID).appendChild(newTab);
 
-                this.TabList[pid].title = title;
+                Tab.title = title;
 
                 const self = this;
 
-                this.TabList[pid].preview = tippy('[id="' + pid + `"]`, {
+                Tab.preview = tippy('[id="' + pid + `"]`, {
                     allowHTML: true,
                     placement: 'bottom',
                     theme: 'tab_preview',
@@ -474,95 +430,22 @@ class BrowserController {
                     this.terminateTab(pid);
                 });
                 this.CurrentTabCount++;
-                this.TravelTo(this.currentTab, "yab://newtab", true, true, "")
+                Tab.TravelTo("yab://newtab", true, true, "")
             }        
     }
 
     // Terminate a Tab and its Process
     terminateTab(pid) {
-        // Find and remove tab entry
-        this.ProcessManager.terminateProcess(pid);
-        this.WebviewRemoveFrame(pid);
-        const container = document.getElementById(this.LayoutTabContainerID); // or document.getElementById('myDiv')
-        const currentElem = document.getElementById(pid); // or however you determine it
-        // Remove tab element
-        const lastChild = container.lastElementChild;
-        let neighbour = null;
-
-        if (currentElem === lastChild) {
-            // If the current element is the last child, get its previous sibling (to the left)
-            neighbour = currentElem.previousElementSibling;
-        } else {
-            // currentElem is not the last child of the DIV.
-            if (currentElem !== lastChild && !this.TabList.hasOwnProperty(lastChild.id)) {
-                // If the container's last child is NOT in the list, get currentElem's previous sibling
-                neighbour = currentElem.previousElementSibling;
-            } else {
-                // If the container's last child IS in the list, get currentElem's next sibling (to the right)
-                neighbour = currentElem.nextElementSibling;
-            }
-        }
-
-        delete this.TabList[pid];
-
-        this.CurrentTabCount--;
-
-        let tabtodel = document.getElementById(pid)
-
-        tabtodel.classList.add('tab_animation_close');
-        tabtodel.style.minWidth = "0px";
-        tabtodel.addEventListener('animationend', () => {
-            tabtodel.remove();
-
-
-            if (Object.keys(this.TabList).length > 0) {
-                if (this.currentTab === pid) {
-                    this.setFocus(neighbour.id);
-                }
-
-            }
-            if (Object.keys(this.TabList).length === 0) {
-                this.terminate();
-            }
-        })
+        this.TabList[pid].terminate();
     }
 
     // Set the focus on a Tab
     async setFocus(pid) {
-        this.currentTab = pid;
-        this.WebviewFocusFrame(pid);
-        document.querySelectorAll('.tab:not(.tab_disabled)').forEach(tab => tab.classList.add('tab_disabled'));
-        document.getElementById(pid).classList.remove('tab_disabled');
-		this.LayoutInputAddressBar.value = this.TabList[pid].addressBar;
-		this.LayoutInputHighlightUpdate();
-        if (!this.TabList[pid].hiddenProtocol) {
-            this.LayoutInputHideProtocol();
-        }
+        this.TabList[pid].takeFocus();
+    }
 
-        const back = document.getElementById('toolbar_icon_historyback')
-        const forward = document.getElementById('toolbar_icon_historyforward')
-        if (this.TabList[pid].historyIndex == 0) {
-            if (this.TabList[pid].navigationHistory.length - 1 > 0) {
-                // show forward
-                forward.classList.add('toolbar_icon_enabled')
-                back.classList.remove('toolbar_icon_enabled')
-            } else {
-                // show none
-                forward.classList.remove('toolbar_icon_enabled')
-                back.classList.remove('toolbar_icon_enabled')
-            }
-        } else if (this.TabList[pid].historyIndex == this.TabList[pid].navigationHistory.length - 1){
-            // show backward
-            console.log("HIIII THERE, value of navigationhistory", this.TabList[pid].navigationHistory.length - 1)
-            back.classList.add('toolbar_icon_enabled')
-            forward.classList.remove('toolbar_icon_enabled')
-        } else {
-            // show both
-            forward.classList.add('toolbar_icon_enabled')
-            back.classList.add('toolbar_icon_enabled')
-        }
-        
-
+    TravelTo(pid, target, recordToHistory=true, masked=false, mask="") {
+        this.TabList[pid].TravelTo(target, recordToHistory, masked, mask)
     }
 
     // Helps create the html skeleton for tabs in the tabbar
@@ -578,114 +461,6 @@ class BrowserController {
                 id: pid
             });
         }
-    }
-
-    // Make a tab go to a certain website
-    async TravelTo(pid, target, recordToHistory = true, masked = false, mask = "") {
-        let favicon = document.getElementById(pid).querySelector(".tab_icon");
-        favicon.innerHTML = "";
-        favicon.appendChild(CitronJS.getContent('tab_spinner'));
-        const res = await this.NetworkPageProcessor(target, pid);
-        console.log("RES", res)
-        if (res == "error-abort") {
-            // its not a valid url, make it a search instead
-        }
-        const tab = this.TabList[pid];
-
-        tab.isMasked = masked ? true : false;
-        tab.addressBar = masked ? mask : target;
-        this.LayoutInputAddressBar.value = masked ? mask : target;
-        tab.currentURL = target;
-
-        
-        
-
-        if (recordToHistory) {
-            tab.historyIndex += 1;
-        
-            if (tab.isMasked) {
-                try {
-                    const test = new URL(tab.mask);
-                    tab.navigationHistory.push({
-                        timestamp: Date.now(),
-                        url: tab.mask,
-                        title: tab.title,
-                        isMasked: false
-                    })
-                } catch(err) {
-                    tab.navigationHistory.push({
-                        timestamp: Date.now(),
-                        url: tab.currentURL,
-                        title: tab.title,
-                        isMasked: true,
-                        mask: tab.mask
-
-                    })
-                }
-            } else {
-                tab.navigationHistory.push({
-                    timestamp: Date.now(),
-                    url: tab.currentURL,
-                    title: tab.title,
-                    isMasked: false
-                })
-            }
-
-        }
-
-        favicon.innerHTML = "";
-        favicon.appendChild(CitronJS.getContent('doc_favicon'));
-
-        if (this.NetworkLocalProtocols.hasOwnProperty(this.HelperURLToObject(target).protocol)) {
-            this.TabList[pid].hiddenProtocol = false;
-        } else { this.TabList[pid].hiddenProtocol = true; }
-         this.LayoutInputHighlightUpdate();
-        
-        /*if (masked) {
-            tab.isMasked = true;
-            tab.mask = mask;
-
-            if (this.currentTab == pid) {
-                this.LayoutInputAddressBar.value = mask;
-                this.TabList[pid].addressBar = mask;
-                this.TabList[pid].currentURL = target;
-                this.LayoutInputHighlightUpdate();
-                
-            }
-        } else {
-            tab.isMasked = false;
-
-            if (this.currentTab == pid) {
-                this.LayoutInputAddressBar.value = target;
-                this.TabList[pid].addressBar = target;
-                this.TabList[pid].currentURL = target;
-                this.LayoutInputHighlightUpdate();
-            }
-        }*/
-        if (this.TabList[pid].addressBar == "") {
-            this.LayoutInputAddressBar.focus();
-        }
-
-        if (this.currentTab == pid) {
-            const back = document.getElementById('toolbar_icon_historyback')
-            const forward = document.getElementById('toolbar_icon_historyforward')
-
-            if (this.TabList[pid].historyIndex == 0) {
-                if (this.TabList[pid].navigationHistory.length -1 > 0) {
-                    forward.classList.add('toolbar_icon_enabled')
-                    back.classList.remove('toolbar_icon_enabled')
-                }
-            } else if (this.TabList[pid].historyIndex == this.TabList[pid].navigationHistory.length - 1){
-                // show backward
-                back.classList.add('toolbar_icon_enabled')
-                forward.classList.remove('toolbar_icon_enabled')
-            } else {
-                // show both
-                forward.classList.add('toolbar_icon_enabled')
-                back.classList.add('toolbar_icon_enabled')
-            }
-        }
-
     }
 
     // =========================
@@ -906,32 +681,226 @@ class BrowserController {
 // Basic layout for changing the tabs in this.Tablist[pid] to use the Tab class instead of an object
 class Tab {
     constructor(pid, controller) {
-        this.pid = pid
-        this.addressBar = ""
-        this.currentURL = ""
-        this.isMasked = ""
-        this.mask = ""
-        this._title = ""
-        this._favicon = ""
-        this.created = Date.now()
-        this.historyIndex = -1
-        this.navigationHistory = []
-        this.preview = undefined
+        this.pid = pid;
+        this.controller = controller;
+        this._addressBar = "";
+        this.currentURL = "";
+        this.isMasked = "";
+        this.mask = "";
+        this._title = "";
+        this._favicon = "";
+        this.created = Date.now();
+        this.historyIndex = -1;
+        this.navigationHistory = [];
+        this.preview = undefined;
     }
     get title() {
         return this._title;
     }
     set title(value) {
         this._title = value;
-        document.getElementById(pid).querySelector(".tab_text").textContent = value;
+        document.getElementById(this.pid).querySelector(".tab_text").textContent = value;
     }
     get favicon() {
         return this._favicon;
     }
     set favicon(value) {
-        let favicon = document.getElementById(pid).querySelector('.tab_icon');
+        let favicon = document.getElementById(this.pid).querySelector('.tab_icon');
         favicon.innerHTML = "";
         favicon.appendChild(value);
+    }
+    get addressBar() {
+        return this._addressBar;
+    }
+    set addressBar(value) {
+        this._addressBar = value;
+        this.controller.LayoutInputAddressBar.value = value;
+    }
+
+    async TravelTo(target, recordToHistory=true, masked=false, mask="") {
+        let favicon = document.getElementById(this.pid).querySelector(".tab_icon");
+        favicon.innerHTML = "";
+        favicon.appendChild(CitronJS.getContent('tab_spinner'));
+        const res = await this.controller.NetworkPageProcessor(target, this.pid);
+        console.log("RES", res)
+        if (res == "error-abort") {
+            // its not a valid url, make it a search instead
+        }
+        const tab = this.controller.TabList[this.pid];
+
+        this.isMasked = masked ? true : false;
+        this.addressBar = masked ? mask : target;
+        tab.currentURL = target;
+
+        
+        
+
+        if (recordToHistory) {
+            tab.historyIndex += 1;
+        
+            if (tab.isMasked) {
+                try {
+                    const test = new URL(tab.mask);
+                    tab.navigationHistory.push({
+                        timestamp: Date.now(),
+                        url: tab.mask,
+                        title: tab.title,
+                        isMasked: false
+                    })
+                } catch(err) {
+                    tab.navigationHistory.push({
+                        timestamp: Date.now(),
+                        url: tab.currentURL,
+                        title: tab.title,
+                        isMasked: true,
+                        mask: tab.mask
+
+                    })
+                }
+            } else {
+                tab.navigationHistory.push({
+                    timestamp: Date.now(),
+                    url: tab.currentURL,
+                    title: tab.title,
+                    isMasked: false
+                })
+            }
+
+        }
+
+        favicon.innerHTML = "";
+        favicon.appendChild(CitronJS.getContent('doc_favicon'));
+
+        /*if (this.controller.NetworkLocalProtocols.hasOwnProperty(this.HelperURLToObject(target).protocol)) {
+            this.controller.TabList[pid].hiddenProtocol = false;
+        } else { this.TabList[pid].hiddenProtocol = true; }*/
+         this.controller.LayoutInputHighlightUpdate();
+        
+        /*if (masked) {
+            tab.isMasked = true;
+            tab.mask = mask;
+
+            if (this.currentTab == pid) {
+                this.LayoutInputAddressBar.value = mask;
+                this.TabList[pid].addressBar = mask;
+                this.TabList[pid].currentURL = target;
+                this.LayoutInputHighlightUpdate();
+                
+            }
+        } else {
+            tab.isMasked = false;
+
+            if (this.currentTab == pid) {
+                this.LayoutInputAddressBar.value = target;
+                this.TabList[pid].addressBar = target;
+                this.TabList[pid].currentURL = target;
+                this.LayoutInputHighlightUpdate();
+            }
+        }*/
+        if (this.addressBar == "") {
+            this.controller.LayoutInputAddressBar.focus();
+        }
+
+        if (this.controller.currentTab == this.pid) {
+            const back = document.getElementById('toolbar_icon_historyback')
+            const forward = document.getElementById('toolbar_icon_historyforward')
+
+            if (this.historyIndex == 0) {
+                if (this.controller.TabList[this.pid].navigationHistory.length -1 > 0) {
+                    forward.classList.add('toolbar_icon_enabled')
+                    back.classList.remove('toolbar_icon_enabled')
+                }
+            } else if (this.historyIndex == this.navigationHistory.length - 1){
+                // show backward
+                back.classList.add('toolbar_icon_enabled')
+                forward.classList.remove('toolbar_icon_enabled')
+            } else {
+                // show both
+                forward.classList.add('toolbar_icon_enabled')
+                back.classList.add('toolbar_icon_enabled')
+            }
+        }
+    }
+
+    takeFocus() {
+        this.controller.currentTab = this.pid;
+        this.controller.WebviewFocusFrame(this.pid);
+        document.querySelectorAll('.tab:not(.tab_disabled)').forEach(tab => tab.classList.add('tab_disabled'));
+        document.getElementById(this.pid).classList.remove('tab_disabled');
+		this.controller.LayoutInputAddressBar.value = this.addressBar;
+		this.controller.LayoutInputHighlightUpdate();
+        /*if (!this.TabList[pid].hiddenProtocol) {
+            this.LayoutInputHideProtocol();
+        }*/
+
+        const back = document.getElementById('toolbar_icon_historyback')
+        const forward = document.getElementById('toolbar_icon_historyforward')
+        if (this.historyIndex == 0) {
+            if (this.navigationHistory.length - 1 > 0) {
+                // show forward
+                forward.classList.add('toolbar_icon_enabled')
+                back.classList.remove('toolbar_icon_enabled')
+            } else {
+                // show none
+                forward.classList.remove('toolbar_icon_enabled')
+                back.classList.remove('toolbar_icon_enabled')
+            }
+        } else if (this.historyIndex == this.navigationHistory.length - 1){
+            // show backward
+            console.log("HIIII THERE, value of navigationhistory", this.navigationHistory.length - 1)
+            back.classList.add('toolbar_icon_enabled')
+            forward.classList.remove('toolbar_icon_enabled')
+        } else {
+            // show both
+            forward.classList.add('toolbar_icon_enabled')
+            back.classList.add('toolbar_icon_enabled')
+        }
+    }
+
+    terminate() {
+        this.controller.ProcessManager.terminateProcess(this.pid);
+        this.controller.WebviewRemoveFrame(this.pid);
+        const container = document.getElementById(this.controller.LayoutTabContainerID); 
+        const currentElem = document.getElementById(this.pid);
+        // Remove tab element
+        const lastChild = container.lastElementChild;
+        let neighbour = null;
+
+        if (currentElem === lastChild) {
+            // If the current element is the last child, get its previous sibling (to the left)
+            neighbour = currentElem.previousElementSibling;
+        } else {
+            // currentElem is not the last child of the DIV.
+            if (currentElem !== lastChild && !this.controller.TabList.hasOwnProperty(lastChild.id)) {
+                // If the container's last child is NOT in the list, get currentElem's previous sibling
+                neighbour = currentElem.previousElementSibling;
+            } else {
+                // If the container's last child IS in the list, get currentElem's next sibling (to the right)
+                neighbour = currentElem.nextElementSibling;
+            }
+        }
+        this.controller.CurrentTabCount--;
+
+        let tabtodel = document.getElementById(this.pid);
+
+        tabtodel.classList.add('tab_animation_close');
+        tabtodel.style.minWidth = "0px";
+        tabtodel.addEventListener('animationend', () => {
+            tabtodel.remove();
+
+
+            if (Object.keys(this.controller.TabList).length > 0) {
+                if (this.controller.currentTab === this.pid) {
+                    this.controller.setFocus(neighbour.id);
+                }
+
+            }
+            if (Object.keys(this.controller.TabList).length === 0) {
+                this.controller.terminate();
+            }
+        })
+
+        delete this.controller.TabList[this.pid];
     }
 
 }

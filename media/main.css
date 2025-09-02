@@ -443,6 +443,7 @@ html, body {
 .webtool_panel {
   display: flex;
   flex-direction: column;
+  background: #1B1F23;
 
 }
 .webtool_menu {
@@ -468,16 +469,53 @@ html, body {
   gap: 7px;
   align-items: center;
 }
+.webtool_menu_alt_close {
+  display: flex;
+  align-items: center;
+}
+.webtool_menu_alt_ext {
+  display: flex;
+  align-items: center;
+}
+.webtool_menu_alt_select {
+  display: flex;
+  align-items: center;
+}
 .webtool_menu_items {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 20px;
   padding: 6px;
+  padding-left: 20px;
+  padding-right: 20px;
   width: 100%;
-  align-items: center;
+  overflow: auto;
+}
+.webtool_menu_items::-webkit-scrollbar {
+  display: none; 
 }
 .webtool_menu_item {
   color: #8D8D8D;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.webtool_menu_item:hover {
+  color: #bfbfbf;
+}
+.webtool_menu_item:active {
+  color: #bfbfbf;
+  scale: 0.9;
+}
+.webtool_cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #DEDEDE;
+  background: #00000070;
+  text-align: center;
 }
 .dev_size_indicator {
   position: absolute;
