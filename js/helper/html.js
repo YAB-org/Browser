@@ -143,7 +143,7 @@ export function fixScripts(obj) {
     }
   }
   return obj;
-} 
+}
 
 export function getScripts(obj) {
   let scripts = [];

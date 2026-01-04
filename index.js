@@ -75,7 +75,7 @@ function createBrowserWindow() {
 		item.setSavePath(filePath);
 
 		const tempExt = path.extname(fileName);
-    	const tempPath = path.join(app.getPath('temp'), `temp_icon${tempExt}`);
+    const tempPath = path.join(app.getPath('temp'), `temp_icon${tempExt}`);
 		try {
 			fs.writeFileSync(tempPath, '');
 			const icon = await app.getFileIcon(tempPath, { size:'large' });
@@ -84,17 +84,15 @@ function createBrowserWindow() {
 		} catch (err) {
 			// cant get icon put a placeholder or nothing
 		}
-
-	})
+	});
   app.on('child-process-gone', (event, details) => {
-	console.log(`Child process of type ${details.type} with name ${details.name} and service name ${details.serviceName} has exited.`);
-	console.log(`Reason: ${details.reason}, Exit Code: ${details.exitCode}`);
-	win.webContents.send('process-unexpected-terminated', { pid: details.name });
-  }); 
+		console.log(`Child process of type ${details.type} with name ${details.name} and service name ${details.serviceName} has exited.`);
+		console.log(`Reason: ${details.reason}, Exit Code: ${details.exitCode}`);
+		win.webContents.send('process-unexpected-terminated', { pid: details.name });
+  });
 }
 
 app.whenReady().then(() => {
-
 	createSplashWindow()
 	autoUpdater.checkForUpdates();
 	setTimeout(() => {
@@ -104,21 +102,21 @@ app.whenReady().then(() => {
 			splashWindow.destroy();
 		}, 1000);
 	}, 3000);
-	
+
 	autoUpdater.on("checking-for-update", () => {
 		console.log("checking for updates");
 		splashWindow.destroy();
-		createBrowserWindow()
-  	});
+		createBrowserWindow();
+  });
 	autoUpdater.on("update-not-available", (info) => {
 		console.log("not available");
-		createBrowserWindow()
+		createBrowserWindow();
 	});
 
 	autoUpdater.on("error", (err) => {
 		//splashWindow.webContents.send("update-status", `Error: ${err.message}`);
-		console.log("error occurred", err.message)
-		createBrowserWindow()
+		console.log("error occurred", err.message);
+		createBrowserWindow();
 	});
 
 	ipcMain.on('window-action', (event, data) => {
@@ -149,13 +147,11 @@ app.whenReady().then(() => {
 				break;
 		}
 	});
-
-	
 })
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') app.quit()
-})
+});
 
 ipcMain.on('close-request', () => {
 	app.quit();
@@ -180,8 +176,8 @@ function generateUniquePid() {
 ipcMain.handle('spawn-process', async (event) => {
 	const pid = generateUniquePid();
 	const child = utilityProcess.fork(path.join(__dirname, 'subwasmoon.js'), [], {
-	serviceName: pid,
-	stdio: 'pipe'
+		serviceName: pid,
+		stdio: 'pipe'
   });
 
 	child.on('spawn', () => {
@@ -195,16 +191,16 @@ ipcMain.handle('spawn-process', async (event) => {
 		console.error('Utility process encountered an error:', error);
 	});
 	child.stdout.on('data', (data) => {
-        console.log(`Utility stdout: ${data.toString()}`);
-    });
-    child.stderr.on('data', (data) => {
-        console.error(`Utility stderr: ${data.toString()}`);
-    });
+    console.log(`Utility stdout: ${data.toString()}`);
+  });
+  child.stderr.on('data', (data) => {
+    console.error(`Utility stderr: ${data.toString()}`);
+  });
 	child.on('message', (message) => {
 		/*if (message.type.startsWith('editRquest/legacy/')) {
 
 		} else if (message.type.startsWith('editRequest/v2/')) {
-			
+
 		}*/
 	})
 	return pid;
@@ -226,38 +222,37 @@ ipcMain.on('reset-process', (event, pid) => {
 	old_child.kill();
 	const new_child = utilityProcess.fork(path.join(__dirname, 'sub_wasmoon.js'), [], {
 		serviceName: pid.toString()
-	  });
-	
-	  new_child.on('spawn', () => {
+	});
+
+	new_child.on('spawn', () => {
 		console.log("Reset process " + pid + " with new tpid: " + new_child.pid)
 		subprocesses[pid] = {
 			child: new_child,
 			tpid: new_child.pid
 		}
-	})
-})
+	});
+});
 
 ipcMain.on("execute-lua", (event, pid, lua, api) => {
 	setTimeout(function () {
 		const child = subprocesses[pid].child;
-		child.postMessage({ type: "code", code: lua, api: api })
-	}, 250)
-	
-})
+		child.postMessage({ type: "code", code: lua, api: api });
+	}, 250);
+});
 
 ipcMain.on("set-html", (event, pid, html) => {
 	setTimeout(function () {
 		const child = subprocesses[pid].child;
 		child.postMessage({ type: "html", html: html })
-	}, 250)
-})
+	}, 250);
+});
 
 ipcMain.handle('get-memory-mb', (event, pid) => {
 	const child = subprocesses[pid];
 	const metric = app.getAppMetrics().find(m => m.pid == child.tpid);
 
 	if (!metric) return 0;
-	
+
 	if (process.platform === "win32") {
 		return metric.memory.privateBytes / 1000;
 	} else {
